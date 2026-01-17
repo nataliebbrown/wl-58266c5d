@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { UserProfile, UserStats, Insight } from '@/types/dashboard';
 
 const PROFILE_STORAGE_KEY = 'scripture-ai-profile';
 const STATS_STORAGE_KEY = 'scripture-ai-stats';
 const INSIGHTS_STORAGE_KEY = 'scripture-ai-insights';
+const FIRST_VISIT_STORAGE_KEY = 'scripture-ai-first-visit';
 
 const DEMO_INSIGHTS: Insight[] = [
   {
@@ -35,17 +36,29 @@ const DEFAULT_STATS: UserStats = {
   insightsCount: 23,
 };
 
+const FIRST_TIME_STATS: UserStats = {
+  daysActive: 0,
+  conversationCount: 0,
+  insightsCount: 0,
+};
+
 export function useUserProfile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
-  const [insights, setInsights] = useState<Insight[]>(DEMO_INSIGHTS);
+  const [stats, setStats] = useState<UserStats>(FIRST_TIME_STATS);
+  const [insights, setInsights] = useState<Insight[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
 
   useEffect(() => {
     // Load profile from localStorage
     const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
     const savedStats = localStorage.getItem(STATS_STORAGE_KEY);
     const savedInsights = localStorage.getItem(INSIGHTS_STORAGE_KEY);
+    const firstVisitStatus = localStorage.getItem(FIRST_VISIT_STORAGE_KEY);
+
+    // Determine first visit status
+    const isFirst = firstVisitStatus === null || firstVisitStatus === 'true';
+    setIsFirstVisit(isFirst);
 
     if (savedProfile) {
       try {
@@ -55,20 +68,28 @@ export function useUserProfile() {
       }
     }
 
-    if (savedStats) {
+    // Use different stats based on first visit
+    if (!isFirst && savedStats) {
       try {
         setStats(JSON.parse(savedStats));
       } catch (e) {
         console.error('Failed to parse saved stats');
+        setStats(DEFAULT_STATS);
       }
+    } else if (!isFirst) {
+      setStats(DEFAULT_STATS);
     }
 
-    if (savedInsights) {
+    // Load insights only for returning users
+    if (!isFirst && savedInsights) {
       try {
         setInsights(JSON.parse(savedInsights));
       } catch (e) {
         console.error('Failed to parse saved insights');
+        setInsights(DEMO_INSIGHTS);
       }
+    } else if (!isFirst) {
+      setInsights(DEMO_INSIGHTS);
     }
 
     setIsLoading(false);
@@ -106,7 +127,7 @@ export function useUserProfile() {
     }
   };
 
-  const getPersonaFromOnboarding = () => {
+  const getPersonaFromOnboarding = useCallback(() => {
     const onboardingData = localStorage.getItem('scripture-ai-onboarding');
     if (!onboardingData) return null;
     try {
@@ -115,17 +136,35 @@ export function useUserProfile() {
     } catch {
       return null;
     }
-  };
+  }, []);
+
+  const completeFirstVisit = useCallback(() => {
+    setIsFirstVisit(false);
+    localStorage.setItem(FIRST_VISIT_STORAGE_KEY, 'false');
+    // Load demo data for returning user experience
+    setStats(DEFAULT_STATS);
+    setInsights(DEMO_INSIGHTS);
+    localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(DEFAULT_STATS));
+    localStorage.setItem(INSIGHTS_STORAGE_KEY, JSON.stringify(DEMO_INSIGHTS));
+  }, []);
+
+  const checkIsFirstVisit = useCallback((): boolean => {
+    const firstVisitStatus = localStorage.getItem(FIRST_VISIT_STORAGE_KEY);
+    return firstVisitStatus === null || firstVisitStatus === 'true';
+  }, []);
 
   return {
     profile,
     stats,
     insights,
     isLoading,
+    isFirstVisit,
     saveProfile,
     updateStats,
     addInsight,
     hasCompletedOnboarding,
     getPersonaFromOnboarding,
+    completeFirstVisit,
+    checkIsFirstVisit,
   };
 }
