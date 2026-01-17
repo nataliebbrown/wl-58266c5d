@@ -24,26 +24,40 @@ type AnimationPhase =
 export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const [phase, setPhase] = useState<AnimationPhase>('initial');
   const [typedText, setTypedText] = useState('');
+  const [imageLoaded, setImageLoaded] = useState(false);
   const fullText = 'Begin Your Journey';
 
-  // Animation sequence timeline
+  // Preload the background image before starting animations
   useEffect(() => {
+    const img = new Image();
+    img.src = introBackground;
+    img.onload = () => setImageLoaded(true);
+    // If image is already cached, it loads immediately
+    if (img.complete) setImageLoaded(true);
+  }, []);
+
+  // Animation sequence timeline - only starts after image is loaded
+  useEffect(() => {
+    if (!imageLoaded) return;
+
     const timeline: { phase: AnimationPhase; delay: number }[] = [
-      { phase: 'overlay-fade', delay: 300 },
-      { phase: 'tagline-appear', delay: 800 },
-      { phase: 'orb-rise', delay: 1500 },
-      { phase: 'orb-colorize', delay: 2500 },
-      { phase: 'orb-center', delay: 3500 },
-      { phase: 'logo-appear', delay: 4500 },
-      { phase: 'transform-button', delay: 5500 },
-      { phase: 'expand-cta', delay: 6300 },
-      { phase: 'typing', delay: 6800 },
+      { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
+      { phase: 'tagline-appear', delay: 1500 },
+      { phase: 'orb-rise', delay: 2200 },
+      { phase: 'orb-colorize', delay: 3200 },
+      { phase: 'orb-center', delay: 4200 },
+      { phase: 'logo-appear', delay: 5200 },
+      { phase: 'transform-button', delay: 6200 },
+      { phase: 'expand-cta', delay: 7000 },
+      { phase: 'typing', delay: 7500 },
     ];
 
-    timeline.forEach(({ phase: nextPhase, delay }) => {
-      setTimeout(() => setPhase(nextPhase), delay);
-    });
-  }, []);
+    const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
+      setTimeout(() => setPhase(nextPhase), delay)
+    );
+
+    return () => timeoutIds.forEach(clearTimeout);
+  }, [imageLoaded]);
 
   // Typing animation
   useEffect(() => {
@@ -126,10 +140,17 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
+  // Don't render anything until image is loaded - prevents white flash
+  if (!imageLoaded) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#C4A77D]" /> // Match dominant color of background
+    );
+  }
+
   return (
     <motion.div 
       className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center"
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
     >
       {/* Initial abstract background with Scripture AI logo */}
