@@ -2,35 +2,40 @@ import { useState, useEffect } from 'react';
 import { CinematicIntro } from '@/components/onboarding/CinematicIntro';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 
-const INTRO_COMPLETED_KEY = 'scripture_ai_intro_completed';
+const ONBOARDING_COMPLETED_KEY = 'scripture_ai_onboarding_completed';
 
 const Index = () => {
-  const [showCinematicIntro, setShowCinematicIntro] = useState(false);
+  const [showCinematicIntro, setShowCinematicIntro] = useState(true);
   const [introCompleted, setIntroCompleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user has already seen the cinematic intro
-    const hasSeenIntro = localStorage.getItem(INTRO_COMPLETED_KEY);
-    if (!hasSeenIntro) {
-      setShowCinematicIntro(true);
-    } else {
+    // Check if user has already completed the full onboarding
+    const hasCompletedOnboarding = localStorage.getItem(ONBOARDING_COMPLETED_KEY);
+    if (hasCompletedOnboarding) {
+      // Skip both intro and onboarding - user has completed everything
+      setShowCinematicIntro(false);
       setIntroCompleted(true);
     }
+    setIsLoading(false);
   }, []);
 
   const handleIntroComplete = () => {
-    localStorage.setItem(INTRO_COMPLETED_KEY, 'true');
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
 
   const handleIntroSkip = () => {
-    localStorage.setItem(INTRO_COMPLETED_KEY, 'true');
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
 
-  // Show cinematic intro on first visit
+  // Loading state
+  if (isLoading) {
+    return null;
+  }
+
+  // Show cinematic intro first (every time until onboarding is complete)
   if (showCinematicIntro) {
     return (
       <CinematicIntro 
@@ -45,7 +50,6 @@ const Index = () => {
     return <OnboardingFlow startAtQuiz />;
   }
 
-  // Loading state
   return null;
 };
 
