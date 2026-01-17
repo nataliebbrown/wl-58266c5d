@@ -162,7 +162,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       {/* Large Scripture AI logo on initial background - appears instantly with background */}
       {showInitialLogo && (
         <motion.h1
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
+          className="absolute inset-0 flex items-center justify-center font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
           initial={{ opacity: 1, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
