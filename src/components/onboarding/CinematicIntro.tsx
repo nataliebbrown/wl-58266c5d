@@ -178,7 +178,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {(phase === 'orb-rise' || phase === 'orb-colorize') && (
           <motion.div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh]"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh] z-30"
             style={{
               background: 'radial-gradient(ellipse at center bottom, rgba(212, 165, 116, 0.4) 0%, rgba(184, 90, 62, 0.2) 30%, transparent 70%)',
             }}
@@ -192,7 +192,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Tagline text */}
       <motion.p
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center z-30"
         initial={{ opacity: 0, y: 10 }}
         animate={{ 
           opacity: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 1 : 0,
@@ -207,7 +207,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showOrb && !showExpandedCta && (
           <motion.div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
             initial={{ y: 400, scale: 3 }}
             animate={getOrbStyles()}
             exit={{ scale: 0.5, opacity: 0 }}
@@ -327,7 +327,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showLogo && !showButton && (
           <motion.h1
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide z-30"
             style={{ marginTop: '80px' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -343,7 +343,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showExpandedCta && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden z-30"
             style={{ 
               boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
             }}
@@ -380,7 +380,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       {/* Skip button */}
       {onSkip && phase !== 'complete' && (
         <motion.button
-          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors"
+          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors z-30"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2 }}
