@@ -42,7 +42,7 @@ function StatCard({ icon, value, label, colorClass, delay }: StatCardProps) {
 
 export function StatsSection({ stats }: StatsSectionProps) {
   return (
-    <section className="mb-8">
+    <section className="mb-8" data-tour="stats">
       <motion.h2
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

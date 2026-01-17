@@ -17,6 +17,7 @@ export function HeroSection({ userName, spiritualBackground }: HeroSectionProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-8"
+      data-tour="hero"
     >
       <p className="text-sm text-muted-foreground mb-2">{formatDate()}</p>
       <h1 className="text-3xl md:text-4xl font-spiritual font-semibold text-foreground mb-2">
