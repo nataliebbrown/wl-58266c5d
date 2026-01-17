@@ -68,43 +68,44 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   };
 
   // Calculate orb position and size based on phase
+  // y is relative to center (0 = center, positive = down, negative = up)
   const getOrbStyles = () => {
     switch (phase) {
       case 'initial':
       case 'overlay-fade':
       case 'tagline-appear':
         return {
-          y: '150vh',
-          scale: 8,
+          y: 400, // Start below screen
+          scale: 3,
           opacity: 0,
         };
       case 'orb-rise':
         return {
-          y: '30vh',
-          scale: 6,
+          y: 150, // Rising from bottom
+          scale: 2.5,
           opacity: 1,
         };
       case 'orb-colorize':
         return {
-          y: '10vh',
-          scale: 4,
+          y: 80, // Continuing to rise
+          scale: 1.8,
           opacity: 1,
         };
       case 'orb-center':
         return {
-          y: '0vh',
-          scale: 2,
+          y: 0, // At center
+          scale: 1.2,
           opacity: 1,
         };
       case 'logo-appear':
         return {
-          y: '-5vh',
+          y: -30, // Slightly above center to make room for logo
           scale: 1,
           opacity: 1,
         };
       default:
         return {
-          y: '-5vh',
+          y: -30,
           scale: 1,
           opacity: 1,
         };
@@ -166,12 +167,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showOrb && !showButton && (
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2"
-            initial={{ y: '150vh', scale: 8 }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            initial={{ y: 400, scale: 3 }}
             animate={getOrbStyles()}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative w-48 h-48 md:w-64 md:h-64">
+            <div className="relative w-32 h-32 md:w-40 md:h-40">
               {/* Base white orb layer */}
               <motion.div 
                 className="absolute inset-0 rounded-full"
@@ -251,8 +252,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showLogo && !showButton && (
           <motion.h1
-            className="absolute left-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide"
-            style={{ top: 'calc(50% + 100px)' }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide"
+            style={{ marginTop: '80px' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
