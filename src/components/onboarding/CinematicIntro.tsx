@@ -8,19 +8,18 @@ interface CinematicIntroProps {
 }
 
 type AnimationPhase = 
-  | 'frame1-brand-hold'        // Brand image + logo visible
-  | 'frame2-overlay-fade'      // Dark overlay fades in
-  | 'frame3-tagline'           // Tagline appears (overlapping with overlay)
-  | 'frame4-light-emerge'      // White glow rises from bottom
-  | 'frame5-orb-form'          // Circle becomes sunset orb
-  | 'frame6-brand-resolve'     // Orb travels to center, becomes logo mark
-  | 'frame7-control-reveal'    // Logo morphs to action button
-  | 'frame8-button-expand'     // Button expands into rectangle
-  | 'frame9-typing'            // Cursor types text
-  | 'frame10-ready';           // Functional ready state
+  | 'brand-hold'           // Full-screen image + ScriptureAI logo
+  | 'overlay-tagline'      // Overlay fades + tagline simultaneously
+  | 'light-rise'           // White circle rises from bottom
+  | 'orb-transform'        // Circle becomes gradient orb
+  | 'logo-resolve'         // Orb moves to center, becomes logo mark
+  | 'button-morph'         // Logo morphs to action button
+  | 'button-expand'        // Button expands into rectangular shape
+  | 'typing'               // Text types in
+  | 'ready';               // Functional ready state
 
 export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
-  const [phase, setPhase] = useState<AnimationPhase>('frame1-brand-hold');
+  const [phase, setPhase] = useState<AnimationPhase>('brand-hold');
   const [typedText, setTypedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const fullText = 'Begin Your Journey';
@@ -28,14 +27,13 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   // Animation sequence timeline
   useEffect(() => {
     const timeline: { phase: AnimationPhase; delay: number }[] = [
-      { phase: 'frame2-overlay-fade', delay: 1200 },      // Hold brand for 1.2s
-      { phase: 'frame3-tagline', delay: 1800 },           // Start tagline while overlay still fading
-      { phase: 'frame4-light-emerge', delay: 3200 },      // White glow rises
-      { phase: 'frame5-orb-form', delay: 4400 },          // Orb forms
-      { phase: 'frame6-brand-resolve', delay: 5600 },     // Orb becomes logo
-      { phase: 'frame7-control-reveal', delay: 6800 },    // Logo becomes button
-      { phase: 'frame8-button-expand', delay: 7600 },     // Button expands
-      { phase: 'frame9-typing', delay: 8100 },            // Start typing
+      { phase: 'overlay-tagline', delay: 1500 },    // Hold brand, then overlay + tagline together
+      { phase: 'light-rise', delay: 3500 },         // White circle rises
+      { phase: 'orb-transform', delay: 5000 },      // Becomes gradient orb
+      { phase: 'logo-resolve', delay: 6200 },       // Orb becomes logo
+      { phase: 'button-morph', delay: 7400 },       // Logo becomes button
+      { phase: 'button-expand', delay: 8200 },      // Button expands
+      { phase: 'typing', delay: 8700 },             // Start typing
     ];
 
     timeline.forEach(({ phase: nextPhase, delay }) => {
@@ -45,7 +43,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
   // Typing animation
   useEffect(() => {
-    if (phase === 'frame9-typing') {
+    if (phase === 'typing') {
       let index = 0;
       const typeInterval = setInterval(() => {
         if (index < fullText.length) {
@@ -53,118 +51,140 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           index++;
         } else {
           clearInterval(typeInterval);
-          // Fade out cursor after typing completes
-          setTimeout(() => setShowCursor(false), 300);
-          setTimeout(() => setPhase('frame10-ready'), 600);
+          setTimeout(() => setShowCursor(false), 400);
+          setTimeout(() => setPhase('ready'), 700);
         }
-      }, 50);
+      }, 55);
       return () => clearInterval(typeInterval);
     }
   }, [phase]);
 
   const handleCtaClick = () => {
-    if (phase === 'frame10-ready' || phase === 'frame9-typing' || phase === 'frame8-button-expand') {
+    if (['ready', 'typing', 'button-expand'].includes(phase)) {
       onComplete();
     }
   };
 
-  // Phase checks for visibility
-  const phaseIndex = [
-    'frame1-brand-hold',
-    'frame2-overlay-fade',
-    'frame3-tagline',
-    'frame4-light-emerge',
-    'frame5-orb-form',
-    'frame6-brand-resolve',
-    'frame7-control-reveal',
-    'frame8-button-expand',
-    'frame9-typing',
-    'frame10-ready'
-  ].indexOf(phase);
+  // Phase order for comparison
+  const phases: AnimationPhase[] = [
+    'brand-hold', 'overlay-tagline', 'light-rise', 'orb-transform',
+    'logo-resolve', 'button-morph', 'button-expand', 'typing', 'ready'
+  ];
+  const phaseIndex = phases.indexOf(phase);
 
-  const isOverlayVisible = phaseIndex >= 1;
-  const isTaglineVisible = phaseIndex >= 2 && phaseIndex <= 5;
-  const isLightEmerging = phaseIndex >= 3 && phaseIndex <= 4;
-  const isOrbForming = phaseIndex >= 4 && phaseIndex <= 5;
-  const isBrandResolving = phaseIndex === 5;
-  const isButtonRevealing = phaseIndex === 6;
-  const isButtonExpanded = phaseIndex >= 7;
+  // Visibility flags
+  const showOverlay = phaseIndex >= 1;
+  const showTagline = phaseIndex >= 1 && phaseIndex <= 4;
+  const showLightCircle = phaseIndex === 2;
+  const showGradientOrb = phaseIndex >= 3 && phaseIndex <= 4;
+  const showLogoMark = phaseIndex === 4;
+  const showCircleButton = phaseIndex === 5;
+  const showExpandedButton = phaseIndex >= 6;
 
   return (
     <motion.div 
       className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4 }}
     >
-      {/* Frame 1: Brand Image Background */}
+      {/* Full-screen image background with warm texture */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal/95 to-charcoal"
+        className="absolute inset-0"
         style={{
-          backgroundImage: `
-            radial-gradient(ellipse at 30% 20%, rgba(212, 165, 116, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(184, 90, 62, 0.06) 0%, transparent 50%)
+          background: `
+            linear-gradient(135deg, #1a1614 0%, #2d2420 40%, #1f1a17 100%)
           `,
         }}
-      />
+      >
+        {/* Subtle texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse at 20% 30%, rgba(212, 165, 116, 0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(96, 165, 250, 0.08) 0%, transparent 60%)
+            `,
+          }}
+        />
+      </div>
 
-      {/* Frame 1: Scripture AI Logo (horizontal, centered) - stays visible but dims with overlay */}
+      {/* Centered ScriptureAI logo (one word, horizontal) */}
       <motion.div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
         initial={{ opacity: 1 }}
         animate={{ 
-          opacity: phaseIndex >= 3 ? 0 : 1,
-          scale: phaseIndex >= 3 ? 0.9 : 1,
-        }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-      >
-        <h1 className="font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide whitespace-nowrap">
-          Scripture AI
-        </h1>
-      </motion.div>
-
-      {/* Frame 2: Dark overlay that fades in over the image */}
-      <motion.div 
-        className="absolute inset-0 bg-charcoal/80"
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: isOverlayVisible ? (phaseIndex >= 9 ? 0.7 : 0.85) : 0 
-        }}
-        transition={{ duration: 1.5, ease: 'easeInOut' }}
-      />
-
-      {/* Frame 3: Tagline - fades up while overlay is still fading */}
-      <motion.p
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.25em] uppercase font-light text-center z-20"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
-          opacity: isTaglineVisible ? 1 : 0,
-          y: isTaglineVisible ? 0 : 20,
+          opacity: phaseIndex >= 2 ? 0 : 1,
+          scale: phaseIndex >= 2 ? 0.95 : 1,
         }}
         transition={{ duration: 1, ease: 'easeOut' }}
       >
-        Where ancient wisdom meets modern discovery
+        <h1 className="font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide whitespace-nowrap">
+          ScriptureAI
+        </h1>
+      </motion.div>
+
+      {/* Dark semi-transparent overlay - fades in gradually */}
+      <motion.div 
+        className="absolute inset-0 z-15"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(26,22,20,0.85) 0%, rgba(26,22,20,0.9) 100%)',
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: showOverlay ? (phaseIndex >= 8 ? 0.75 : 1) : 0 
+        }}
+        transition={{ duration: 2, ease: 'easeInOut' }}
+      />
+
+      {/* Tagline - fades in simultaneously with overlay */}
+      <motion.p
+        className="absolute top-[35%] left-1/2 -translate-x-1/2 text-cream/90 text-sm md:text-base lg:text-lg tracking-[0.2em] uppercase font-light text-center z-20 px-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ 
+          opacity: showTagline ? 1 : 0,
+          y: showTagline ? 0 : 15,
+        }}
+        transition={{ duration: 1.2, ease: 'easeOut', delay: showTagline ? 0.3 : 0 }}
+      >
+        When Ancient Wisdom Meets Modern Discovery
       </motion.p>
 
-      {/* Frame 4: Light Emergence - white glow rises from bottom */}
+      {/* Ambient glow at bottom during light rise */}
       <AnimatePresence>
-        {isLightEmerging && (
+        {(phaseIndex >= 2 && phaseIndex <= 3) && (
           <motion.div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20"
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: '20%', opacity: 1 }}
-            exit={{ opacity: 0, y: '-20%' }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute bottom-0 left-0 right-0 h-[60vh] z-18"
+            style={{
+              background: 'linear-gradient(to top, rgba(255,255,255,0.12) 0%, rgba(139,92,246,0.06) 40%, transparent 100%)',
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* White circle rising from bottom edge */}
+      <AnimatePresence>
+        {showLightCircle && (
+          <motion.div
+            className="absolute left-1/2 -translate-x-1/2 z-25"
+            initial={{ bottom: '-200px', opacity: 0 }}
+            animate={{ bottom: '25%', opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Large white glow/circle */}
             <div 
-              className="w-64 h-64 md:w-80 md:h-80 rounded-full"
+              className="w-48 h-48 md:w-64 md:h-64 rounded-full"
               style={{
-                background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0.3) 60%, transparent 80%)',
+                background: 'radial-gradient(circle at 50% 40%, #ffffff 0%, rgba(255,255,255,0.9) 40%, rgba(255,255,255,0.5) 70%, transparent 100%)',
                 boxShadow: `
-                  0 0 120px 60px rgba(255, 255, 255, 0.4),
-                  0 0 200px 100px rgba(212, 165, 116, 0.2),
-                  0 0 300px 150px rgba(184, 90, 62, 0.1)
+                  0 0 80px 40px rgba(255, 255, 255, 0.5),
+                  0 0 150px 80px rgba(139, 92, 246, 0.2),
+                  0 0 200px 100px rgba(96, 165, 250, 0.15)
                 `,
               }}
             />
@@ -172,178 +192,172 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Ambient glow at bottom during light emergence */}
+      {/* Gradient orb with blue-purple/sunset colors */}
       <AnimatePresence>
-        {isLightEmerging && (
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 h-[50vh] z-10"
-            style={{
-              background: 'linear-gradient(to top, rgba(255,255,255,0.15) 0%, rgba(212,165,116,0.1) 30%, transparent 100%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Frame 5: Orb Formation - sunset-like gradient orb */}
-      <AnimatePresence>
-        {(isOrbForming || isBrandResolving) && (
+        {showGradientOrb && (
           <motion.div
             className="absolute left-1/2 -translate-x-1/2 z-30"
-            initial={{ y: '30vh', scale: 2 }}
+            initial={{ bottom: '25%', scale: 1.5 }}
             animate={{ 
-              y: isBrandResolving ? '0vh' : '10vh',
-              scale: isBrandResolving ? 0.8 : 1.5,
+              bottom: showLogoMark ? '45%' : '30%',
+              scale: showLogoMark ? 0.6 : 1,
             }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.div 
-              className="w-32 h-32 md:w-40 md:h-40 rounded-full relative overflow-hidden"
+              className="w-36 h-36 md:w-44 md:h-44 rounded-full relative overflow-hidden"
               style={{
                 background: `linear-gradient(
                   145deg, 
-                  rgba(255, 220, 180, 0.95) 0%, 
-                  rgba(255, 180, 120, 0.9) 25%,
-                  rgba(230, 130, 90, 0.85) 50%,
-                  rgba(180, 100, 80, 0.8) 75%,
-                  rgba(120, 70, 70, 0.75) 100%
+                  rgba(255, 255, 255, 0.95) 0%,
+                  rgba(200, 180, 255, 0.9) 20%,
+                  rgba(139, 92, 246, 0.85) 40%,
+                  rgba(168, 85, 247, 0.8) 55%,
+                  rgba(236, 72, 153, 0.75) 70%,
+                  rgba(251, 146, 60, 0.7) 85%,
+                  rgba(234, 179, 8, 0.65) 100%
                 )`,
                 boxShadow: `
-                  0 0 80px 30px rgba(255, 180, 120, 0.4),
-                  0 0 120px 50px rgba(230, 130, 90, 0.3),
-                  inset 0 0 40px rgba(255, 255, 255, 0.4)
+                  0 0 60px 25px rgba(139, 92, 246, 0.4),
+                  0 0 100px 50px rgba(168, 85, 247, 0.25),
+                  0 0 140px 70px rgba(236, 72, 153, 0.15),
+                  inset 0 0 40px rgba(255, 255, 255, 0.5)
                 `,
               }}
-              animate={isBrandResolving ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: isBrandResolving ? 0.5 : 0 }}
+              animate={showLogoMark ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: showLogoMark ? 0.4 : 0 }}
             >
               {/* Glossy highlight */}
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
                   background: `
-                    linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 40%),
-                    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 25%)
+                    linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 45%),
+                    radial-gradient(ellipse at 25% 25%, rgba(255,255,255,0.5) 0%, transparent 30%)
                   `,
                 }}
               />
               
-              {/* Subtle inner glow animation */}
+              {/* Subtle shimmer */}
               <motion.div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 50%)',
+                  background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25) 0%, transparent 60%)',
                 }}
-                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
               />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Frame 6: Brand Resolve - Scripture AI logo mark appears */}
+      {/* Logo mark resolving from orb */}
       <AnimatePresence>
-        {isBrandResolving && (
+        {showLogoMark && (
           <motion.div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40"
-            initial={{ opacity: 0, scale: 0.5 }}
+            initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
           >
             <h1 className="font-spiritual text-3xl md:text-4xl lg:text-5xl text-cream font-medium tracking-wide">
-              Scripture AI
+              ScriptureAI
             </h1>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Frame 7: Control Reveal - right-facing action button */}
+      {/* Circular action button (morphed from logo) */}
       <AnimatePresence>
-        {isButtonRevealing && (
+        {showCircleButton && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-cream/95 flex items-center justify-center cursor-pointer z-50"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-cream flex items-center justify-center cursor-pointer z-50"
             style={{ 
-              boxShadow: '0 0 50px rgba(255, 255, 255, 0.35), 0 10px 40px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 0 50px rgba(255, 255, 255, 0.35), 0 10px 50px rgba(0, 0, 0, 0.3)',
             }}
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            exit={{ scale: 0.7, opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onClick={handleCtaClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
+            <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" strokeWidth={2.5} />
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* Frames 8-10: Expanded CTA button with typing */}
+      {/* Expanded rectangular button with nested arrow */}
       <AnimatePresence>
-        {isButtonExpanded && (
+        {showExpandedButton && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-3 md:gap-4 cursor-pointer z-50 hover:bg-cream transition-colors"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream flex items-center cursor-pointer z-50 hover:bg-cream/95 transition-colors overflow-hidden"
             style={{ 
-              boxShadow: '0 0 60px rgba(255, 255, 255, 0.3), 0 15px 50px rgba(0, 0, 0, 0.3)',
-              paddingLeft: typedText ? '2.5rem' : '0',
-              paddingRight: typedText ? '2rem' : '0',
+              boxShadow: '0 0 60px rgba(255, 255, 255, 0.3), 0 15px 60px rgba(0, 0, 0, 0.35)',
             }}
-            initial={{ width: 96 }}
-            animate={{ width: typedText ? 'auto' : 96 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ width: 96, paddingLeft: 0, paddingRight: 0 }}
+            animate={{ 
+              width: typedText ? 'auto' : 96,
+              paddingLeft: typedText ? 40 : 0,
+              paddingRight: typedText ? 24 : 0,
+            }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onClick={handleCtaClick}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
+            {/* Typed text */}
             <motion.span 
               className="font-spiritual text-xl md:text-2xl text-charcoal font-medium whitespace-nowrap flex items-center"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: typedText ? 1 : 0, width: typedText ? 'auto' : 0 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: typedText ? 1 : 0 }}
             >
               {typedText}
-              {/* Cursor */}
+              {/* Blinking cursor */}
               <AnimatePresence>
-                {showCursor && phase === 'frame9-typing' && (
+                {showCursor && phase === 'typing' && (
                   <motion.span
-                    className="inline-block w-0.5 h-6 md:h-7 bg-charcoal/70 ml-0.5"
-                    initial={{ opacity: 1 }}
+                    className="inline-block w-0.5 h-6 md:h-7 bg-charcoal/60 ml-0.5"
                     animate={{ opacity: [1, 0, 1] }}
                     exit={{ opacity: 0 }}
-                    transition={{ 
-                      opacity: { duration: 0.6, repeat: Infinity },
-                    }}
+                    transition={{ duration: 0.6, repeat: Infinity }}
                   />
                 )}
               </AnimatePresence>
             </motion.span>
+
+            {/* Arrow button nested inside */}
             <motion.div
-              className="flex items-center justify-center"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
+              className="flex items-center justify-center ml-3"
+              style={{ minWidth: typedText ? 'auto' : 96, minHeight: typedText ? 'auto' : 80 }}
             >
-              <ArrowRight className="w-6 h-6 md:w-8 md:h-8 text-charcoal" />
+              <div 
+                className={`flex items-center justify-center ${typedText ? 'w-10 h-10 md:w-12 md:h-12 bg-charcoal/10 rounded-full' : ''}`}
+              >
+                <ArrowRight 
+                  className={`text-charcoal ${typedText ? 'w-5 h-5 md:w-6 md:h-6' : 'w-8 h-8 md:w-10 md:h-10'}`} 
+                  strokeWidth={2.5} 
+                />
+              </div>
             </motion.div>
           </motion.button>
         )}
       </AnimatePresence>
 
       {/* Skip button */}
-      {onSkip && phase !== 'frame10-ready' && (
+      {onSkip && phase !== 'ready' && (
         <motion.button
-          className="absolute bottom-8 right-8 text-cream/50 hover:text-cream/80 text-sm tracking-wide transition-colors z-50"
+          className="absolute bottom-8 right-8 text-cream/40 hover:text-cream/70 text-sm tracking-wider transition-colors z-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
+          transition={{ delay: 2.5 }}
           onClick={onSkip}
         >
-          Skip intro
+          Skip
         </motion.button>
       )}
     </motion.div>
