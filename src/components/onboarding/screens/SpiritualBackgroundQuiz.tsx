@@ -8,7 +8,7 @@ import { Sprout, Heart, Users, GraduationCap, HelpCircle } from 'lucide-react';
 interface SpiritualBackgroundQuizProps {
   selected: SpiritualBackground | null;
   onSelect: (value: SpiritualBackground) => void;
-  onBack: () => void;
+  onBack?: () => void;
   onContinue: () => void;
 }
 

@@ -40,9 +40,9 @@ const Index = () => {
     );
   }
 
-  // After intro, show onboarding flow
+  // After intro, show onboarding flow starting at the quiz
   if (introCompleted) {
-    return <OnboardingFlow />;
+    return <OnboardingFlow startAtQuiz />;
   }
 
   // Loading state

@@ -23,7 +23,11 @@ const pageTransition = {
   duration: 0.3,
 };
 
-export function OnboardingFlow() {
+interface OnboardingFlowProps {
+  startAtQuiz?: boolean;
+}
+
+export function OnboardingFlow({ startAtQuiz = false }: OnboardingFlowProps) {
   const {
     step,
     data,
@@ -31,10 +35,18 @@ export function OnboardingFlow() {
     updateData,
     nextStep,
     prevStep,
+    goToStep,
     processResults,
     resetOnboarding,
     trackScreen,
   } = useOnboarding();
+
+  // Start at quiz step (step 2) if coming from cinematic intro
+  useEffect(() => {
+    if (startAtQuiz && step < 2) {
+      goToStep(2);
+    }
+  }, [startAtQuiz, step, goToStep]);
 
   // Track screen views
   useEffect(() => {
@@ -77,7 +89,7 @@ export function OnboardingFlow() {
             key="spiritual"
             selected={data.spiritualBackground}
             onSelect={(value) => updateData('spiritualBackground', value)}
-            onBack={prevStep}
+            onBack={startAtQuiz ? undefined : prevStep}
             onContinue={nextStep}
           />
         );
