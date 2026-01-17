@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import introBackground from '@/assets/intro-background.jpg';
 
 interface CinematicIntroProps {
   onComplete: () => void;
@@ -118,6 +119,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     }
   };
 
+  const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
   const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showLogo = ['logo-appear'].includes(phase); // Only show during logo-appear, hide when button appears
@@ -130,12 +132,36 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {/* Background overlay - darkens the page */}
+      {/* Initial abstract background with Scripture AI logo */}
+      <motion.div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${introBackground})` }}
+        initial={{ opacity: 1 }}
+        animate={{ opacity: showInitialLogo ? 1 : 0 }}
+        transition={{ duration: 1.2, ease: 'easeInOut' }}
+      />
+
+      {/* Large Scripture AI logo on initial background */}
+      <AnimatePresence>
+        {showInitialLogo && (
+          <motion.h1
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            Scripture AI
+          </motion.h1>
+        )}
+      </AnimatePresence>
+
+      {/* Background overlay - darkens the page after initial */}
       <motion.div 
         className="absolute inset-0 bg-gradient-to-b from-charcoal/90 via-charcoal/95 to-charcoal"
         initial={{ opacity: 0 }}
         animate={{ 
-          opacity: phase === 'initial' ? 0 : 1 
+          opacity: ['initial', 'overlay-fade'].includes(phase) ? 0 : 1 
         }}
         transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
