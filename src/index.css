@@ -141,4 +141,30 @@
       hsl(var(--terracotta) / 0.15) 100%
     );
   }
+
+  /* First-time dashboard focus card glow */
+  .first-time-focus-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .first-time-focus-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 20px 40px -10px hsl(var(--primary) / 0.2),
+      0 8px 16px -8px hsl(var(--primary) / 0.1);
+  }
+
+  /* Subtle pulse animation for emphasis */
+  @keyframes gentle-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  .animate-gentle-pulse {
+    animation: gentle-pulse 3s ease-in-out infinite;
+  }
 }
