@@ -168,7 +168,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Background overlay - darkens the page after initial, covering the logo and background */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/60 to-charcoal/90 z-20"
+        className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/90 to-charcoal z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: showDarkOverlay ? 1 : 0 }}
         transition={{ duration: 1.5, ease: 'easeInOut' }}
