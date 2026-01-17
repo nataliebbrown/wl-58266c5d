@@ -9,9 +9,12 @@ import { QuickActionsSection } from '@/components/dashboard/QuickActionsSection'
 import { ComingSoonSection } from '@/components/dashboard/ComingSoonSection';
 import { OnboardingOverlay } from '@/components/onboarding-overlay/OnboardingOverlay';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useOnboardingOverlay } from '@/hooks/useOnboardingOverlay';
+import { Button } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
 
 export default function Dashboard() {
-  const navigate = useNavigate();
+const navigate = useNavigate();
   const { 
     stats, 
     insights, 
@@ -19,6 +22,7 @@ export default function Dashboard() {
     hasCompletedOnboarding, 
     getPersonaFromOnboarding 
   } = useUserProfile();
+  const { resetOverlay, showOverlay } = useOnboardingOverlay();
 
   useEffect(() => {
     // Redirect to onboarding if not completed
@@ -60,6 +64,21 @@ export default function Dashboard() {
         <InsightsSection insights={insights} />
         <QuickActionsSection />
         <ComingSoonSection />
+        
+        {/* Reset Tour Button - for testing */}
+        {!showOverlay && (
+          <div className="mt-8 flex justify-center">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={resetOverlay}
+              className="gap-2 text-muted-foreground"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Replay Sophia's Tour
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );
