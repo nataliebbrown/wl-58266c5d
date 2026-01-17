@@ -1,1 +1,4 @@
 project_id = "dzhbewjkabdjwetimchs"
+
+[functions.chat-sophia]
+verify_jwt = false
