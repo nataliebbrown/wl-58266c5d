@@ -153,13 +153,10 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
     >
-      {/* Initial abstract background with Scripture AI logo */}
-      <motion.div 
+      {/* Abstract background - always visible */}
+      <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${introBackground})` }}
-        initial={{ opacity: 1 }}
-        animate={{ opacity: showInitialLogo ? 1 : 0 }}
-        transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
 
       {/* Large Scripture AI logo on initial background - appears instantly with background */}
