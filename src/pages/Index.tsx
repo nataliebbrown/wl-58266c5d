@@ -3,6 +3,7 @@ import { CinematicIntro } from '@/components/onboarding/CinematicIntro';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 
 const ONBOARDING_COMPLETED_KEY = 'scripture_ai_onboarding_completed';
+const ONBOARDING_DATA_KEY = 'scripture-ai-onboarding';
 
 const Index = () => {
   const [showCinematicIntro, setShowCinematicIntro] = useState(true);
@@ -21,11 +22,15 @@ const Index = () => {
   }, []);
 
   const handleIntroComplete = () => {
+    // Clear any previous onboarding data so quiz starts fresh
+    localStorage.removeItem(ONBOARDING_DATA_KEY);
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
 
   const handleIntroSkip = () => {
+    // Clear any previous onboarding data so quiz starts fresh
+    localStorage.removeItem(ONBOARDING_DATA_KEY);
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
