@@ -70,7 +70,7 @@ export function CurrentSeasonQuiz({
         animate={{ opacity: 1, y: 0 }}
         className="p-6"
       >
-        <ProgressIndicator currentStep={5} totalSteps={5} />
+        <ProgressIndicator currentStep={4} totalSteps={4} />
       </motion.div>
 
       {/* Content */}
