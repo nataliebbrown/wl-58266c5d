@@ -64,7 +64,7 @@ export function SpiritualBackgroundQuiz({
         animate={{ opacity: 1, y: 0 }}
         className="p-6"
       >
-        <ProgressIndicator currentStep={2} totalSteps={5} />
+        <ProgressIndicator currentStep={1} totalSteps={4} />
       </motion.div>
 
       {/* Content */}
