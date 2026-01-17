@@ -111,8 +111,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     }
   };
 
-  const showWhiteOrb = ['orb-rise'].includes(phase);
-  const showColoredOrb = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
+  const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase);
+  const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showLogo = ['logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
@@ -162,44 +162,34 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         Where ancient wisdom meets modern discovery
       </motion.p>
 
-      {/* White Orb (sunrise phase) */}
+      {/* Single unified orb that transitions from white to colored */}
       <AnimatePresence>
-        {showWhiteOrb && (
+        {showOrb && !showButton && (
           <motion.div
             className="absolute left-1/2 -translate-x-1/2"
             initial={{ y: '150vh', scale: 8 }}
-            animate={{ y: '30vh', scale: 6 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div 
-              className="w-48 h-48 md:w-64 md:h-64 rounded-full"
-              style={{
-                background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
-                boxShadow: `
-                  0 0 100px 50px rgba(255, 255, 255, 0.5),
-                  0 0 200px 100px rgba(212, 165, 116, 0.3),
-                  0 0 300px 150px rgba(184, 90, 62, 0.2)
-                `,
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Colored Sophia Orb */}
-      <AnimatePresence>
-        {showColoredOrb && (
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2"
-            initial={{ y: '30vh', scale: 4, opacity: 0 }}
             animate={getOrbStyles()}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative">
-              {/* Main orb */}
+            <div className="relative w-48 h-48 md:w-64 md:h-64">
+              {/* Base white orb layer */}
               <motion.div 
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full relative overflow-hidden"
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
+                  boxShadow: `
+                    0 0 100px 50px rgba(255, 255, 255, 0.5),
+                    0 0 200px 100px rgba(212, 165, 116, 0.3),
+                    0 0 300px 150px rgba(184, 90, 62, 0.2)
+                  `,
+                }}
+                animate={{ opacity: isColorized ? 0 : 1 }}
+                transition={{ duration: 1, ease: 'easeInOut' }}
+              />
+              
+              {/* Colored iridescent orb layer */}
+              <motion.div 
+                className="absolute inset-0 rounded-full overflow-hidden"
                 style={{
                   background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
                   boxShadow: `
@@ -208,8 +198,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                     inset 0 0 30px rgba(255, 255, 255, 0.9)
                   `,
                 }}
-                animate={showButton ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                animate={{ opacity: isColorized ? 1 : 0 }}
+                transition={{ duration: 1, ease: 'easeInOut' }}
               >
                 {/* Iridescent inner layers */}
                 <motion.div
