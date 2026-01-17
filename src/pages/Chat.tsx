@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, ArrowLeft } from 'lucide-react';
+import { Menu, ArrowLeft, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from '@/components/chat/ChatMessage';
@@ -26,6 +26,7 @@ export default function Chat() {
 
   // State
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [crisisModal, setCrisisModal] = useState<{ open: boolean; level: 'low' | 'medium' | 'high' }>({
     open: false,
     level: 'low'
@@ -73,6 +74,26 @@ export default function Chat() {
 
   // Get suggested topics based on persona
   const suggestedTopics = getSuggestedTopics(userPersona || undefined);
+
+  // Initialize dark mode from system preference or localStorage
+  useEffect(() => {
+    const savedMode = localStorage.getItem('scripture-ai-dark-mode');
+    if (savedMode !== null) {
+      setIsDarkMode(savedMode === 'true');
+    } else {
+      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+  }, []);
+
+  // Apply dark mode class
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('scripture-ai-dark-mode', String(isDarkMode));
+  }, [isDarkMode]);
 
   // Redirect to onboarding if not completed
   useEffect(() => {
@@ -145,7 +166,7 @@ export default function Chat() {
   const showWelcome = messages.length === 0 && !isTyping;
 
   return (
-    <div className="h-screen flex bg-background">
+    <div className="h-screen flex chat-bg-light transition-colors duration-300">
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
@@ -167,12 +188,12 @@ export default function Chat() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 border-b border-border flex items-center justify-between px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <header className="h-16 flex items-center justify-between px-4 md:px-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden text-foreground/70 hover:text-foreground hover:bg-foreground/5"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -182,7 +203,7 @@ export default function Chat() {
               variant="ghost"
               size="sm"
               onClick={() => navigate('/dashboard')}
-              className="gap-2"
+              className="gap-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -190,52 +211,68 @@ export default function Chat() {
           </div>
 
           <div className="flex items-center gap-3">
-            <SophiaAvatar size="sm" />
+            <div className="chat-sophia-avatar rounded-full">
+              <SophiaAvatar size="sm" />
+            </div>
             <div className="text-left">
-              <h1 className="font-semibold text-sm">Sophia</h1>
+              <h1 className="font-semibold text-sm text-foreground">Sophia</h1>
               <p className="text-xs text-muted-foreground">
                 {currentConversation?.title || 'Your spiritual companion'}
               </p>
             </div>
           </div>
 
-          <div className="w-20" /> {/* Spacer for centering */}
+          {/* Dark mode toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+          >
+            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
         </header>
 
-        {/* Messages area */}
-        <ScrollArea ref={scrollAreaRef} className="flex-1">
-          <div className="max-w-3xl mx-auto py-6">
-            {showWelcome ? (
-              <WelcomeScreen
-                userName={userName}
-                suggestedTopics={suggestedTopics}
-                onSelectTopic={handleSelectTopic}
-              />
-            ) : (
-              <>
-                {messages.map((message) => (
-                  <ChatMessage
-                    key={message.id}
-                    message={message}
-                    onSaveInsight={message.role === 'assistant' ? handleSaveInsight : undefined}
-                    isSaved={savedMessageIds.has(message.id)}
+        {/* Chat container with glassmorphism */}
+        <div className="flex-1 flex flex-col min-h-0 px-4 md:px-10 pb-4 md:pb-6">
+          <div className="flex-1 flex flex-col chat-container-glass overflow-hidden">
+            {/* Messages area */}
+            <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 md:px-8 py-6">
+              <div className="max-w-[900px] mx-auto">
+                {showWelcome ? (
+                  <WelcomeScreen
+                    userName={userName}
+                    suggestedTopics={suggestedTopics}
+                    onSelectTopic={handleSelectTopic}
                   />
-                ))}
-                
-                <AnimatePresence>
-                  {isTyping && <TypingIndicator />}
-                </AnimatePresence>
-              </>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+                ) : (
+                  <>
+                    {messages.map((message, index) => (
+                      <ChatMessage
+                        key={message.id}
+                        message={message}
+                        onSaveInsight={message.role === 'assistant' ? handleSaveInsight : undefined}
+                        isSaved={savedMessageIds.has(message.id)}
+                        index={index}
+                      />
+                    ))}
+                    
+                    <AnimatePresence>
+                      {isTyping && <TypingIndicator />}
+                    </AnimatePresence>
+                  </>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
 
-        {/* Input area */}
-        <ChatInput
-          onSend={handleSendMessage}
-          isLoading={isTyping}
-        />
+            {/* Input area */}
+            <ChatInput
+              onSend={handleSendMessage}
+              isLoading={isTyping}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Modals */}
