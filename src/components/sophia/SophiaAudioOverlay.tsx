@@ -21,6 +21,18 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName }: SophiaAudioOve
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Lock body scroll when overlay is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Focus input when overlay opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
