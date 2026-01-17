@@ -34,9 +34,8 @@ export const CATEGORY_LABELS: Record<Insight['category'], string> = {
 };
 
 export const PERSONA_GREETINGS: Record<string, string> = {
+  'new_to_faith': "Let's explore together at your own pace",
   'believer_going_deeper': "Ready to discover deeper insights today?",
-  'new_to_faith': "Let's explore together",
-  'visual_learner': "What will you discover today?",
   'pastor_leader': "Ready to prepare and equip?",
   'seminary_student': "Let's dive into the depths today",
   'exploring_faith': "Your questions are welcome here",
