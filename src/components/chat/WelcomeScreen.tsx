@@ -17,13 +17,6 @@ const CATEGORY_ICONS = {
   study: Sparkles
 };
 
-const CATEGORY_COLORS = {
-  daily: 'text-primary',
-  exploration: 'text-secondary',
-  growth: 'text-ochre',
-  study: 'text-accent'
-};
-
 export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: WelcomeScreenProps) {
   const greeting = getTimeBasedGreeting();
 
@@ -35,7 +28,9 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
         transition={{ duration: 0.5 }}
         className="mb-6"
       >
-        <SophiaAvatar size="lg" />
+        <div className="chat-sophia-avatar rounded-full">
+          <SophiaAvatar size="lg" />
+        </div>
       </motion.div>
 
       <motion.div
@@ -44,10 +39,10 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
         transition={{ duration: 0.5, delay: 0.2 }}
         className="max-w-md"
       >
-        <h1 className="text-2xl md:text-3xl font-spiritual text-foreground mb-2">
+        <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-2">
           {greeting}{userName ? `, ${userName}` : ''}
         </h1>
-        <p className="text-muted-foreground font-spiritual text-lg mb-8">
+        <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
           I'm Sophia, your companion for exploring Scripture together. 
           What would you like to discover today?
         </p>
@@ -62,7 +57,6 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
       >
         {suggestedTopics.map((topic, index) => {
           const Icon = CATEGORY_ICONS[topic.category] || Sparkles;
-          const colorClass = CATEGORY_COLORS[topic.category] || 'text-primary';
 
           return (
             <motion.button
@@ -72,23 +66,24 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
               transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
               onClick={() => onSelectTopic(topic)}
               className={cn(
-                "group flex items-start gap-4 p-5 rounded-xl",
-                "bg-card border border-border",
-                "hover:border-primary/30 hover:shadow-md",
-                "transition-all duration-200 text-left"
+                "group flex items-start gap-4 p-5 rounded-xl text-left",
+                "bg-card/50 backdrop-blur-sm",
+                "border border-border/50",
+                "hover:bg-card/80 hover:border-[#87A96B]/30 hover:shadow-lg",
+                "transition-all duration-200"
               )}
             >
               <div className={cn(
-                "h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0",
-                "group-hover:bg-primary/10 transition-colors"
+                "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+                "bg-[#87A96B]/10 group-hover:bg-[#87A96B]/20 transition-colors"
               )}>
-                <Icon className={cn("h-5 w-5", colorClass)} />
+                <Icon className="h-5 w-5" style={{ color: '#87A96B' }} />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                <h3 className="font-medium text-foreground group-hover:text-[#B85A3E] transition-colors">
                   {topic.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
                   {topic.prompt}
                 </p>
               </div>
@@ -102,7 +97,7 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 1 }}
-        className="text-sm text-muted-foreground mt-8"
+        className="text-sm text-muted-foreground/60 mt-8"
       >
         Or simply type your question below...
       </motion.p>

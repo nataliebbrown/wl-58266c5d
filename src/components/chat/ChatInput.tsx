@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
@@ -38,7 +37,7 @@ export function ChatInput({
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
 
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         let transcript = '';
         for (let i = 0; i < event.results.length; i++) {
           transcript += event.results[i][0].transcript;
@@ -46,7 +45,7 @@ export function ChatInput({
         setValue(transcript);
       };
 
-      recognitionRef.current.onerror = (event) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
@@ -94,11 +93,11 @@ export function ChatInput({
   const hasVoiceSupport = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
 
   return (
-    <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 p-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="relative flex items-end gap-2">
+    <div className="chat-input-container mx-4 md:mx-8 mb-4 md:mb-6 p-4">
+      <div className="max-w-[900px] mx-auto">
+        <div className="relative flex items-end gap-3">
           <div className="flex-1 relative">
-            <Textarea
+            <textarea
               ref={textareaRef}
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -106,10 +105,11 @@ export function ChatInput({
               placeholder={placeholder}
               disabled={isLoading || disabled}
               className={cn(
-                "min-h-[48px] max-h-[150px] resize-none pr-12",
-                "rounded-2xl border-border focus-visible:ring-primary/50",
-                "bg-muted/50 placeholder:text-muted-foreground/60",
-                isListening && "ring-2 ring-primary/50"
+                "w-full min-h-[48px] max-h-[150px] resize-none",
+                "chat-input-field px-[18px] py-[14px] pr-12",
+                "text-base text-foreground placeholder:text-muted-foreground/60",
+                "focus:outline-none",
+                isListening && "ring-2 ring-[#87A96B]/50"
               )}
               rows={1}
             />
@@ -123,8 +123,9 @@ export function ChatInput({
                 onClick={toggleVoice}
                 disabled={isLoading || disabled}
                 className={cn(
-                  "absolute right-2 bottom-1.5 h-8 w-8",
-                  isListening && "text-primary animate-pulse"
+                  "absolute right-3 bottom-2 h-8 w-8",
+                  "text-muted-foreground hover:text-foreground",
+                  isListening && "text-[#87A96B] animate-pulse"
                 )}
               >
                 {isListening ? (
@@ -137,21 +138,25 @@ export function ChatInput({
           </div>
 
           {/* Send button */}
-          <Button
+          <button
             onClick={handleSubmit}
             disabled={!value.trim() || isLoading || disabled}
-            size="icon"
-            className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 shrink-0"
+            className={cn(
+              "h-11 w-11 flex items-center justify-center shrink-0",
+              "chat-send-button text-white",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            )}
+            aria-label="Send message"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <Send className="h-5 w-5" />
             )}
-          </Button>
+          </button>
         </div>
 
-        <p className="text-xs text-muted-foreground text-center mt-2">
+        <p className="text-xs text-muted-foreground/60 text-center mt-3">
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>

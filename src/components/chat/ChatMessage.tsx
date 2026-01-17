@@ -10,9 +10,10 @@ interface ChatMessageProps {
   message: Message;
   onSaveInsight?: (message: Message) => void;
   isSaved?: boolean;
+  index?: number;
 }
 
-export function ChatMessage({ message, onSaveInsight, isSaved }: ChatMessageProps) {
+export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
@@ -24,45 +25,55 @@ export function ChatMessage({ message, onSaveInsight, isSaved }: ChatMessageProp
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ 
+        duration: 0.3, 
+        ease: [0.4, 0, 0.2, 1],
+        delay: index * 0.05 
+      }}
       className={cn(
-        "flex gap-3 px-4 py-3",
+        "flex gap-3 mb-4",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       {/* Sophia avatar for assistant messages */}
       {!isUser && (
         <div className="flex-shrink-0 mt-1">
-          <SophiaAvatar size="sm" />
+          <div className="w-9 h-9 rounded-full chat-sophia-avatar overflow-hidden">
+            <SophiaAvatar size="sm" />
+          </div>
         </div>
       )}
 
       <div className={cn(
-        "flex flex-col max-w-[80%] md:max-w-[70%]",
-        isUser && "items-end"
+        "flex flex-col",
+        isUser ? "items-end max-w-[75%] md:max-w-[75%]" : "items-start max-w-[80%] md:max-w-[80%]"
       )}>
+        {/* Sophia label */}
+        {!isUser && (
+          <span className="text-sm font-medium mb-1 ml-1" style={{ color: '#87A96B' }}>
+            Sophia
+          </span>
+        )}
+
         {/* Message bubble */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-3 shadow-sm",
+            "px-[18px] py-3",
             isUser 
-              ? "bg-primary text-primary-foreground rounded-br-md" 
-              : "bg-card border border-border rounded-bl-md"
+              ? "chat-bubble-user" 
+              : "chat-bubble-sophia"
           )}
         >
-          <p className={cn(
-            "text-sm leading-relaxed whitespace-pre-wrap",
-            !isUser && "font-spiritual"
-          )}>
+          <p className="text-base leading-relaxed whitespace-pre-wrap">
             {message.content}
           </p>
         </div>
 
         {/* Message actions - only for assistant messages */}
         {!isUser && (
-          <div className="flex items-center gap-1 mt-2 opacity-0 hover:opacity-100 transition-opacity group-hover:opacity-100">
+          <div className="flex items-center gap-1 mt-2 opacity-0 hover:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="icon"
@@ -70,7 +81,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved }: ChatMessageProp
               onClick={handleCopy}
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-secondary" />
+                <Check className="h-3.5 w-3.5" style={{ color: '#87A96B' }} />
               ) : (
                 <Copy className="h-3.5 w-3.5" />
               )}
@@ -95,16 +106,13 @@ export function ChatMessage({ message, onSaveInsight, isSaved }: ChatMessageProp
         )}
 
         {/* Timestamp */}
-        <span className="text-xs text-muted-foreground mt-1">
+        <span className="text-[13px] text-muted-foreground/60 mt-1 ml-1">
           {message.createdAt.toLocaleTimeString([], { 
             hour: '2-digit', 
             minute: '2-digit' 
           })}
         </span>
       </div>
-
-      {/* User avatar placeholder - keep alignment */}
-      {isUser && <div className="w-8 flex-shrink-0" />}
     </motion.div>
   );
 }
