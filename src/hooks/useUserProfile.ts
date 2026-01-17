@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { UserProfile, UserStats, Insight } from '@/types/dashboard';
 
 const PROFILE_STORAGE_KEY = 'scripture-ai-profile';
 const STATS_STORAGE_KEY = 'scripture-ai-stats';
 const INSIGHTS_STORAGE_KEY = 'scripture-ai-insights';
+const FIRST_ACTION_KEY = 'scripture-ai-first-action-taken';
 
 const DEMO_INSIGHTS: Insight[] = [
   {
@@ -29,6 +30,14 @@ const DEMO_INSIGHTS: Insight[] = [
   },
 ];
 
+// Empty stats for first-time users
+const FIRST_TIME_STATS: UserStats = {
+  daysActive: 0,
+  conversationCount: 0,
+  insightsCount: 0,
+};
+
+// Demo stats for returning users (or default fallback)
 const DEFAULT_STATS: UserStats = {
   daysActive: 7,
   conversationCount: 12,
@@ -37,15 +46,21 @@ const DEFAULT_STATS: UserStats = {
 
 export function useUserProfile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
-  const [insights, setInsights] = useState<Insight[]>(DEMO_INSIGHTS);
+  const [stats, setStats] = useState<UserStats>(FIRST_TIME_STATS);
+  const [insights, setInsights] = useState<Insight[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFirstTime, setIsFirstTime] = useState(true);
 
   useEffect(() => {
     // Load profile from localStorage
     const savedProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
     const savedStats = localStorage.getItem(STATS_STORAGE_KEY);
     const savedInsights = localStorage.getItem(INSIGHTS_STORAGE_KEY);
+    const firstActionTaken = localStorage.getItem(FIRST_ACTION_KEY);
+
+    // Determine if this is a first-time user
+    const hasFirstAction = firstActionTaken === 'true';
+    setIsFirstTime(!hasFirstAction);
 
     if (savedProfile) {
       try {
@@ -61,6 +76,9 @@ export function useUserProfile() {
       } catch (e) {
         console.error('Failed to parse saved stats');
       }
+    } else if (hasFirstAction) {
+      // If user has taken action but no saved stats, use defaults
+      setStats(DEFAULT_STATS);
     }
 
     if (savedInsights) {
@@ -69,6 +87,9 @@ export function useUserProfile() {
       } catch (e) {
         console.error('Failed to parse saved insights');
       }
+    } else if (hasFirstAction) {
+      // If user has taken action but no saved insights, use demo insights
+      setInsights(DEMO_INSIGHTS);
     }
 
     setIsLoading(false);
@@ -117,15 +138,40 @@ export function useUserProfile() {
     }
   };
 
+  // Mark that user has taken their first action (transition from first-time to regular view)
+  const markFirstActionTaken = useCallback(() => {
+    localStorage.setItem(FIRST_ACTION_KEY, 'true');
+    localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify({
+      daysActive: 1,
+      conversationCount: 0,
+      insightsCount: 0,
+    }));
+    setIsFirstTime(false);
+    setStats({
+      daysActive: 1,
+      conversationCount: 0,
+      insightsCount: 0,
+    });
+  }, []);
+
+  // Check if user is first-time (hasn't taken any action yet)
+  const checkIsFirstTime = useCallback((): boolean => {
+    const firstActionTaken = localStorage.getItem(FIRST_ACTION_KEY);
+    return firstActionTaken !== 'true';
+  }, []);
+
   return {
     profile,
     stats,
     insights,
     isLoading,
+    isFirstTime,
     saveProfile,
     updateStats,
     addInsight,
     hasCompletedOnboarding,
     getPersonaFromOnboarding,
+    markFirstActionTaken,
+    checkIsFirstTime,
   };
 }

@@ -12,6 +12,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useOnboardingOverlay } from '@/hooks/useOnboardingOverlay';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
+import FirstTimeDashboard from './FirstTimeDashboard';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,8 +20,10 @@ export default function Dashboard() {
     stats, 
     insights, 
     isLoading, 
+    isFirstTime,
     hasCompletedOnboarding, 
-    getPersonaFromOnboarding 
+    getPersonaFromOnboarding,
+    markFirstActionTaken,
   } = useUserProfile();
   const overlayState = useOnboardingOverlay();
 
@@ -43,6 +46,18 @@ export default function Dashboard() {
   const userName = "Friend";
   const spiritualBackground = personaData?.spiritualBackground || 'default';
 
+  // Show first-time dashboard for new users
+  if (isFirstTime) {
+    return (
+      <FirstTimeDashboard
+        userName={userName}
+        spiritualBackground={spiritualBackground}
+        onFirstActionTaken={markFirstActionTaken}
+      />
+    );
+  }
+
+  // Regular dashboard for returning users
   return (
     <div className="min-h-screen bg-background">
       {/* Onboarding overlay for first-time visitors */}
