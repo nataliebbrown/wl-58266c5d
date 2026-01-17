@@ -162,20 +162,18 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
 
-      {/* Large Scripture AI logo on initial background */}
-      <AnimatePresence>
-        {showInitialLogo && (
-          <motion.h1
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            Scripture AI
-          </motion.h1>
-        )}
-      </AnimatePresence>
+      {/* Large Scripture AI logo on initial background - appears instantly with background */}
+      {showInitialLogo && (
+        <motion.h1
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          Scripture AI
+        </motion.h1>
+      )}
 
       {/* Background overlay - darkens the page after initial */}
       <motion.div 
