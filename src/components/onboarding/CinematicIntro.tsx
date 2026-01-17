@@ -159,12 +159,15 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         style={{ backgroundImage: `url(${introBackground})` }}
       />
 
-      {/* Large Scripture AI logo on initial background - always visible, gets covered by overlay */}
-      <h1
+      {/* Large Scripture AI logo on initial background - fades out before tagline appears */}
+      <motion.h1
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: ['initial', 'overlay-fade'].includes(phase) ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         Scripture AI
-      </h1>
+      </motion.h1>
 
       {/* Background overlay - darkens the page after initial, covering the logo and background */}
       <motion.div 
