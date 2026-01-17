@@ -39,6 +39,7 @@ export function FormationFocusCard() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
+      data-tour="formation-focus"
     >
       <Card className="relative overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card via-card to-sage/10">
         <div className="absolute top-0 right-0 w-32 h-32 bg-sage/5 rounded-full -translate-y-1/2 translate-x-1/2" />

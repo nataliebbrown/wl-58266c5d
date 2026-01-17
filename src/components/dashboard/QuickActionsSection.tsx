@@ -57,7 +57,7 @@ export function QuickActionsSection() {
   };
 
   return (
-    <section className="mb-8">
+    <section className="mb-8" data-tour="quick-actions">
       <motion.h2
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

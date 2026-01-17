@@ -9,7 +9,6 @@ import { QuickActionsSection } from '@/components/dashboard/QuickActionsSection'
 import { ComingSoonSection } from '@/components/dashboard/ComingSoonSection';
 import { OnboardingOverlay } from '@/components/onboarding-overlay/OnboardingOverlay';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useOnboardingOverlay } from '@/hooks/useOnboardingOverlay';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,8 +19,6 @@ export default function Dashboard() {
     hasCompletedOnboarding, 
     getPersonaFromOnboarding 
   } = useUserProfile();
-  
-  const { showOverlay } = useOnboardingOverlay();
 
   useEffect(() => {
     // Redirect to onboarding if not completed
@@ -50,22 +47,20 @@ export default function Dashboard() {
         spiritualBackground={spiritualBackground}
       />
       
-      {/* Dashboard content - blurred when overlay is active */}
-      <div className={showOverlay ? 'dashboard-blurred' : ''}>
-        <Navbar />
-        <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
-          <HeroSection 
-            userName={userName}
-            spiritualBackground={spiritualBackground}
-          />
-          <FormationFocusCard />
-          <div className="my-8" />
-          <StatsSection stats={stats} />
-          <InsightsSection insights={insights} />
-          <QuickActionsSection />
-          <ComingSoonSection />
-        </main>
-      </div>
+      {/* Dashboard content */}
+      <Navbar />
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
+        <HeroSection 
+          userName={userName}
+          spiritualBackground={spiritualBackground}
+        />
+        <FormationFocusCard />
+        <div className="my-8" />
+        <StatsSection stats={stats} />
+        <InsightsSection insights={insights} />
+        <QuickActionsSection />
+        <ComingSoonSection />
+      </main>
     </div>
   );
 }

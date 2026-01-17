@@ -28,7 +28,7 @@ export function InsightsSection({ insights }: InsightsSectionProps) {
   };
 
   return (
-    <section className="mb-8">
+    <section className="mb-8" data-tour="insights">
       <motion.h2
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
