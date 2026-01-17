@@ -103,18 +103,24 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           scale: 1,
           opacity: 1,
         };
+      case 'transform-button':
+        return {
+          y: 0, // Move to center for button
+          scale: 0.6, // Shrink to button size
+          opacity: 1,
+        };
       default:
         return {
-          y: -30,
-          scale: 1,
+          y: 0,
+          scale: 0.6,
           opacity: 1,
         };
     }
   };
 
-  const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase);
+  const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showLogo = ['logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
+  const showLogo = ['logo-appear'].includes(phase); // Only show during logo-appear, hide when button appears
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
@@ -163,14 +169,15 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         Where ancient wisdom meets modern discovery
       </motion.p>
 
-      {/* Single unified orb that transitions from white to colored */}
+      {/* Single unified orb that transitions from white to colored, then morphs to button */}
       <AnimatePresence>
-        {showOrb && !showButton && (
+        {showOrb && !showExpandedCta && (
           <motion.div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             initial={{ y: 400, scale: 3 }}
             animate={getOrbStyles()}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative w-32 h-32 md:w-40 md:h-40">
               {/* Base white orb layer */}
@@ -188,21 +195,28 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 transition={{ duration: 1, ease: 'easeInOut' }}
               />
               
-              {/* Colored iridescent orb layer */}
+              {/* Colored iridescent orb layer - becomes solid cream for button */}
               <motion.div 
-                className="absolute inset-0 rounded-full overflow-hidden"
+                className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
                 style={{
-                  background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
-                  boxShadow: `
-                    0 0 60px rgba(167, 139, 250, 0.25),
-                    0 0 100px rgba(96, 165, 250, 0.2),
-                    inset 0 0 30px rgba(255, 255, 255, 0.9)
-                  `,
+                  boxShadow: showButton 
+                    ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
+                    : `
+                      0 0 60px rgba(167, 139, 250, 0.25),
+                      0 0 100px rgba(96, 165, 250, 0.2),
+                      inset 0 0 30px rgba(255, 255, 255, 0.9)
+                    `,
                 }}
-                animate={{ opacity: isColorized ? 1 : 0 }}
-                transition={{ duration: 1, ease: 'easeInOut' }}
+                animate={{ 
+                  opacity: isColorized ? 1 : 0,
+                  background: showButton 
+                    ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
+                    : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
+                }}
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                onClick={showButton ? handleCtaClick : undefined}
               >
-                {/* Iridescent inner layers */}
+                {/* Iridescent inner layers - fade out for button */}
                 <motion.div
                   className="absolute inset-0"
                   style={{
@@ -214,8 +228,14 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                     `,
                     filter: 'blur(12px)',
                   }}
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  animate={{ 
+                    rotate: [0, 360],
+                    opacity: showButton ? 0 : 1,
+                  }}
+                  transition={{ 
+                    rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+                    opacity: { duration: 0.5 }
+                  }}
                 />
                 
                 {/* Secondary layer */}
@@ -228,12 +248,18 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                     `,
                     filter: 'blur(14px)',
                   }}
-                  animate={{ rotate: [360, 0] }}
-                  transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                  animate={{ 
+                    rotate: [360, 0],
+                    opacity: showButton ? 0 : 1,
+                  }}
+                  transition={{ 
+                    rotate: { duration: 25, repeat: Infinity, ease: 'linear' },
+                    opacity: { duration: 0.5 }
+                  }}
                 />
 
-                {/* Glossy highlight */}
-                <div
+                {/* Glossy highlight - fade out for button */}
+                <motion.div
                   className="absolute inset-0 rounded-full"
                   style={{
                     background: `
@@ -241,7 +267,22 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                       radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
                     `,
                   }}
+                  animate={{ opacity: showButton ? 0 : 1 }}
+                  transition={{ duration: 0.5 }}
                 />
+
+                {/* Arrow icon - appears when becoming button */}
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ 
+                    opacity: showButton ? 1 : 0,
+                    scale: showButton ? 1 : 0.5,
+                  }}
+                  transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
+                >
+                  <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
+                </motion.div>
               </motion.div>
             </div>
           </motion.div>
@@ -264,45 +305,24 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Circular action button (transforms from orb) */}
-      <AnimatePresence>
-        {showButton && !showExpandedCta && (
-          <motion.button
-            className="absolute left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-cream/95 flex items-center justify-center cursor-pointer"
-            style={{ 
-              top: 'calc(50% - 48px)',
-              boxShadow: '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)',
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            onClick={handleCtaClick}
-          >
-            <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* Expanded CTA button */}
+      {/* Expanded CTA button - morphs from circular orb/button */}
       <AnimatePresence>
         {showExpandedCta && (
           <motion.button
-            className="absolute left-1/2 -translate-x-1/2 h-16 md:h-20 px-10 md:px-16 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden"
             style={{ 
-              top: 'calc(50% - 40px)',
               boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
             }}
-            initial={{ width: 96, borderRadius: 48 }}
-            animate={{ width: 'auto', borderRadius: 40 }}
+            initial={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
+            animate={{ width: 'auto', paddingLeft: 40, paddingRight: 40 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onClick={handleCtaClick}
           >
             <motion.span 
               className="font-spiritual text-xl md:text-2xl text-charcoal font-medium whitespace-nowrap"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: 'auto' }}
+              transition={{ delay: 0.1, duration: 0.3 }}
             >
               {typedText}
               {phase === 'typing' && (
@@ -314,9 +334,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               )}
             </motion.span>
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 1 }}
             >
               <ArrowRight className="w-6 h-6 md:w-7 md:h-7 text-charcoal" />
             </motion.div>
