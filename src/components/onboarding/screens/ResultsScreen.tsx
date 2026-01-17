@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PersonaResult } from '@/types/onboarding';
 import { Sparkles, ArrowRight, RotateCcw } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface ResultsScreenProps {
   persona: PersonaResult | null;
@@ -11,11 +11,11 @@ interface ResultsScreenProps {
 }
 
 export function ResultsScreen({ persona, onEnterDashboard, onRestart }: ResultsScreenProps) {
+  const navigate = useNavigate();
+
   const handleEnterDashboard = () => {
-    toast.info("Dashboard coming in Phase 2!", {
-      description: "We're building something amazing for you.",
-    });
     onEnterDashboard();
+    navigate('/dashboard');
   };
 
   if (!persona) {
