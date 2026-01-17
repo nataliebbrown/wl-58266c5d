@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { GlobalSophia } from "@/components/sophia/GlobalSophia";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import FirstTimeDashboard from "./pages/FirstTimeDashboard";
@@ -22,20 +23,37 @@ function FirstTimeDashboardTest() {
   );
 }
 
+// Wrapper to conditionally show GlobalSophia based on route
+function AppContent() {
+  const location = useLocation();
+  
+  // Show floating Sophia on these routes
+  const showGlobalSophia = ['/dashboard', '/dashboard/first-time'].some(
+    path => location.pathname.startsWith(path)
+  );
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/first-time" element={<FirstTimeDashboardTest />} />
+        <Route path="/chat" element={<Chat />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {showGlobalSophia && <GlobalSophia />}
+    </>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/first-time" element={<FirstTimeDashboardTest />} />
-          <Route path="/chat" element={<Chat />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
