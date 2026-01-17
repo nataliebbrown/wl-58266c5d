@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 
 export default function Dashboard() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const { 
     stats, 
     insights, 
@@ -22,7 +22,7 @@ const navigate = useNavigate();
     hasCompletedOnboarding, 
     getPersonaFromOnboarding 
   } = useUserProfile();
-  const { resetOverlay, showOverlay } = useOnboardingOverlay();
+  const overlayState = useOnboardingOverlay();
 
   useEffect(() => {
     // Redirect to onboarding if not completed
@@ -49,6 +49,7 @@ const navigate = useNavigate();
       <OnboardingOverlay 
         userName={userName}
         spiritualBackground={spiritualBackground}
+        overlayState={overlayState}
       />
       
       {/* Dashboard content */}
@@ -66,12 +67,12 @@ const navigate = useNavigate();
         <ComingSoonSection />
         
         {/* Reset Tour Button - for testing */}
-        {!showOverlay && (
+        {!overlayState.showOverlay && (
           <div className="mt-8 flex justify-center">
             <Button 
               variant="outline" 
               size="sm"
-              onClick={resetOverlay}
+              onClick={overlayState.resetOverlay}
               className="gap-2 text-muted-foreground"
             >
               <RotateCcw className="w-4 h-4" />

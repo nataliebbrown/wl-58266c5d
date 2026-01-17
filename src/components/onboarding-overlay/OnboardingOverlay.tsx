@@ -2,16 +2,30 @@ import { useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { InteractiveTour } from './InteractiveTour';
 import { PathwaySelection } from './PathwaySelection';
-import { useOnboardingOverlay } from '@/hooks/useOnboardingOverlay';
 import type { PathwayOption } from '@/types/onboarding-overlay';
 import { toast } from 'sonner';
+
+// Type for the overlay state from useOnboardingOverlay hook
+interface OverlayState {
+  showOverlay: boolean;
+  showTour: boolean;
+  tourStep: number;
+  showPathways: boolean;
+  isTransitioning: boolean;
+  completeTour: (chosenStart: string) => void;
+  selectPathway: (pathId: string) => void;
+  skipToExplore: () => void;
+  dismissTour: () => void;
+  resetOverlay: () => void;
+}
 
 interface OnboardingOverlayProps {
   userName: string;
   spiritualBackground: string;
+  overlayState: OverlayState;
 }
 
-export function OnboardingOverlay({ userName, spiritualBackground }: OnboardingOverlayProps) {
+export function OnboardingOverlay({ userName, spiritualBackground, overlayState }: OnboardingOverlayProps) {
   const {
     showOverlay,
     showTour,
@@ -20,7 +34,7 @@ export function OnboardingOverlay({ userName, spiritualBackground }: OnboardingO
     selectPathway,
     skipToExplore,
     dismissTour,
-  } = useOnboardingOverlay();
+  } = overlayState;
 
   // Handle escape key
   useEffect(() => {
