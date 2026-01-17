@@ -177,7 +177,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Background overlay - darkens the page after initial */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-charcoal/90 via-charcoal/95 to-charcoal"
+        className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/90 to-charcoal"
         initial={{ opacity: 0 }}
         animate={{ 
           opacity: ['initial', 'overlay-fade'].includes(phase) ? 0 : 1 
