@@ -133,12 +133,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     }
   };
 
+  const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
   const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showLogo = ['logo-appear'].includes(phase); // Only show during logo-appear, hide when button appears
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
-  const showDarkOverlay = !['initial'].includes(phase); // Start fading in after initial
 
   // Don't render anything until image is loaded - prevents white flash
   if (!imageLoaded) {
@@ -153,35 +153,43 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
     >
-      {/* Initial abstract background - always visible, gets covered by overlay */}
-      <div 
+      {/* Initial abstract background with Scripture AI logo */}
+      <motion.div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${introBackground})` }}
+        initial={{ opacity: 1 }}
+        animate={{ opacity: showInitialLogo ? 1 : 0 }}
+        transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
 
-      {/* Large Scripture AI logo on initial background - fades out before tagline appears */}
-      <motion.h1
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: ['initial', 'overlay-fade'].includes(phase) ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-      >
-        Scripture AI
-      </motion.h1>
+      {/* Large Scripture AI logo on initial background - appears instantly with background */}
+      {showInitialLogo && (
+        <motion.h1
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-spiritual text-6xl md:text-7xl lg:text-8xl text-charcoal font-medium tracking-wide text-center z-10"
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          Scripture AI
+        </motion.h1>
+      )}
 
-      {/* Background overlay - darkens the page after initial, covering the logo and background */}
+      {/* Background overlay - darkens the page after initial */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/90 to-charcoal z-20"
+        className="absolute inset-0 bg-gradient-to-b from-charcoal/90 via-charcoal/95 to-charcoal"
         initial={{ opacity: 0 }}
-        animate={{ opacity: showDarkOverlay ? 1 : 0 }}
-        transition={{ duration: 1.5, ease: 'easeInOut' }}
+        animate={{ 
+          opacity: ['initial', 'overlay-fade'].includes(phase) ? 0 : 1 
+        }}
+        transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
 
       {/* Ambient glow at bottom during orb rise */}
       <AnimatePresence>
         {(phase === 'orb-rise' || phase === 'orb-colorize') && (
           <motion.div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh] z-30"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh]"
             style={{
               background: 'radial-gradient(ellipse at center bottom, rgba(212, 165, 116, 0.4) 0%, rgba(184, 90, 62, 0.2) 30%, transparent 70%)',
             }}
@@ -195,7 +203,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Tagline text */}
       <motion.p
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center z-30"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ 
           opacity: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 1 : 0,
@@ -210,7 +218,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showOrb && !showExpandedCta && (
           <motion.div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             initial={{ y: 400, scale: 3 }}
             animate={getOrbStyles()}
             exit={{ scale: 0.5, opacity: 0 }}
@@ -330,7 +338,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showLogo && !showButton && (
           <motion.h1
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide z-30"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide"
             style={{ marginTop: '80px' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -346,7 +354,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showExpandedCta && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden z-30"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden"
             style={{ 
               boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
             }}
@@ -383,7 +391,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       {/* Skip button */}
       {onSkip && phase !== 'complete' && (
         <motion.button
-          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors z-30"
+          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2 }}
