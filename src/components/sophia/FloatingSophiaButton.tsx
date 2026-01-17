@@ -85,8 +85,16 @@ export function FloatingSophiaButton({ onClick, onOpenHistory, onLearnToday }: F
         onClick={onClick}
         className="relative focus:outline-none focus:ring-2 focus:ring-[#87A96B] focus:ring-offset-2 rounded-full"
         initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.5 }}
+        animate={{ 
+          scale: 1, 
+          opacity: 1,
+          y: [0, -6, 0],
+        }}
+        transition={{ 
+          scale: { type: 'spring', stiffness: 260, damping: 20, delay: 0.5 },
+          opacity: { type: 'spring', stiffness: 260, damping: 20, delay: 0.5 },
+          y: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+        }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Talk to Sophia"
