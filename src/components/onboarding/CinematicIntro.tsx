@@ -96,7 +96,9 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
   const showOrb = orbAnimating;
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showLogo = ['logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
+  // Include 'orb-center' because our timeline briefly sets that phase after 'logo-appear'
+  // (logo-appear @ 5800ms, orb-center @ 6000ms). Without this, the logo flickers off then back on.
+  const showLogo = ['orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
