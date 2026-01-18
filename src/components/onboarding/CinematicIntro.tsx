@@ -91,25 +91,25 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       case 'tagline-appear':
         return {
           y: 400, // Start below screen
-          scale: 3,
+          scale: 5,
           opacity: 0,
         };
       case 'orb-rise':
         return {
           y: 150, // Rising from bottom
-          scale: 2.5,
+          scale: 4,
           opacity: 1,
         };
       case 'orb-colorize':
         return {
           y: 80, // Continuing to rise
-          scale: 1.8,
+          scale: 2.8,
           opacity: 1,
         };
       case 'orb-center':
         return {
           y: 0, // At center
-          scale: 1.2,
+          scale: 1.8,
           opacity: 1,
         };
       case 'logo-appear':
