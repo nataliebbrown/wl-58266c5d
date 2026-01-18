@@ -344,8 +344,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                   opacity: showLogo ? 1 : 0,
                 }}
                 transition={{
-                  height: { duration: logoSettled ? 0 : 1.5, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: logoSettled ? 0 : 0.8, ease: 'easeOut' },
+                  height: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.8, ease: 'easeOut' },
                 }}
               >
                 <h1 className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center">
