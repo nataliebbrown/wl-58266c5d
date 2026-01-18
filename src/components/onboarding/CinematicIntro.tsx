@@ -182,13 +182,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             initial={{ y: 400 }}
             animate={{ 
-              y: phase === 'transform-button' ? 0 : [400, 100, 30, -30],
+              y: phase === 'transform-button' ? 0 : -30,
             }}
             transition={{ 
               y: { 
-                duration: 4.5, 
-                ease: [0.25, 0.1, 0.25, 1], // Smooth cubic bezier
-                times: [0, 0.35, 0.7, 1], // Keyframe timing
+                duration: 5, 
+                ease: [0.16, 1, 0.3, 1], // Smooth exponential ease-out
               }
             }}
           >
@@ -196,17 +195,16 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               className="pointer-events-auto"
               initial={{ scale: 4, opacity: 0 }}
               animate={{ 
-                scale: phase === 'transform-button' ? 0.6 : [4, 2.5, 1.4, 1],
+                scale: phase === 'transform-button' ? 0.6 : 1,
                 opacity: 1,
               }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ 
                 scale: { 
-                  duration: 4.5, 
-                  ease: [0.25, 0.1, 0.25, 1],
-                  times: [0, 0.35, 0.7, 1],
+                  duration: 5, 
+                  ease: [0.16, 1, 0.3, 1], // Match the y animation
                 },
-                opacity: { duration: 0.8, ease: 'easeOut' }
+                opacity: { duration: 0.6, ease: 'easeOut' }
               }}
             >
             <div className="relative w-32 h-32 md:w-40 md:h-40">
