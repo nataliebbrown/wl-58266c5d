@@ -226,10 +226,10 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           >
             <motion.div
               className="pointer-events-auto"
-              initial={{ scale: 3, opacity: 0 }}
+              initial={{ scale: 5, opacity: 0 }}
               animate={{ scale: getOrbStyles().scale, opacity: getOrbStyles().opacity }}
               exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1] }}
             >
             <div className="relative w-32 h-32 md:w-40 md:h-40">
               {/* Base white orb layer */}
