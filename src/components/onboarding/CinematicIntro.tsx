@@ -220,7 +220,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 }}
               >
                 <div className="relative w-32 h-32 md:w-40 md:h-40">
-                  {/* Base white orb layer */}
+                  {/* Solid opaque base - ensures no transparency at any point */}
+                  <div 
+                    className="absolute inset-0 rounded-full bg-white"
+                  />
+                  
+                  {/* Base white orb layer with glow */}
                   <motion.div 
                     className="absolute inset-0 rounded-full"
                     style={{
