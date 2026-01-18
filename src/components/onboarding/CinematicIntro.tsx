@@ -200,15 +200,15 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Tagline text */}
+      {/* Tagline: "Where ancient wisdom meets modern discovery" */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{
-          opacity: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 1 : 0,
-          y: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 0 : 10,
+          opacity: ['tagline-appear', 'orb-rise', 'orb-colorize'].includes(phase) ? 1 : 0,
+          y: ['tagline-appear', 'orb-rise', 'orb-colorize'].includes(phase) ? 0 : 10,
         }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
       >
         <p className="text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center px-4">
           Where ancient wisdom<br />meets modern discovery
