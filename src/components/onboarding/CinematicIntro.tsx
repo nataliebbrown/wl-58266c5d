@@ -46,7 +46,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
       { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
       { phase: 'orb-center', delay: 6000 }, // Orb settling
-      { phase: 'logo-appear', delay: 6500 }, // Logo appears right as orb finishes (3500 + 3000ms)
+      { phase: 'logo-appear', delay: 5800 }, // Slight overlap - appears ~700ms before orb finishes
       { phase: 'transform-button', delay: 7800 },
       { phase: 'expand-cta', delay: 8600 },
       { phase: 'typing', delay: 9100 },
