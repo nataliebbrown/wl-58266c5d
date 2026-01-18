@@ -250,8 +250,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                     animate={{ 
                       opacity: isColorized ? 1 : 0,
                       background: showButton 
-                        ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
-                        : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
+                        ? 'linear-gradient(145deg, #faf8f5 0%, #f5f2f0 100%)'
+                        : 'linear-gradient(145deg, #ffffff 0%, #f8f6ff 100%)',
                     }}
                     transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
                     onClick={showButton ? handleCtaClick : undefined}
