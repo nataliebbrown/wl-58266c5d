@@ -334,16 +334,18 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
               {/* Scripture AI text - sits "behind" the orb and gets revealed as the orb shrinks */}
               <motion.div
-                className="relative -mt-10 md:-mt-12 overflow-hidden"
+                className="relative overflow-hidden"
                 style={{ zIndex: 0 }}
-                initial={{ maxHeight: 0, opacity: 0 }}
+                initial={{ maxHeight: 0, opacity: 0, marginTop: -60 }}
                 animate={{
                   maxHeight: showLogo ? 120 : 0,
                   opacity: showLogo ? 1 : 0,
+                  marginTop: showLogo ? 16 : -60,
                 }}
                 transition={{
                   maxHeight: { duration: 1.1, ease: [0.16, 1, 0.3, 1] },
                   opacity: { duration: 0.5, ease: 'easeOut' },
+                  marginTop: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
                 }}
               >
                 <motion.h1
