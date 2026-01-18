@@ -45,8 +45,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'tagline-appear', delay: 1500 },
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
       { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
-      { phase: 'orb-center', delay: 6000 }, // Orb settling
-      { phase: 'logo-appear', delay: 5800 }, // Slight overlap - appears ~700ms before orb finishes
+      { phase: 'logo-appear', delay: 5000 }, // Text unveils as orb shrinks (1.5s into 3s shrink animation)
+      { phase: 'orb-center', delay: 6500 }, // Orb settling
       { phase: 'transform-button', delay: 7800 },
       { phase: 'expand-cta', delay: 8600 },
       { phase: 'typing', delay: 9100 },
@@ -336,13 +336,18 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                   opacity: showLogo ? 1 : 0,
                 }}
                 transition={{ 
-                  height: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.8, delay: 0.3 }
+                  height: { duration: 1.8, ease: [0.16, 1, 0.3, 1] }, // Slower reveal to match orb shrink
+                  opacity: { duration: 1.2, delay: 0.2 }
                 }}
               >
-                <h1 className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center">
+                <motion.h1 
+                  className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center pt-2"
+                  initial={{ y: -20 }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                >
                   Scripture AI
-                </h1>
+                </motion.h1>
               </motion.div>
             </motion.div>
           </motion.div>
