@@ -202,9 +202,9 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Tagline text */}
       <motion.p
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center"
         initial={{ opacity: 0, y: 10 }}
-        animate={{ 
+        animate={{
           opacity: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 1 : 0,
           y: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 0 : 10,
         }}
