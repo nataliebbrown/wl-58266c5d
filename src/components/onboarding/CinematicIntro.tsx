@@ -96,7 +96,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
   const showOrb = orbAnimating;
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showLogo = ['logo-appear'].includes(phase); // Only show during logo-appear, hide when button appears
+  const showLogo = ['logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
