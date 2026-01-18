@@ -320,13 +320,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Scripture AI Logo text */}
       <AnimatePresence>
-        {showLogo && !showButton && (
+        {showLogo && (
           <motion.h1
             className="absolute left-1/2 top-1/2 -translate-x-1/2 font-spiritual text-4xl md:text-5xl lg:text-6xl text-cream font-medium tracking-wide"
             style={{ marginTop: '80px' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
             Scripture AI
