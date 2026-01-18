@@ -44,8 +44,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
       { phase: 'tagline-appear', delay: 1500 },
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
+      { phase: 'logo-appear', delay: 4500 }, // Start unveiling text while orb is still large/shrinking
       { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
-      { phase: 'logo-appear', delay: 5000 }, // Text unveils as orb shrinks (1.5s into 3s shrink animation)
       { phase: 'orb-center', delay: 6500 }, // Orb settling
       { phase: 'transform-button', delay: 7800 },
       { phase: 'expand-cta', delay: 8600 },
@@ -96,9 +96,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
   const showOrb = orbAnimating;
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  // Include 'orb-center' because our timeline briefly sets that phase after 'logo-appear'
-  // (logo-appear @ 5800ms, orb-center @ 6000ms). Without this, the logo flickers off then back on.
-  const showLogo = ['orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
+  // Start logo reveal during orb shrink (logo-appear) and keep it visible for all later phases
+  const showLogo = ['logo-appear', 'orb-center', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
@@ -195,7 +194,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           >
             {/* Container for orb + text that stays centered together */}
             <motion.div
-              className="flex flex-col items-center gap-4"
+              className="relative flex flex-col items-center"
               initial={{ scale: 1 }}
               animate={{ 
                 scale: phase === 'transform-button' ? 0.8 : 1,
@@ -204,7 +203,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
             >
               {/* The orb itself */}
               <motion.div
-                className="pointer-events-auto"
+                className="pointer-events-auto relative"
+                style={{ zIndex: 10 }}
                 initial={{ scale: 4, opacity: 0 }}
                 animate={{ 
                   scale: phase === 'transform-button' ? 0.6 : 1,
@@ -327,24 +327,25 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 </div>
               </motion.div>
 
-              {/* Scripture AI text - unveiled from behind the shrinking orb */}
+              {/* Scripture AI text - sits "behind" the orb and gets revealed as the orb shrinks */}
               <motion.div
-                className="overflow-hidden"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ 
-                  height: showLogo ? 'auto' : 0,
+                className="relative -mt-10 md:-mt-12 overflow-hidden"
+                style={{ zIndex: 0 }}
+                initial={{ maxHeight: 0, opacity: 0 }}
+                animate={{
+                  maxHeight: showLogo ? 120 : 0,
                   opacity: showLogo ? 1 : 0,
                 }}
-                transition={{ 
-                  height: { duration: 1.8, ease: [0.16, 1, 0.3, 1] }, // Slower reveal to match orb shrink
-                  opacity: { duration: 1.2, delay: 0.2 }
+                transition={{
+                  maxHeight: { duration: 1.1, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.5, ease: 'easeOut' },
                 }}
               >
-                <motion.h1 
-                  className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center pt-2"
-                  initial={{ y: -20 }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                <motion.h1
+                  className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center"
+                  initial={{ y: -24 }}
+                  animate={{ y: showLogo ? 0 : -24 }}
+                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                 >
                   Scripture AI
                 </motion.h1>
