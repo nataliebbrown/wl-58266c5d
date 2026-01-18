@@ -44,7 +44,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
       { phase: 'tagline-appear', delay: 1500 },
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
-      { phase: 'logo-appear', delay: 4500 }, // Start unveiling text while orb is still large/shrinking
+      { phase: 'logo-appear', delay: 4000 }, // Start unveiling text while orb is still large/shrinking
       { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
       { phase: 'orb-center', delay: 6500 }, // Orb settling
       { phase: 'transform-button', delay: 7800 },
