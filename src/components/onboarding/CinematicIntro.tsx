@@ -13,11 +13,10 @@ type AnimationPhase =
   | 'overlay-fade'
   | 'tagline-appear'
   | 'orb-rise'
-  | 'orb-colorize'
-  | 'orb-center'
-  | 'logo-appear'
-  | 'transform-button'
-  | 'expand-cta'
+  | 'orb-shrink'
+  | 'logo-reveal'
+  | 'logo-settle'
+  | 'cta-appear'
   | 'typing'
   | 'complete';
 
@@ -32,24 +31,22 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     const img = new Image();
     img.src = introBackground;
     img.onload = () => setImageLoaded(true);
-    // If image is already cached, it loads immediately
     if (img.complete) setImageLoaded(true);
   }, []);
 
-  // Animation sequence timeline - only starts after image is loaded
+  // Animation sequence timeline
   useEffect(() => {
     if (!imageLoaded) return;
 
     const timeline: { phase: AnimationPhase; delay: number }[] = [
-      { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
+      { phase: 'overlay-fade', delay: 800 },
       { phase: 'tagline-appear', delay: 1500 },
-      { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
-      { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
-      { phase: 'orb-center', delay: 6000 }, // Orb settling
-      { phase: 'logo-appear', delay: 5800 }, // Slight overlap - appears ~700ms before orb finishes
-      { phase: 'transform-button', delay: 7800 },
-      { phase: 'expand-cta', delay: 8600 },
-      { phase: 'typing', delay: 9100 },
+      { phase: 'orb-rise', delay: 3500 },
+      { phase: 'orb-shrink', delay: 5500 }, // Orb starts shrinking as it nears center
+      { phase: 'logo-reveal', delay: 6500 }, // Text reveals as orb shrinks
+      { phase: 'logo-settle', delay: 7500 }, // Both settle into final position
+      { phase: 'cta-appear', delay: 8500 }, // CTA button appears below logo
+      { phase: 'typing', delay: 9000 },
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
@@ -82,30 +79,32 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     }
   };
 
-  // Check if orb animation should be running (uses keyframes for seamless motion)
-  const orbAnimating = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
-  
-  // Final resting position for the orb before becoming a button
-  const getOrbFinalStyles = () => {
-    if (phase === 'transform-button') {
-      return { y: 0, scale: 0.6 };
-    }
-    return { y: -30, scale: 1 };
+  // Phase-based visibility flags
+  const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
+  const showOrb = ['orb-rise', 'orb-shrink', 'logo-reveal', 'logo-settle', 'cta-appear', 'typing', 'complete'].includes(phase);
+  const isOrbShrinking = ['orb-shrink', 'logo-reveal', 'logo-settle', 'cta-appear', 'typing', 'complete'].includes(phase);
+  const showLogoText = ['logo-reveal', 'logo-settle', 'cta-appear', 'typing', 'complete'].includes(phase);
+  const isLogoSettled = ['logo-settle', 'cta-appear', 'typing', 'complete'].includes(phase);
+  const showCta = ['cta-appear', 'typing', 'complete'].includes(phase);
+
+  // Calculate orb position and scale based on phase
+  const getOrbY = () => {
+    if (!showOrb) return 400; // Off-screen below
+    if (phase === 'orb-rise') return 50; // Rising, still below center
+    return 0; // At center
   };
 
-  const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
-  const showOrb = orbAnimating;
-  const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  // Include 'orb-center' because our timeline briefly sets that phase after 'logo-appear'
-  // (logo-appear @ 5800ms, orb-center @ 6000ms). Without this, the logo flickers off then back on.
-  const showLogo = ['orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
+  const getOrbScale = () => {
+    if (!showOrb) return 4;
+    if (phase === 'orb-rise') return 3;
+    if (phase === 'orb-shrink') return 1.5;
+    return 1; // Final logo size
+  };
 
-  // Don't render anything until image is loaded - prevents white flash
+  // Don't render anything until image is loaded
   if (!imageLoaded) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#C4A77D]" /> // Match dominant color of background
+      <div className="fixed inset-0 z-50 bg-[#C4A77D]" />
     );
   }
 
@@ -115,13 +114,13 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
     >
-      {/* Abstract background - always visible */}
+      {/* Abstract background */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${introBackground})` }}
       />
 
-      {/* Large Scripture AI logo on initial background - fades out smoothly */}
+      {/* Large Scripture AI logo on initial background */}
       <AnimatePresence>
         {showInitialLogo && (
           <motion.h1
@@ -136,7 +135,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Background overlay - darkens the page after initial */}
+      {/* Background overlay */}
       <motion.div 
         className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/90 to-charcoal"
         initial={{ opacity: 0 }}
@@ -148,7 +147,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
 
       {/* Ambient glow at bottom during orb rise */}
       <AnimatePresence>
-        {(phase === 'orb-rise' || phase === 'orb-colorize') && (
+        {(phase === 'orb-rise') && (
           <motion.div
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh]"
             style={{
@@ -162,7 +161,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         )}
       </AnimatePresence>
 
-      {/* Tagline: "Where ancient wisdom meets modern discovery" */}
+      {/* Tagline */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         initial={{ opacity: 0, y: 10 }}
@@ -177,198 +176,153 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         </p>
       </motion.div>
 
-      {/* Single unified orb that transitions from white to colored, then morphs to button */}
+      {/* Logo Lockup Container - Orb + Text together, centered */}
       <AnimatePresence>
-        {showOrb && !showExpandedCta && (
+        {showOrb && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
             initial={{ y: 400 }}
-            animate={{ 
-              y: phase === 'transform-button' ? 0 : -30,
-            }}
+            animate={{ y: getOrbY() }}
             transition={{ 
-              y: { 
-                duration: 3, 
-                ease: [0.16, 1, 0.3, 1], // Smooth exponential ease-out
-              }
+              duration: phase === 'orb-rise' ? 2 : 1,
+              ease: [0.16, 1, 0.3, 1],
             }}
           >
+            {/* Orb */}
             <motion.div
-              className="pointer-events-auto"
+              className="relative"
               initial={{ scale: 4, opacity: 0 }}
               animate={{ 
-                scale: phase === 'transform-button' ? 0.6 : 1,
+                scale: getOrbScale(),
                 opacity: 1,
               }}
-              exit={{ scale: 0.5, opacity: 0 }}
               transition={{ 
                 scale: { 
-                  duration: 3, 
-                  ease: [0.16, 1, 0.3, 1], // Match the y animation
+                  duration: phase === 'orb-rise' ? 2 : 1,
+                  ease: [0.16, 1, 0.3, 1],
                 },
                 opacity: { duration: 0.6, ease: 'easeOut' }
               }}
             >
-            <div className="relative w-32 h-32 md:w-40 md:h-40">
-              {/* Base white orb layer */}
-              <motion.div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
-                  boxShadow: `
-                    0 0 100px 50px rgba(255, 255, 255, 0.5),
-                    0 0 200px 100px rgba(212, 165, 116, 0.3),
-                    0 0 300px 150px rgba(184, 90, 62, 0.2)
-                  `,
-                }}
-                animate={{ opacity: isColorized ? 0 : 1 }}
-                transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-              />
-              
-              {/* Colored iridescent orb layer - becomes solid cream for button */}
-              <motion.div 
-                className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
-                style={{
-                  boxShadow: showButton 
-                    ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
-                    : `
-                      0 0 60px rgba(167, 139, 250, 0.25),
-                      0 0 100px rgba(96, 165, 250, 0.2),
-                      inset 0 0 30px rgba(255, 255, 255, 0.9)
-                    `,
-                }}
-                animate={{ 
-                  opacity: isColorized ? 1 : 0,
-                  background: showButton 
-                    ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
-                    : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
-                }}
-                transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
-                onClick={showButton ? handleCtaClick : undefined}
-              >
-                {/* Iridescent inner layers - fade out for button */}
-                <motion.div
-                  className="absolute inset-0"
+              <div className="relative w-24 h-24 md:w-32 md:h-32">
+                {/* White orb with subtle iridescence */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full"
                   style={{
-                    background: `
-                      radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.7) 0%, transparent 50%),
-                      radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.6) 0%, transparent 45%),
-                      radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.5) 0%, transparent 40%),
-                      radial-gradient(ellipse at 80% 30%, rgba(45, 212, 191, 0.4) 0%, transparent 35%)
-                    `,
-                    filter: 'blur(12px)',
+                    background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 40%, #f0ebe0 70%, #e8e0d5 100%)',
+                    boxShadow: isOrbShrinking 
+                      ? '0 0 60px 20px rgba(255, 255, 255, 0.4), 0 0 100px 40px rgba(167, 139, 250, 0.15)'
+                      : `
+                        0 0 100px 50px rgba(255, 255, 255, 0.5),
+                        0 0 200px 100px rgba(212, 165, 116, 0.3),
+                        0 0 300px 150px rgba(184, 90, 62, 0.2)
+                      `,
                   }}
                   animate={{ 
-                    rotate: [0, 360],
-                    opacity: showButton ? 0 : 1,
+                    boxShadow: isOrbShrinking 
+                      ? '0 0 40px 15px rgba(255, 255, 255, 0.3), 0 0 80px 30px rgba(167, 139, 250, 0.1)'
+                      : '0 0 100px 50px rgba(255, 255, 255, 0.5), 0 0 200px 100px rgba(212, 165, 116, 0.3)'
                   }}
-                  transition={{ 
-                    rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
-                    opacity: { duration: 0.5 }
-                  }}
+                  transition={{ duration: 1 }}
                 />
                 
-                {/* Secondary layer */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: `
-                      radial-gradient(ellipse at 60% 30%, rgba(45, 212, 191, 0.5) 0%, transparent 40%),
-                      radial-gradient(ellipse at 30% 70%, rgba(167, 139, 250, 0.4) 0%, transparent 45%)
-                    `,
-                    filter: 'blur(14px)',
-                  }}
-                  animate={{ 
-                    rotate: [360, 0],
-                    opacity: showButton ? 0 : 1,
-                  }}
-                  transition={{ 
-                    rotate: { duration: 25, repeat: Infinity, ease: 'linear' },
-                    opacity: { duration: 0.5 }
-                  }}
-                />
+                {/* Iridescent overlay */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full overflow-hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isOrbShrinking ? 0.6 : 0.3 }}
+                  transition={{ duration: 1 }}
+                >
+                  <motion.div
+                    className="absolute inset-0"
+                    style={{
+                      background: `
+                        radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.5) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.4) 0%, transparent 45%),
+                        radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.3) 0%, transparent 40%)
+                      `,
+                      filter: 'blur(8px)',
+                    }}
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  />
+                </motion.div>
 
-                {/* Glossy highlight - fade out for button */}
-                <motion.div
+                {/* Glossy highlight */}
+                <div
                   className="absolute inset-0 rounded-full"
                   style={{
                     background: `
-                      linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 50%),
-                      radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
+                      linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 50%),
+                      radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 30%)
                     `,
                   }}
-                  animate={{ opacity: showButton ? 0 : 1 }}
-                  transition={{ duration: 0.5 }}
                 />
-
-                {/* Arrow icon - appears when becoming button */}
-                <motion.div
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ 
-                    opacity: showButton ? 1 : 0,
-                    scale: showButton ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
-                >
-                  <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
-                </motion.div>
-              </motion.div>
-            </div>
+              </div>
             </motion.div>
+
+            {/* Scripture AI Text - reveals as orb shrinks */}
+            <motion.h1
+              className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide mt-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ 
+                opacity: showLogoText ? 1 : 0,
+                y: showLogoText ? 0 : -20,
+              }}
+              transition={{ 
+                duration: 0.8, 
+                ease: 'easeOut',
+                delay: showLogoText ? 0.2 : 0,
+              }}
+            >
+              Scripture AI
+            </motion.h1>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Scripture AI Logo text */}
+      {/* CTA Button - appears below the centered logo */}
       <AnimatePresence>
-        {showLogo && (
-          <motion.h1
-            className="absolute left-0 right-0 top-1/2 text-center font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide"
-            style={{ marginTop: '80px' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            Scripture AI
-          </motion.h1>
-        )}
-      </AnimatePresence>
-
-      {/* Expanded CTA button - morphs from circular orb/button */}
-      <AnimatePresence>
-        {showExpandedCta && (
+        {showCta && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden"
+            className="absolute left-1/2 -translate-x-1/2 h-14 md:h-16 rounded-full bg-cream/95 flex items-center justify-center gap-3 cursor-pointer hover:bg-cream transition-colors overflow-hidden pointer-events-auto"
             style={{ 
-              boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
+              top: '65%',
+              boxShadow: '0 0 40px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.2)',
             }}
-            initial={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
-            animate={{ width: 'auto', paddingLeft: 40, paddingRight: 40 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0, 
+              scale: 1,
+              paddingLeft: phase === 'typing' || phase === 'complete' ? 32 : 24,
+              paddingRight: phase === 'typing' || phase === 'complete' ? 32 : 24,
+            }}
+            transition={{ 
+              duration: 0.5, 
+              ease: [0.22, 1, 0.36, 1],
+            }}
             onClick={handleCtaClick}
           >
             <motion.span 
-              className="font-spiritual text-xl md:text-2xl text-charcoal font-medium whitespace-nowrap"
+              className="font-spiritual text-lg md:text-xl text-charcoal font-medium whitespace-nowrap"
               initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
+              animate={{ 
+                opacity: phase === 'typing' || phase === 'complete' ? 1 : 0, 
+                width: phase === 'typing' || phase === 'complete' ? 'auto' : 0 
+              }}
               transition={{ delay: 0.1, duration: 0.3 }}
             >
               {typedText}
               {phase === 'typing' && (
                 <motion.span
-                  className="inline-block w-0.5 h-6 md:h-7 bg-primary ml-1 align-middle"
+                  className="inline-block w-0.5 h-5 md:h-6 bg-primary ml-1 align-middle"
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.5, repeat: Infinity }}
                 />
               )}
             </motion.span>
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
-            >
-              <ArrowRight className="w-6 h-6 md:w-7 md:h-7 text-charcoal" />
-            </motion.div>
+            <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-charcoal" />
           </motion.button>
         )}
       </AnimatePresence>
