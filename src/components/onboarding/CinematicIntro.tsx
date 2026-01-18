@@ -43,13 +43,13 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     const timeline: { phase: AnimationPhase; delay: number }[] = [
       { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
       { phase: 'tagline-appear', delay: 1500 },
-      { phase: 'orb-rise', delay: 2200 },
-      { phase: 'orb-colorize', delay: 3200 },
-      { phase: 'orb-center', delay: 4200 },
-      { phase: 'logo-appear', delay: 5200 },
-      { phase: 'transform-button', delay: 6200 },
-      { phase: 'expand-cta', delay: 7000 },
-      { phase: 'typing', delay: 7500 },
+      { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
+      { phase: 'orb-colorize', delay: 4500 },
+      { phase: 'orb-center', delay: 5500 },
+      { phase: 'logo-appear', delay: 6500 },
+      { phase: 'transform-button', delay: 7500 },
+      { phase: 'expand-cta', delay: 8300 },
+      { phase: 'typing', delay: 8800 },
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
