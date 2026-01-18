@@ -219,12 +219,18 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showOrb && !showExpandedCta && (
           <motion.div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            initial={{ y: 400, scale: 3 }}
-            animate={getOrbStyles()}
-            exit={{ scale: 0.5, opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ y: 400 }}
+            animate={{ y: getOrbStyles().y }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
+            <motion.div
+              className="pointer-events-auto"
+              initial={{ scale: 3, opacity: 0 }}
+              animate={{ scale: getOrbStyles().scale, opacity: getOrbStyles().opacity }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
             <div className="relative w-32 h-32 md:w-40 md:h-40">
               {/* Base white orb layer */}
               <motion.div 
@@ -331,6 +337,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 </motion.div>
               </motion.div>
             </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
