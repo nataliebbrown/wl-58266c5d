@@ -98,6 +98,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   // Start logo reveal during orb shrink (logo-appear) and keep it visible for all later phases
   const showLogo = ['logo-appear', 'orb-center', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
+  // Logo is fully settled after orb-center phase - locks in place
+  const logoSettled = ['orb-center', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
 
@@ -332,30 +334,23 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 </div>
               </motion.div>
 
-              {/* Scripture AI text - sits "behind" the orb and gets revealed as the orb shrinks */}
+              {/* Scripture AI text - clips from bottom, never overlaps the orb */}
               <motion.div
-                className="relative overflow-hidden"
+                className="overflow-hidden mt-4"
                 style={{ zIndex: 0 }}
-                initial={{ maxHeight: 0, opacity: 0, marginTop: -60 }}
+                initial={{ height: 0, opacity: 0 }}
                 animate={{
-                  maxHeight: showLogo ? 120 : 0,
+                  height: showLogo ? 'auto' : 0,
                   opacity: showLogo ? 1 : 0,
-                  marginTop: showLogo ? 16 : -60,
                 }}
                 transition={{
-                  maxHeight: { duration: 1.1, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.5, ease: 'easeOut' },
-                  marginTop: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
+                  height: { duration: logoSettled ? 0 : 1.5, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: logoSettled ? 0 : 0.8, ease: 'easeOut' },
                 }}
               >
-                <motion.h1
-                  className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center"
-                  initial={{ y: -24 }}
-                  animate={{ y: showLogo ? 0 : -24 }}
-                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                >
+                <h1 className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center">
                   Scripture AI
-                </motion.h1>
+                </h1>
               </motion.div>
             </motion.div>
           </motion.div>
