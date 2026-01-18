@@ -211,7 +211,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <p className="text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center px-4">
-          Where ancient wisdom meets modern discovery
+          Where ancient wisdom<br />meets modern discovery
         </p>
       </motion.div>
 
