@@ -44,12 +44,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
       { phase: 'tagline-appear', delay: 1500 },
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
-      { phase: 'orb-colorize', delay: 4500 },
-      { phase: 'orb-center', delay: 5500 },
-      { phase: 'logo-appear', delay: 6500 },
-      { phase: 'transform-button', delay: 7500 },
-      { phase: 'expand-cta', delay: 8300 },
-      { phase: 'typing', delay: 8800 },
+      { phase: 'orb-colorize', delay: 5000 }, // More time for rise before colorizing
+      { phase: 'orb-center', delay: 6800 }, // More time for color transition
+      { phase: 'logo-appear', delay: 8200 }, // More time at center before logo
+      { phase: 'transform-button', delay: 9500 },
+      { phase: 'expand-cta', delay: 10300 },
+      { phase: 'typing', delay: 10800 },
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
@@ -96,20 +96,20 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         };
       case 'orb-rise':
         return {
-          y: 150, // Rising from bottom
-          scale: 4,
+          y: 120, // Rising from bottom
+          scale: 3.5,
           opacity: 1,
         };
       case 'orb-colorize':
         return {
-          y: 80, // Continuing to rise
-          scale: 2.8,
+          y: 50, // Continuing to rise
+          scale: 2.2,
           opacity: 1,
         };
       case 'orb-center':
         return {
           y: 0, // At center
-          scale: 1.8,
+          scale: 1.4,
           opacity: 1,
         };
       case 'logo-appear':
@@ -244,7 +244,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                   `,
                 }}
                 animate={{ opacity: isColorized ? 0 : 1 }}
-                transition={{ duration: 1, ease: 'easeInOut' }}
+                transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
               />
               
               {/* Colored iridescent orb layer - becomes solid cream for button */}
@@ -265,7 +265,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                     ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
                     : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
                 }}
-                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
                 onClick={showButton ? handleCtaClick : undefined}
               >
                 {/* Iridescent inner layers - fade out for button */}
