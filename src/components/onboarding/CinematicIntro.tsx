@@ -82,59 +82,19 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     }
   };
 
-  // Calculate orb position and size based on phase
-  // y is relative to center (0 = center, positive = down, negative = up)
-  const getOrbStyles = () => {
-    switch (phase) {
-      case 'initial':
-      case 'overlay-fade':
-      case 'tagline-appear':
-        return {
-          y: 400, // Start below screen
-          scale: 5,
-          opacity: 0,
-        };
-      case 'orb-rise':
-        return {
-          y: 120, // Rising from bottom
-          scale: 3.5,
-          opacity: 1,
-        };
-      case 'orb-colorize':
-        return {
-          y: 50, // Continuing to rise
-          scale: 2.2,
-          opacity: 1,
-        };
-      case 'orb-center':
-        return {
-          y: 0, // At center
-          scale: 1.4,
-          opacity: 1,
-        };
-      case 'logo-appear':
-        return {
-          y: -30, // Slightly above center to make room for logo
-          scale: 1,
-          opacity: 1,
-        };
-      case 'transform-button':
-        return {
-          y: 0, // Move to center for button
-          scale: 0.6, // Shrink to button size
-          opacity: 1,
-        };
-      default:
-        return {
-          y: 0,
-          scale: 0.6,
-          opacity: 1,
-        };
+  // Check if orb animation should be running (uses keyframes for seamless motion)
+  const orbAnimating = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
+  
+  // Final resting position for the orb before becoming a button
+  const getOrbFinalStyles = () => {
+    if (phase === 'transform-button') {
+      return { y: 0, scale: 0.6 };
     }
+    return { y: -30, scale: 1 };
   };
 
   const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
-  const showOrb = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
+  const showOrb = orbAnimating;
   const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
   const showLogo = ['logo-appear'].includes(phase); // Only show during logo-appear, hide when button appears
   const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
@@ -221,15 +181,33 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             initial={{ y: 400 }}
-            animate={{ y: getOrbStyles().y }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            animate={{ 
+              y: phase === 'transform-button' ? 0 : [400, 100, 30, -30],
+            }}
+            transition={{ 
+              y: { 
+                duration: 4.5, 
+                ease: [0.25, 0.1, 0.25, 1], // Smooth cubic bezier
+                times: [0, 0.35, 0.7, 1], // Keyframe timing
+              }
+            }}
           >
             <motion.div
               className="pointer-events-auto"
-              initial={{ scale: 5, opacity: 0 }}
-              animate={{ scale: getOrbStyles().scale, opacity: getOrbStyles().opacity }}
+              initial={{ scale: 4, opacity: 0 }}
+              animate={{ 
+                scale: phase === 'transform-button' ? 0.6 : [4, 2.5, 1.4, 1],
+                opacity: 1,
+              }}
               exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 1.4, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ 
+                scale: { 
+                  duration: 4.5, 
+                  ease: [0.25, 0.1, 0.25, 1],
+                  times: [0, 0.35, 0.7, 1],
+                },
+                opacity: { duration: 0.8, ease: 'easeOut' }
+              }}
             >
             <div className="relative w-32 h-32 md:w-40 md:h-40">
               {/* Base white orb layer */}
