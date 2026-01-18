@@ -201,8 +201,8 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       </AnimatePresence>
 
       {/* Tagline text */}
-      <motion.p
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center"
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{
           opacity: ['tagline-appear', 'orb-rise', 'orb-colorize', 'orb-center', 'logo-appear'].includes(phase) ? 1 : 0,
@@ -210,8 +210,10 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        Where ancient wisdom meets modern discovery
-      </motion.p>
+        <p className="text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center px-4">
+          Where ancient wisdom meets modern discovery
+        </p>
+      </motion.div>
 
       {/* Single unified orb that transitions from white to colored, then morphs to button */}
       <AnimatePresence>
