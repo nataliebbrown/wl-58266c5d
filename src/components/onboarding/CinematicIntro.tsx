@@ -177,14 +177,14 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         </p>
       </motion.div>
 
-      {/* Single unified orb that transitions from white to colored, then morphs to button */}
+      {/* Unified orb + text container - moves together as one logo */}
       <AnimatePresence>
         {showOrb && !showExpandedCta && (
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             initial={{ y: 400 }}
             animate={{ 
-              y: phase === 'transform-button' ? 0 : -30,
+              y: 0, // Orb rises to center
             }}
             transition={{ 
               y: { 
@@ -193,145 +193,159 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               }
             }}
           >
+            {/* Container for orb + text that stays centered together */}
             <motion.div
-              className="pointer-events-auto"
-              initial={{ scale: 4, opacity: 0 }}
+              className="flex flex-col items-center gap-4"
+              initial={{ scale: 1 }}
               animate={{ 
-                scale: phase === 'transform-button' ? 0.6 : 1,
-                opacity: 1,
+                scale: phase === 'transform-button' ? 0.8 : 1,
               }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ 
-                scale: { 
-                  duration: 3, 
-                  ease: [0.16, 1, 0.3, 1], // Match the y animation
-                },
-                opacity: { duration: 0.6, ease: 'easeOut' }
-              }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
-            <div className="relative w-32 h-32 md:w-40 md:h-40">
-              {/* Base white orb layer */}
-              <motion.div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
-                  boxShadow: `
-                    0 0 100px 50px rgba(255, 255, 255, 0.5),
-                    0 0 200px 100px rgba(212, 165, 116, 0.3),
-                    0 0 300px 150px rgba(184, 90, 62, 0.2)
-                  `,
-                }}
-                animate={{ opacity: isColorized ? 0 : 1 }}
-                transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-              />
-              
-              {/* Colored iridescent orb layer - becomes solid cream for button */}
-              <motion.div 
-                className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
-                style={{
-                  boxShadow: showButton 
-                    ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
-                    : `
-                      0 0 60px rgba(167, 139, 250, 0.25),
-                      0 0 100px rgba(96, 165, 250, 0.2),
-                      inset 0 0 30px rgba(255, 255, 255, 0.9)
-                    `,
-                }}
+              {/* The orb itself */}
+              <motion.div
+                className="pointer-events-auto"
+                initial={{ scale: 4, opacity: 0 }}
                 animate={{ 
-                  opacity: isColorized ? 1 : 0,
-                  background: showButton 
-                    ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
-                    : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
+                  scale: phase === 'transform-button' ? 0.6 : 1,
+                  opacity: 1,
                 }}
-                transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
-                onClick={showButton ? handleCtaClick : undefined}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ 
+                  scale: { 
+                    duration: 3, 
+                    ease: [0.16, 1, 0.3, 1], // Match the y animation
+                  },
+                  opacity: { duration: 0.6, ease: 'easeOut' }
+                }}
               >
-                {/* Iridescent inner layers - fade out for button */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: `
-                      radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.7) 0%, transparent 50%),
-                      radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.6) 0%, transparent 45%),
-                      radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.5) 0%, transparent 40%),
-                      radial-gradient(ellipse at 80% 30%, rgba(45, 212, 191, 0.4) 0%, transparent 35%)
-                    `,
-                    filter: 'blur(12px)',
-                  }}
-                  animate={{ 
-                    rotate: [0, 360],
-                    opacity: showButton ? 0 : 1,
-                  }}
-                  transition={{ 
-                    rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
-                    opacity: { duration: 0.5 }
-                  }}
-                />
-                
-                {/* Secondary layer */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: `
-                      radial-gradient(ellipse at 60% 30%, rgba(45, 212, 191, 0.5) 0%, transparent 40%),
-                      radial-gradient(ellipse at 30% 70%, rgba(167, 139, 250, 0.4) 0%, transparent 45%)
-                    `,
-                    filter: 'blur(14px)',
-                  }}
-                  animate={{ 
-                    rotate: [360, 0],
-                    opacity: showButton ? 0 : 1,
-                  }}
-                  transition={{ 
-                    rotate: { duration: 25, repeat: Infinity, ease: 'linear' },
-                    opacity: { duration: 0.5 }
-                  }}
-                />
+                <div className="relative w-32 h-32 md:w-40 md:h-40">
+                  {/* Base white orb layer */}
+                  <motion.div 
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
+                      boxShadow: `
+                        0 0 100px 50px rgba(255, 255, 255, 0.5),
+                        0 0 200px 100px rgba(212, 165, 116, 0.3),
+                        0 0 300px 150px rgba(184, 90, 62, 0.2)
+                      `,
+                    }}
+                    animate={{ opacity: isColorized ? 0 : 1 }}
+                    transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
+                  />
+                  
+                  {/* Colored iridescent orb layer - becomes solid cream for button */}
+                  <motion.div 
+                    className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
+                    style={{
+                      boxShadow: showButton 
+                        ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
+                        : `
+                          0 0 60px rgba(167, 139, 250, 0.25),
+                          0 0 100px rgba(96, 165, 250, 0.2),
+                          inset 0 0 30px rgba(255, 255, 255, 0.9)
+                        `,
+                    }}
+                    animate={{ 
+                      opacity: isColorized ? 1 : 0,
+                      background: showButton 
+                        ? 'linear-gradient(145deg, rgba(250,248,245,0.98) 0%, rgba(245,242,240,0.95) 100%)'
+                        : 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,242,255,0.8) 100%)',
+                    }}
+                    transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
+                    onClick={showButton ? handleCtaClick : undefined}
+                  >
+                    {/* Iridescent inner layers - fade out for button */}
+                    <motion.div
+                      className="absolute inset-0"
+                      style={{
+                        background: `
+                          radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.7) 0%, transparent 50%),
+                          radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.6) 0%, transparent 45%),
+                          radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.5) 0%, transparent 40%),
+                          radial-gradient(ellipse at 80% 30%, rgba(45, 212, 191, 0.4) 0%, transparent 35%)
+                        `,
+                        filter: 'blur(12px)',
+                      }}
+                      animate={{ 
+                        rotate: [0, 360],
+                        opacity: showButton ? 0 : 1,
+                      }}
+                      transition={{ 
+                        rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+                        opacity: { duration: 0.5 }
+                      }}
+                    />
+                    
+                    {/* Secondary layer */}
+                    <motion.div
+                      className="absolute inset-0"
+                      style={{
+                        background: `
+                          radial-gradient(ellipse at 60% 30%, rgba(45, 212, 191, 0.5) 0%, transparent 40%),
+                          radial-gradient(ellipse at 30% 70%, rgba(167, 139, 250, 0.4) 0%, transparent 45%)
+                        `,
+                        filter: 'blur(14px)',
+                      }}
+                      animate={{ 
+                        rotate: [360, 0],
+                        opacity: showButton ? 0 : 1,
+                      }}
+                      transition={{ 
+                        rotate: { duration: 25, repeat: Infinity, ease: 'linear' },
+                        opacity: { duration: 0.5 }
+                      }}
+                    />
 
-                {/* Glossy highlight - fade out for button */}
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background: `
-                      linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 50%),
-                      radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
-                    `,
-                  }}
-                  animate={{ opacity: showButton ? 0 : 1 }}
-                  transition={{ duration: 0.5 }}
-                />
+                    {/* Glossy highlight - fade out for button */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: `
+                          linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 50%),
+                          radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
+                        `,
+                      }}
+                      animate={{ opacity: showButton ? 0 : 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
 
-                {/* Arrow icon - appears when becoming button */}
-                <motion.div
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ 
-                    opacity: showButton ? 1 : 0,
-                    scale: showButton ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
-                >
-                  <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
-                </motion.div>
+                    {/* Arrow icon - appears when becoming button */}
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ 
+                        opacity: showButton ? 1 : 0,
+                        scale: showButton ? 1 : 0.5,
+                      }}
+                      transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
+                    >
+                      <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
+                    </motion.div>
+                  </motion.div>
+                </div>
               </motion.div>
-            </div>
+
+              {/* Scripture AI text - unveiled from behind the shrinking orb */}
+              <motion.div
+                className="overflow-hidden"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ 
+                  height: showLogo ? 'auto' : 0,
+                  opacity: showLogo ? 1 : 0,
+                }}
+                transition={{ 
+                  height: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.8, delay: 0.3 }
+                }}
+              >
+                <h1 className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center">
+                  Scripture AI
+                </h1>
+              </motion.div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Scripture AI Logo text */}
-      <AnimatePresence>
-        {showLogo && (
-          <motion.h1
-            className="absolute left-0 right-0 top-1/2 text-center font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide"
-            style={{ marginTop: '80px' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            Scripture AI
-          </motion.h1>
         )}
       </AnimatePresence>
 
