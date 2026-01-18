@@ -186,7 +186,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
             }}
             transition={{ 
               y: { 
-                duration: 5, 
+                duration: 3, 
                 ease: [0.16, 1, 0.3, 1], // Smooth exponential ease-out
               }
             }}
@@ -201,7 +201,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ 
                 scale: { 
-                  duration: 5, 
+                  duration: 3, 
                   ease: [0.16, 1, 0.3, 1], // Match the y animation
                 },
                 opacity: { duration: 0.6, ease: 'easeOut' }
