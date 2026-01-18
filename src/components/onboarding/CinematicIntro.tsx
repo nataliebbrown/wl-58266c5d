@@ -44,12 +44,12 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
       { phase: 'tagline-appear', delay: 1500 },
       { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
-      { phase: 'orb-colorize', delay: 5000 }, // More time for rise before colorizing
-      { phase: 'orb-center', delay: 6800 }, // More time for color transition
-      { phase: 'logo-appear', delay: 8200 }, // More time at center before logo
-      { phase: 'transform-button', delay: 9500 },
-      { phase: 'expand-cta', delay: 10300 },
-      { phase: 'typing', delay: 10800 },
+      { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
+      { phase: 'orb-center', delay: 6000 }, // Orb settling
+      { phase: 'logo-appear', delay: 6500 }, // Logo appears right as orb finishes (3500 + 3000ms)
+      { phase: 'transform-button', delay: 7800 },
+      { phase: 'expand-cta', delay: 8600 },
+      { phase: 'typing', delay: 9100 },
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
