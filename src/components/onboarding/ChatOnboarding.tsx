@@ -323,9 +323,11 @@ export function ChatOnboarding({ onComplete }: ChatOnboardingProps) {
       {/* Chat container */}
       <div 
         ref={chatContainerRef}
-        className="flex-1 relative z-10 overflow-y-auto px-4 pb-32 pt-32"
+        className="flex-1 relative z-10 overflow-y-auto px-4 pb-32 pt-32 flex flex-col"
       >
-        <div className="max-w-2xl mx-auto space-y-8">
+        {/* Spacer to push content to bottom initially */}
+        <div className="flex-1 min-h-0" />
+        <div className="max-w-2xl mx-auto w-full space-y-8">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
