@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import FirstTimeDashboard from "./pages/FirstTimeDashboard";
 import Chat from "./pages/Chat";
+import OrbTest from "./pages/OrbTest";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ function AppContent() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/first-time" element={<FirstTimeDashboardTest />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/orb-test" element={<OrbTest />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

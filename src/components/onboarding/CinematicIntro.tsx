@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import introBackground from '@/assets/intro-background.jpg';
+import { useState, useEffect, lazy, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import introBackground from "@/assets/Slide 16_9 - 3.png";
+import wholelicityLogo from "@/assets/logo_white.svg";
+import ErrorBoundary from "@/components/ErrorBoundary";
+
+// Lazy load the 3D orb component
+const AnimatedOrb = lazy(() => import("@/components/AnimatedOrb"));
 
 interface CinematicIntroProps {
   onComplete: () => void;
@@ -10,20 +15,21 @@ interface CinematicIntroProps {
 
 type AnimationPhase = 
   | 'initial'
+  | 'logo-fade'
   | 'overlay-fade'
-  | 'tagline-appear'
   | 'orb-rise'
-  | 'orb-colorize'
-  | 'orb-center'
+  | 'orb-shrink'
   | 'logo-appear'
   | 'transform-button'
   | 'expand-cta'
   | 'typing'
+  | 'cursor-blink'
   | 'complete';
 
 export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const [phase, setPhase] = useState<AnimationPhase>('initial');
   const [typedText, setTypedText] = useState('');
+  const [showCursor, setShowCursor] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const fullText = 'Begin Your Journey';
 
@@ -41,15 +47,16 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     if (!imageLoaded) return;
 
     const timeline: { phase: AnimationPhase; delay: number }[] = [
-      { phase: 'overlay-fade', delay: 800 }, // Give more time to see initial logo
-      { phase: 'tagline-appear', delay: 1500 },
-      { phase: 'orb-rise', delay: 3500 }, // 2 seconds after tagline appears
-      { phase: 'logo-appear', delay: 4000 }, // Start unveiling text while orb is still large/shrinking
-      { phase: 'orb-colorize', delay: 5000 }, // Color transition during rise
-      { phase: 'orb-center', delay: 6500 }, // Orb settling
-      { phase: 'transform-button', delay: 7800 },
-      { phase: 'expand-cta', delay: 8600 },
-      { phase: 'typing', delay: 9100 },
+      { phase: 'logo-fade', delay: 100 }, // Logo starts fading out
+      { phase: 'overlay-fade', delay: 800 }, // Logo gone, overlay/tagline/glow start (0% opacity)
+      { phase: 'orb-rise', delay: 4000 }, // Sophia rises at 5x
+      { phase: 'orb-shrink', delay: 4800 }, // ** Sophia starts shrinking while still rising (600ms overlap) **
+      { phase: 'logo-appear', delay: 8400 }, // Shrink done, show Scripture AI text
+      { phase: 'transform-button', delay: 9900 }, // Sophia becomes transparent arrow button
+      { phase: 'expand-cta', delay: 10600 }, // Pill expands, arrow slides right
+      { phase: 'typing', delay: 11400 }, // Cursor appears and starts typing
+      { phase: 'cursor-blink', delay: 13400 }, // Typing done, cursor blinks
+      { phase: 'complete', delay: 14900 }, // Cursor disappears, done
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
@@ -59,49 +66,77 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     return () => timeoutIds.forEach(clearTimeout);
   }, [imageLoaded]);
 
-  // Typing animation
+  // Typing effect - types one character at a time
   useEffect(() => {
     if (phase === 'typing') {
-      let index = 0;
-      const typeInterval = setInterval(() => {
-        if (index < fullText.length) {
-          setTypedText(fullText.slice(0, index + 1));
-          index++;
+      setShowCursor(true);
+      setTypedText('');
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex < fullText.length) {
+          setTypedText(fullText.slice(0, currentIndex + 1));
+          currentIndex++;
         } else {
-          clearInterval(typeInterval);
-          setTimeout(() => setPhase('complete'), 500);
+          clearInterval(typingInterval);
         }
-      }, 60);
-      return () => clearInterval(typeInterval);
+      }, 80); // 80ms per character
+      return () => clearInterval(typingInterval);
+    }
+  }, [phase]);
+
+  // Cursor blinking effect
+  useEffect(() => {
+    if (phase === 'cursor-blink') {
+      let blinkCount = 0;
+      const blinkInterval = setInterval(() => {
+        setShowCursor(prev => !prev);
+        blinkCount++;
+        if (blinkCount >= 6) { // 3 blinks (on-off-on-off-on-off)
+          clearInterval(blinkInterval);
+          setShowCursor(false);
+        }
+      }, 400);
+      return () => clearInterval(blinkInterval);
+    }
+  }, [phase]);
+
+  // Hide cursor when complete
+  useEffect(() => {
+    if (phase === 'complete') {
+      setShowCursor(false);
+      setTypedText(fullText);
     }
   }, [phase]);
 
   const handleCtaClick = () => {
-    if (phase === 'complete' || phase === 'typing') {
+    if (['complete', 'expand-cta', 'typing', 'cursor-blink'].includes(phase)) {
       onComplete();
     }
   };
 
-  // Check if orb animation should be running (uses keyframes for seamless motion)
-  const orbAnimating = ['orb-rise', 'orb-colorize', 'orb-center', 'logo-appear', 'transform-button'].includes(phase);
+  // Sophia is always visible, but changes position based on phase
+  const sophiaHasRisen = ['orb-rise', 'orb-shrink', 'logo-appear', 'transform-button'].includes(phase);
+  // Sophia only reaches center during shrink phase (like Dia animation)
+  const sophiaAtCenter = ['orb-shrink', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'cursor-blink', 'complete'].includes(phase);
   
-  // Final resting position for the orb before becoming a button
-  const getOrbFinalStyles = () => {
-    if (phase === 'transform-button') {
-      return { y: 0, scale: 0.6 };
-    }
-    return { y: -30, scale: 1 };
-  };
+  // Glow is attached to Sophia - shows at 5x scale, starts fading when shrinking begins
+  const showSophiaGlow = ['overlay-fade', 'orb-rise'].includes(phase);
+  // Glow intensity decreases as Sophia shrinks
+  const sophiaGlowIntensity = ['overlay-fade', 'orb-rise'].includes(phase) ? 1 : 0;
 
-  const showInitialLogo = ['initial', 'overlay-fade'].includes(phase);
-  const showOrb = orbAnimating;
-  const isColorized = ['orb-colorize', 'orb-center', 'logo-appear', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  // Start logo reveal during orb shrink (logo-appear) and keep it visible for all later phases
-  const showLogo = ['logo-appear', 'orb-center', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  // Logo is fully settled after orb-center phase - locks in place
-  const logoSettled = ['orb-center', 'transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showButton = ['transform-button', 'expand-cta', 'typing', 'complete'].includes(phase);
-  const showExpandedCta = ['expand-cta', 'typing', 'complete'].includes(phase);
+  // Logo only shows during initial phase, starts fading at 100ms
+  const showInitialLogo = phase === 'initial';
+  // Sophia is always rendered - stays visible throughout entire animation
+  const showOrb = true;
+  // Scripture AI text reveals AS Sophia shrinks (during orb-shrink phase)
+  const showLogo = ['orb-shrink', 'logo-appear'].includes(phase);
+  // Logo is fully settled after logo-appear phase - locks in place
+  const logoSettled = ['logo-appear', 'transform-button'].includes(phase);
+  const showButton = ['transform-button', 'expand-cta', 'typing', 'cursor-blink', 'complete'].includes(phase);
+  const showExpandedCta = ['expand-cta', 'typing', 'cursor-blink', 'complete'].includes(phase);
+  const isTyping = ['typing', 'cursor-blink', 'complete'].includes(phase);
+  // Arrow slides right when pill expands
+  const arrowSlidRight = ['expand-cta', 'typing', 'cursor-blink', 'complete'].includes(phase);
 
   // Don't render anything until image is loaded - prevents white flash
   if (!imageLoaded) {
@@ -122,199 +157,225 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
         style={{ backgroundImage: `url(${introBackground})` }}
       />
 
-      {/* Large Scripture AI logo on initial background - fades out smoothly */}
-      <AnimatePresence>
-        {showInitialLogo && (
-          <motion.h1
-            className="absolute inset-0 flex items-center justify-center font-spiritual text-6xl md:text-7xl lg:text-8xl text-white font-medium tracking-wide text-center z-10"
-            initial={{ opacity: 1, scale: 1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            Scripture AI
-          </motion.h1>
-        )}
-      </AnimatePresence>
+      {/* Large Wholelicity logo on initial background - fades out from 100ms to 800ms */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center z-10"
+        initial={{ opacity: 1, scale: 1 }}
+        animate={{ 
+          opacity: showInitialLogo ? 1 : 0,
+          scale: showInitialLogo ? 1 : 1.02,
+        }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
+        <img 
+          src={wholelicityLogo} 
+          alt="Wholelicity" 
+          className="h-[72px] md:h-24 lg:h-[120px]" 
+          style={{ filter: 'drop-shadow(0 4px 24px rgba(0, 0, 0, 0.3))' }}
+        />
+      </motion.div>
 
-      {/* Background overlay - darkens the page after initial */}
+      {/* Background overlay - starts at 800ms (0%), fades in smoothly to 100% */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/90 to-charcoal"
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(37, 37, 28, 0.5) 0%, rgba(37, 37, 28, 0.85) 50%, rgba(37, 37, 28, 0.95) 100%)',
+        }}
         initial={{ opacity: 0 }}
         animate={{ 
-          opacity: ['initial', 'overlay-fade'].includes(phase) ? 0 : 1 
+          opacity: ['initial', 'logo-fade'].includes(phase) ? 0 : 1 
         }}
-        transition={{ duration: 1.2, ease: 'easeInOut' }}
+        transition={{ 
+          duration: 3.2, 
+          ease: 'linear'
+        }}
       />
 
-      {/* Ambient glow at bottom during orb rise */}
-      <AnimatePresence>
-        {(phase === 'orb-rise' || phase === 'orb-colorize') && (
-          <motion.div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200vw] h-[60vh]"
-            style={{
-              background: 'radial-gradient(ellipse at center bottom, rgba(212, 165, 116, 0.4) 0%, rgba(184, 90, 62, 0.2) 30%, transparent 70%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Ambient glow at bottom - emanates from Sophia, fades as she shrinks */}
+      <motion.div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300vw] h-[80vh] pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center bottom, rgba(194, 112, 60, 0.5) 0%, rgba(212, 160, 48, 0.3) 20%, rgba(156, 174, 166, 0.15) 40%, transparent 70%)',
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: showSophiaGlow ? 1 : 0,
+        }}
+        transition={{ 
+          duration: 3.2, 
+          ease: 'linear'
+        }}
+      />
 
-      {/* Tagline: "Where ancient wisdom meets modern discovery" */}
+      {/* Tagline: "Where ancient wisdom meets modern discovery" - starts at 800ms (0%), reaches 100% by 3000ms */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{
-          opacity: phase === 'tagline-appear' ? 1 : 0,
-          y: phase === 'tagline-appear' ? 0 : 10,
+          opacity: phase === 'overlay-fade' ? 1 : 0,
+          y: phase === 'overlay-fade' ? 0 : 10,
         }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={{ duration: 2.2, ease: 'easeOut' }}
       >
-        <p className="text-cream/80 text-sm md:text-base tracking-[0.3em] uppercase font-light text-center px-4">
-          Where ancient wisdom<br />meets modern discovery
+        <p className="text-cream/80 text-base md:text-lg lg:text-xl tracking-[0.3em] uppercase font-light text-center px-4">
+          Where ancient<br />wisdom meets<br />modern discovery
         </p>
+      </motion.div>
+
+      {/* Small Wholelicity logo at top - appears when button mode starts */}
+      <motion.div
+        className="absolute top-12 left-0 right-0 flex justify-center z-30"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{
+          opacity: showButton ? 1 : 0,
+          y: showButton ? 0 : -20,
+        }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <img src={wholelicityLogo} alt="Wholelicity" className="h-6 md:h-8" />
       </motion.div>
 
       {/* Unified orb + text container - moves together as one logo */}
       <AnimatePresence>
-        {showOrb && !showExpandedCta && (
+        {showOrb && (
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            initial={{ y: 400 }}
-            animate={{ 
-              y: 0, // Orb rises to center
-            }}
-            transition={{ 
-              y: { 
-                duration: 3, 
-                ease: [0.16, 1, 0.3, 1], // Smooth exponential ease-out
-              }
-            }}
+            style={{ zIndex: 20 }}
           >
-            {/* Container for orb + text that stays centered together */}
+            {/* Container - Sophia stays at fixed position, text positioned below */}
             <motion.div
-              className="relative flex flex-col items-center"
-              initial={{ scale: 1 }}
-              animate={{ 
-                scale: phase === 'transform-button' ? 0.8 : 1,
+              className="relative"
+              animate={{
+                x: arrowSlidRight ? 186 : 0, // Half of 500px minus half of button (128px) = 186px
+                marginTop: showButton ? 0 : -40, // No offset in button mode
               }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* The orb itself */}
+              {/* The orb itself - always present, starts peeking from bottom */}
               <motion.div
                 className="pointer-events-auto relative"
                 style={{ zIndex: 10 }}
-                initial={{ scale: 4, opacity: 0 }}
+                initial={{ scale: 5, opacity: 1, y: 'calc(100vh - 40px)' }}
                 animate={{ 
-                  scale: phase === 'transform-button' ? 0.6 : 1,
+                  scale: phase === 'initial' ? 5
+                       : phase === 'logo-fade' ? 5
+                       : phase === 'overlay-fade' ? 5
+                       : phase === 'orb-rise' ? 5
+                       : phase === 'orb-shrink' ? 1
+                       : phase === 'logo-appear' ? 1
+                       : phase === 'transform-button' ? 1
+                       : 1,
                   opacity: 1,
+                  y: sophiaAtCenter ? 0 
+                     : sophiaHasRisen ? 'calc(35vh)' 
+                     : 'calc(100vh - 40px)',
                 }}
-                exit={{ scale: 0.5, opacity: 0 }}
+                exit={{ opacity: 0 }}
                 transition={{ 
                   scale: { 
-                    duration: 3, 
-                    ease: [0.16, 1, 0.3, 1], // Match the y animation
+                    duration: 3.5,
+                    ease: [0.16, 1, 0.3, 1],
                   },
-                  opacity: { duration: 0.6, ease: 'easeOut' }
+                  y: {
+                    duration: 3,
+                    ease: [0.16, 1, 0.3, 1],
+                  },
+                  opacity: { duration: 0.3, ease: 'easeOut' }
                 }}
               >
                 <div className="relative w-32 h-32 md:w-40 md:h-40">
-                  {/* Solid opaque base - ensures no transparency at any point */}
-                  <div 
-                    className="absolute inset-0 rounded-full bg-white"
-                  />
-                  
-                  {/* Base white orb layer with glow */}
-                  <motion.div 
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      background: 'radial-gradient(circle at 50% 30%, #ffffff 0%, #faf8f5 60%, #f0ebe0 100%)',
-                      boxShadow: `
-                        0 0 100px 50px rgba(255, 255, 255, 0.5),
-                        0 0 200px 100px rgba(212, 165, 116, 0.3),
-                        0 0 300px 150px rgba(184, 90, 62, 0.2)
-                      `,
-                    }}
-                    animate={{ opacity: isColorized ? 0 : 1 }}
-                    transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-                  />
-                  
-                  {/* Colored iridescent orb layer - becomes solid cream for button */}
+                  {/* Sophia orb - 3D animated version */}
                   <motion.div 
                     className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
-                    style={{
-                      boxShadow: showButton 
-                        ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
-                        : `
-                          0 0 60px rgba(167, 139, 250, 0.25),
-                          0 0 100px rgba(96, 165, 250, 0.2),
-                          inset 0 0 30px rgba(255, 255, 255, 0.9)
-                        `,
-                    }}
                     animate={{ 
-                      opacity: isColorized ? 1 : 0,
-                      background: showButton 
-                        ? 'linear-gradient(145deg, #faf8f5 0%, #f5f2f0 100%)'
-                        : 'linear-gradient(145deg, #ffffff 0%, #f8f6ff 100%)',
+                      boxShadow: showSophiaGlow 
+                        ? `
+                          0 0 100px 50px rgba(194, 112, 60, 0.4),
+                          0 0 200px 100px rgba(212, 160, 48, 0.3),
+                          0 0 300px 150px rgba(156, 174, 166, 0.2)
+                        `
+                        : showButton 
+                          ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
+                          : `
+                            0 0 60px rgba(194, 112, 60, 0.25),
+                            0 0 100px rgba(212, 160, 48, 0.2)
+                          `,
                     }}
-                    transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
+                    whileHover={showButton ? { 
+                      scale: 1.05,
+                      boxShadow: '0 0 50px rgba(255, 255, 255, 0.5), 0 12px 40px rgba(0, 0, 0, 0.25)',
+                    } : {}}
+                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                     onClick={showButton ? handleCtaClick : undefined}
                   >
-                    {/* Iridescent inner layers - fade out for button */}
-                    <motion.div
-                      className="absolute inset-0"
-                      style={{
-                        background: `
-                          radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.7) 0%, transparent 50%),
-                          radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.6) 0%, transparent 45%),
-                          radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.5) 0%, transparent 40%),
-                          radial-gradient(ellipse at 80% 30%, rgba(45, 212, 191, 0.4) 0%, transparent 35%)
-                        `,
-                        filter: 'blur(12px)',
-                      }}
-                      animate={{ 
-                        rotate: [0, 360],
-                        opacity: showButton ? 0 : 1,
-                      }}
-                      transition={{ 
-                        rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
-                        opacity: { duration: 0.5 }
-                      }}
-                    />
-                    
-                    {/* Secondary layer */}
-                    <motion.div
-                      className="absolute inset-0"
-                      style={{
-                        background: `
-                          radial-gradient(ellipse at 60% 30%, rgba(45, 212, 191, 0.5) 0%, transparent 40%),
-                          radial-gradient(ellipse at 30% 70%, rgba(167, 139, 250, 0.4) 0%, transparent 45%)
-                        `,
-                        filter: 'blur(14px)',
-                      }}
-                      animate={{ 
-                        rotate: [360, 0],
-                        opacity: showButton ? 0 : 1,
-                      }}
-                      transition={{ 
-                        rotate: { duration: 25, repeat: Infinity, ease: 'linear' },
-                        opacity: { duration: 0.5 }
-                      }}
-                    />
+                    {/* 3D Animated Orb with fallback */}
+                    <ErrorBoundary
+                      fallback={
+                        <motion.div
+                          className="absolute inset-0 rounded-full"
+                          style={{
+                            background: `
+                              radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 245, 0.9) 30%, rgba(255, 245, 240, 0.7) 50%, transparent 75%),
+                              radial-gradient(ellipse 120% 100% at 85% 60%, rgba(245, 166, 35, 0.45) 0%, rgba(255, 167, 38, 0.3) 30%, transparent 60%),
+                              radial-gradient(ellipse 100% 80% at 75% 85%, rgba(245, 166, 35, 0.35) 0%, transparent 50%),
+                              radial-gradient(ellipse 80% 100% at 25% 25%, rgba(255, 181, 160, 0.4) 0%, rgba(255, 154, 139, 0.25) 30%, transparent 55%),
+                              radial-gradient(ellipse 60% 80% at 15% 40%, rgba(255, 181, 160, 0.25) 0%, transparent 45%),
+                              linear-gradient(145deg, rgba(255, 252, 250, 0.95) 0%, rgba(255, 248, 244, 0.9) 50%, rgba(255, 250, 248, 0.95) 100%)
+                            `,
+                            boxShadow: `
+                              inset 0 0 80px rgba(255, 255, 255, 0.6),
+                              inset 30px 40px 60px rgba(255, 181, 160, 0.12),
+                              inset -30px -30px 70px rgba(245, 166, 35, 0.15),
+                              0 0 40px rgba(255, 212, 168, 0.25),
+                              0 0 80px rgba(245, 166, 35, 0.15)
+                            `,
+                          }}
+                          animate={{ opacity: showButton ? 0 : 1 }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      }
+                    >
+                      <Suspense
+                        fallback={
+                          <motion.div
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: `
+                                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 245, 0.9) 30%, rgba(255, 245, 240, 0.7) 50%, transparent 75%),
+                                radial-gradient(ellipse 120% 100% at 85% 60%, rgba(245, 166, 35, 0.45) 0%, rgba(255, 167, 38, 0.3) 30%, transparent 60%),
+                                radial-gradient(ellipse 100% 80% at 75% 85%, rgba(245, 166, 35, 0.35) 0%, transparent 50%),
+                                radial-gradient(ellipse 80% 100% at 25% 25%, rgba(255, 181, 160, 0.4) 0%, rgba(255, 154, 139, 0.25) 30%, transparent 55%),
+                                radial-gradient(ellipse 60% 80% at 15% 40%, rgba(255, 181, 160, 0.25) 0%, transparent 45%),
+                                linear-gradient(145deg, rgba(255, 252, 250, 0.95) 0%, rgba(255, 248, 244, 0.9) 50%, rgba(255, 250, 248, 0.95) 100%)
+                              `,
+                              boxShadow: `
+                                inset 0 0 80px rgba(255, 255, 255, 0.6),
+                                inset 30px 40px 60px rgba(255, 181, 160, 0.12),
+                                inset -30px -30px 70px rgba(245, 166, 35, 0.15),
+                                0 0 40px rgba(255, 212, 168, 0.25),
+                                0 0 80px rgba(245, 166, 35, 0.15)
+                              `,
+                            }}
+                            animate={{ opacity: showButton ? 0 : 1 }}
+                            transition={{ duration: 0.5 }}
+                          />
+                        }
+                      >
+                        <motion.div
+                          className="absolute inset-0"
+                          animate={{ opacity: showButton ? 0 : 1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <AnimatedOrb />
+                        </motion.div>
+                      </Suspense>
+                    </ErrorBoundary>
 
-                    {/* Glossy highlight - fade out for button */}
+                    {/* White background for button state */}
                     <motion.div
                       className="absolute inset-0 rounded-full"
-                      style={{
-                        background: `
-                          linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 50%),
-                          radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
-                        `,
-                      }}
-                      animate={{ opacity: showButton ? 0 : 1 }}
+                      style={{ background: 'linear-gradient(145deg, #ffffff 0%, #f8f6ff 100%)' }}
+                      animate={{ opacity: showButton ? 1 : 0 }}
                       transition={{ duration: 0.5 }}
                     />
 
@@ -328,69 +389,69 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                       }}
                       transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
                     >
-                      <ArrowRight className="w-8 h-8 md:w-10 md:h-10 text-charcoal" />
+                      <ArrowRight className="w-12 h-12 md:w-14 md:h-14 text-charcoal" />
                     </motion.div>
                   </motion.div>
                 </div>
               </motion.div>
 
-              {/* Scripture AI text - clips from bottom, never overlaps the orb */}
+              {/* Wholelicity text - positioned absolutely below Sophia */}
               <motion.div
-                className="overflow-hidden mt-4"
-                style={{ zIndex: 0 }}
-                initial={{ height: 0, opacity: 0 }}
+                className="absolute left-1/2 -translate-x-1/2"
+                style={{ zIndex: 0, top: 'calc(100% + 40px)' }}
+                initial={{ opacity: 0 }}
                 animate={{
-                  height: showLogo ? 'auto' : 0,
                   opacity: showLogo ? 1 : 0,
                 }}
                 transition={{
-                  height: { duration: 1.5, ease: [0.16, 1, 0.3, 1] },
                   opacity: { duration: 0.8, ease: 'easeOut' },
                 }}
               >
-                <h1 className="font-spiritual text-2xl md:text-3xl lg:text-4xl text-cream font-medium tracking-wide text-center">
-                  Scripture AI
-                </h1>
+                <img src={wholelicityLogo} alt="Wholelicity" className="w-[400px] md:w-[500px] h-auto" />
               </motion.div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Expanded CTA button - morphs from circular orb/button */}
+      {/* Expanded CTA pill - appears BEHIND Sophia/arrow button */}
       <AnimatePresence>
         {showExpandedCta && (
           <motion.button
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-16 md:h-20 rounded-full bg-cream/95 flex items-center justify-center gap-4 cursor-pointer hover:bg-cream transition-colors overflow-hidden"
+            className="absolute left-1/2 top-1/2 h-32 md:h-40 rounded-full bg-cream/95 flex items-center cursor-pointer hover:bg-cream transition-colors overflow-hidden"
             style={{ 
               boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 15, // Behind Sophia (z-index 20)
             }}
-            initial={{ width: 80, paddingLeft: 0, paddingRight: 0 }}
-            animate={{ width: 'auto', paddingLeft: 40, paddingRight: 40 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ width: 128, opacity: 0 }}
+            animate={{ width: 500, opacity: 1 }}
+            transition={{ 
+              width: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+              opacity: { duration: 0.2 }
+            }}
             onClick={handleCtaClick}
           >
-            <motion.span 
-              className="font-spiritual text-xl md:text-2xl text-charcoal font-medium whitespace-nowrap"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-            >
-              {typedText}
-              {phase === 'typing' && (
-                <motion.span
-                  className="inline-block w-0.5 h-6 md:h-7 bg-primary ml-1 align-middle"
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity }}
-                />
-              )}
-            </motion.span>
+            {/* Text area with cursor - left side of pill */}
             <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
+              className="flex-1 flex items-center justify-start pl-12 pr-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isTyping ? 1 : 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
             >
-              <ArrowRight className="w-6 h-6 md:w-7 md:h-7 text-charcoal" />
+              <span className="font-spiritual text-2xl md:text-3xl text-charcoal font-medium whitespace-nowrap">
+                {typedText}
+              </span>
+              {/* Typing cursor */}
+              <motion.span
+                className="inline-block w-0.5 h-8 md:h-9 bg-blue-500 ml-1"
+                animate={{ opacity: showCursor ? 1 : 0 }}
+                transition={{ duration: 0.1 }}
+              />
             </motion.div>
+            
+            {/* Spacer for where Sophia/arrow will be (on the right) */}
+            <div className="w-32 h-32 md:w-40 md:h-40 flex-shrink-0" />
           </motion.button>
         )}
       </AnimatePresence>

@@ -1,12 +1,10 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useNavigate } from 'react-router-dom';
 import { WelcomeSplash } from './screens/WelcomeSplash';
 import { VisionCast } from './screens/VisionCast';
-import { SpiritualBackgroundQuiz } from './screens/SpiritualBackgroundQuiz';
-import { LearningStyleQuiz } from './screens/LearningStyleQuiz';
-import { CommunityPreferenceQuiz } from './screens/CommunityPreferenceQuiz';
-import { CurrentSeasonQuiz } from './screens/CurrentSeasonQuiz';
+import { ChatOnboarding } from './ChatOnboarding';
 import { ProcessingScreen } from './screens/ProcessingScreen';
 import { ResultsScreen } from './screens/ResultsScreen';
 import { toast } from 'sonner';
@@ -28,6 +26,7 @@ interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ startAtQuiz = false }: OnboardingFlowProps) {
+  const navigate = useNavigate();
   const {
     step,
     data,
@@ -41,22 +40,16 @@ export function OnboardingFlow({ startAtQuiz = false }: OnboardingFlowProps) {
     trackScreen,
   } = useOnboarding();
 
-  // Start at quiz step (step 2) if coming from cinematic intro
-  useEffect(() => {
-    if (startAtQuiz && step < 2) {
-      goToStep(2);
-    }
-  }, [startAtQuiz, step, goToStep]);
+  // If starting at quiz, use the chat-style onboarding
+  if (startAtQuiz) {
+    return <ChatOnboarding onComplete={() => navigate('/dashboard')} />;
+  }
 
   // Track screen views
   useEffect(() => {
     const screenNames = [
       'welcome_splash',
       'vision_cast',
-      'spiritual_background',
-      'learning_style',
-      'community_preference',
-      'current_season',
       'processing',
       'results',
     ];
@@ -84,62 +77,15 @@ export function OnboardingFlow({ startAtQuiz = false }: OnboardingFlowProps) {
         );
       
       case 2:
-        return (
-          <SpiritualBackgroundQuiz
-            key="spiritual"
-            selected={data.spiritualBackground}
-            onSelect={(value) => updateData('spiritualBackground', value)}
-            onBack={startAtQuiz ? undefined : prevStep}
-            onContinue={nextStep}
-          />
-        );
-      
-      case 3:
-        return (
-          <LearningStyleQuiz
-            key="learning"
-            selected={data.learningStyle}
-            onSelect={(value) => updateData('learningStyle', value)}
-            onBack={prevStep}
-            onContinue={nextStep}
-          />
-        );
-      
-      case 4:
-        return (
-          <CommunityPreferenceQuiz
-            key="community"
-            selected={data.communityPreference}
-            onSelect={(value) => updateData('communityPreference', value)}
-            onBack={prevStep}
-            onContinue={nextStep}
-          />
-        );
-      
-      case 5:
-        return (
-          <CurrentSeasonQuiz
-            key="season"
-            selected={data.currentSeason}
-            onSelect={(value) => updateData('currentSeason', value)}
-            onBack={prevStep}
-            onContinue={() => {
-              nextStep();
-              processResults();
-            }}
-          />
-        );
-      
-      case 6:
         return <ProcessingScreen key="processing" onComplete={() => {}} />;
       
-      case 7:
+      case 3:
         return (
           <ResultsScreen
             key="results"
             persona={persona}
             onEnterDashboard={() => {
-              // For Phase 1, just show toast
+              navigate('/dashboard');
             }}
             onRestart={resetOnboarding}
           />
