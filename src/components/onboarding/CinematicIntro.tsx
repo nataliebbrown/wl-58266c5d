@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import introBackground from "@/assets/Slide 16_9 - 3.png";
+import introBackground from "@/assets/intro-background.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
