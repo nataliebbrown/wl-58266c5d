@@ -39,7 +39,7 @@ export function InteractiveTour({
 
   const introMessage = `Welcome, ${userName}! I'm Sophia, your spiritual formation guide. ${greeting}`;
   
-  const choiceMessage = "Would you like me to show you around? I'll walk you through how Scripture AI can serve your journey. It'll only take a minute!";
+  const choiceMessage = "Would you like me to show you around? I'll walk you through how WL can serve your journey. It'll only take a minute!";
 
   const tourSteps: TourStep[] = [
     {

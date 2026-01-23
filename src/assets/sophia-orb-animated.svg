@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Sophia brand color gradients -->
+    <radialGradient id="mainGrad" cx="40%" cy="35%" r="60%" fx="30%" fy="25%">
+      <stop offset="0%" stop-color="#D4A030"/>
+      <stop offset="45%" stop-color="#C2703C"/>
+      <stop offset="100%" stop-color="#9CAEA6"/>
+    </radialGradient>
+    
+    <radialGradient id="flowGrad1" cx="30%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#D4A030" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#C2703C" stop-opacity="0.4"/>
+      <animate attributeName="cx" values="30%;70%;30%" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="40%;60%;40%" dur="3s" repeatCount="indefinite"/>
+    </radialGradient>
+    
+    <radialGradient id="flowGrad2" cx="70%" cy="60%" r="45%">
+      <stop offset="0%" stop-color="#9CAEA6" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#C2703C" stop-opacity="0.3"/>
+      <animate attributeName="cx" values="70%;30%;70%" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="60%;35%;60%" dur="4s" repeatCount="indefinite"/>
+    </radialGradient>
+    
+    <radialGradient id="highlightGrad" cx="30%" cy="25%" r="35%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+      <animate attributeName="cx" values="30%;35%;30%" dur="2s" repeatCount="indefinite"/>
+    </radialGradient>
+    
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="50%" stop-color="#D4A030" stop-opacity="0.35"/>
+      <stop offset="75%" stop-color="#C2703C" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#9CAEA6" stop-opacity="0"/>
+    </radialGradient>
+    
+    <filter id="blur1" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4"/>
+    </filter>
+    
+    <filter id="blur2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+    </filter>
+    
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+    </filter>
+  </defs>
+  
+  <!-- Pulsing outer glow -->
+  <circle cx="100" cy="100" r="85" fill="url(#glowGrad)" filter="url(#glow)">
+    <animate attributeName="r" values="85;92;85" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.7;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Organic blob layer 1 - morphing -->
+  <path fill="url(#mainGrad)" opacity="0.95">
+    <animate 
+      attributeName="d" 
+      dur="4s" 
+      repeatCount="indefinite"
+      values="
+        M100,30 C140,30 170,60 170,100 C170,140 140,170 100,170 C60,170 30,140 30,100 C30,60 60,30 100,30 Z;
+        M100,32 C145,28 172,65 168,102 C165,145 138,172 98,168 C55,165 28,138 32,98 C35,55 58,32 100,32 Z;
+        M100,28 C138,35 168,58 172,100 C175,142 145,168 102,172 C58,175 32,145 28,102 C25,58 62,28 100,28 Z;
+        M100,30 C140,30 170,60 170,100 C170,140 140,170 100,170 C60,170 30,140 30,100 C30,60 60,30 100,30 Z
+      "/>
+  </path>
+  
+  <!-- Organic blob layer 2 - counter morphing -->
+  <path fill="url(#flowGrad1)" filter="url(#blur1)" opacity="0.7">
+    <animate 
+      attributeName="d" 
+      dur="5s" 
+      repeatCount="indefinite"
+      values="
+        M100,38 C135,38 162,62 162,100 C162,138 135,162 100,162 C62,162 38,135 38,100 C38,62 65,38 100,38 Z;
+        M98,35 C138,42 165,68 160,105 C155,142 128,165 92,160 C55,155 32,128 38,92 C45,55 60,35 98,35 Z;
+        M102,40 C132,35 160,62 165,98 C170,135 142,165 105,162 C68,158 38,132 35,95 C32,58 72,42 102,40 Z;
+        M100,38 C135,38 162,62 162,100 C162,138 135,162 100,162 C62,162 38,135 38,100 C38,62 65,38 100,38 Z
+      "/>
+  </path>
+  
+  <!-- Organic blob layer 3 - flowing -->
+  <path fill="url(#flowGrad2)" filter="url(#blur2)" opacity="0.6">
+    <animate 
+      attributeName="d" 
+      dur="6s" 
+      repeatCount="indefinite"
+      values="
+        M100,45 C130,45 155,70 155,100 C155,130 130,155 100,155 C70,155 45,130 45,100 C45,70 70,45 100,45 Z;
+        M105,42 C135,50 158,75 152,108 C148,140 122,158 90,152 C58,145 42,118 48,88 C55,55 75,42 105,42 Z;
+        M95,48 C125,42 155,68 158,100 C162,132 138,158 105,155 C72,152 45,125 42,95 C38,62 65,48 95,48 Z;
+        M100,45 C130,45 155,70 155,100 C155,130 130,155 100,155 C70,155 45,130 45,100 C45,70 70,45 100,45 Z
+      "/>
+  </path>
+  
+  <!-- Inner core - pulsing -->
+  <ellipse cx="100" cy="100" rx="35" ry="38" fill="#D4A030" opacity="0.5" filter="url(#blur1)">
+    <animate attributeName="rx" values="35;40;35" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="38;33;38" dur="2.5s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="8s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Highlight layer -->
+  <ellipse cx="100" cy="100" rx="55" ry="55" fill="url(#highlightGrad)">
+    <animate attributeName="rx" values="55;58;55" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Top specular -->
+  <ellipse cx="78" cy="68" rx="22" ry="12" fill="#FFFFFF" opacity="0.4" filter="url(#blur1)">
+    <animate attributeName="opacity" values="0.4;0.55;0.4" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="cx" values="78;82;78" dur="4s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Secondary specular -->
+  <ellipse cx="120" cy="130" rx="10" ry="6" fill="#FFFFFF" opacity="0.2" filter="url(#blur1)">
+    <animate attributeName="opacity" values="0.2;0.35;0.2" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+</svg>

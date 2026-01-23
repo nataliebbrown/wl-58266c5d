@@ -1,6 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, Suspense, lazy } from 'react';
 import { MessageCircle, History, Sparkles } from 'lucide-react';
+
+// Lazy load NoiseOrb for performance
+const NoiseOrb = lazy(() => import('../NoiseOrb'));
 
 interface FloatingSophiaButtonProps {
   onClick: () => void;
@@ -99,11 +102,11 @@ export function FloatingSophiaButton({ onClick, onOpenHistory, onLearnToday }: F
         whileTap={{ scale: 0.95 }}
         aria-label="Talk to Sophia"
       >
-        {/* Outer soft glow */}
+        {/* Outer soft glow - Sophia brand colors */}
         <motion.div
           className="absolute inset-0 w-16 h-16 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, rgba(96, 165, 250, 0.3) 50%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(212, 160, 48, 0.4) 0%, rgba(194, 112, 60, 0.3) 50%, transparent 70%)',
             filter: 'blur(10px)',
           }}
           animate={{
@@ -117,80 +120,30 @@ export function FloatingSophiaButton({ onClick, onOpenHistory, onLearnToday }: F
           }}
         />
 
-        {/* Main orb container */}
+        {/* Main orb container with NoiseOrb */}
         <motion.div 
           className="relative w-16 h-16 rounded-full overflow-hidden"
-          style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(240,240,255,0.8) 100%)',
-          }}
           animate={{
             boxShadow: isHovered
-              ? `0 0 50px rgba(167, 139, 250, 0.4), 0 0 80px rgba(96, 165, 250, 0.25), inset 0 0 25px rgba(255, 255, 255, 0.9)`
-              : `0 0 40px rgba(167, 139, 250, 0.25), 0 0 60px rgba(96, 165, 250, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.8)`,
+              ? `0 0 50px rgba(212, 160, 48, 0.4), 0 0 80px rgba(194, 112, 60, 0.25)`
+              : `0 0 40px rgba(212, 160, 48, 0.25), 0 0 60px rgba(194, 112, 60, 0.15)`,
           }}
         >
-          {/* Iridescent inner orb */}
-          <motion.div
-            className="absolute inset-0 m-auto w-12 h-12 rounded-full"
-            style={{
-              background: `
-                radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.8) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 60%, rgba(167, 139, 250, 0.7) 0%, transparent 45%),
-                radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.6) 0%, transparent 40%),
-                radial-gradient(ellipse at 80% 30%, rgba(45, 212, 191, 0.5) 0%, transparent 35%),
-                radial-gradient(ellipse at 50% 50%, rgba(129, 140, 248, 0.4) 0%, transparent 60%)
-              `,
-              filter: 'blur(6px)',
-            }}
-            animate={{
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: isHovered ? 10 : 20,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-
-          {/* Secondary color layer */}
-          <motion.div
-            className="absolute inset-0 m-auto w-12 h-12 rounded-full"
-            style={{
-              background: `
-                radial-gradient(ellipse at 60% 30%, rgba(45, 212, 191, 0.6) 0%, transparent 40%),
-                radial-gradient(ellipse at 30% 70%, rgba(167, 139, 250, 0.5) 0%, transparent 45%),
-                radial-gradient(ellipse at 70% 80%, rgba(96, 165, 250, 0.4) 0%, transparent 35%)
-              `,
-              filter: 'blur(8px)',
-            }}
-            animate={{
-              rotate: [360, 0],
-            }}
-            transition={{
-              duration: isHovered ? 12 : 25,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-
-          {/* Glossy highlight overlay */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: `
-                linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 50%),
-                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 30%)
-              `,
-            }}
-          />
-
-          {/* Subtle rim light */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              boxShadow: 'inset 0 0 15px rgba(167, 139, 250, 0.25)',
-            }}
-          />
+          <Suspense fallback={
+            <div 
+              className="w-full h-full rounded-full"
+              style={{
+                background: 'radial-gradient(circle at 30% 30%, #D4A030, #C2703C, #9CAEA6)',
+              }}
+            />
+          }>
+            <NoiseOrb 
+              size="100%" 
+              preset="sophia" 
+              noiseIntensity={isHovered ? 0.5 : 0.35} 
+              speed={isHovered ? 1.2 : 0.8} 
+            />
+          </Suspense>
         </motion.div>
       </motion.button>
     </div>

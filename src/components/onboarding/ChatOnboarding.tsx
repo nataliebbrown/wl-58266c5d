@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useNavigate } from 'react-router-dom';
+import { markQuizCompleted } from '@/lib/onboardingState';
 import { 
   SpiritualBackground, 
   LearningStyle, 
@@ -11,8 +12,9 @@ import {
   LEARNING_MODIFIERS,
 } from '@/types/onboarding';
 import { Sprout, Heart, Users, GraduationCap, HelpCircle, BookOpen, Eye, MessageCircle, Hand, GitBranch, User, Crown, Search, Blend, CloudRain, Compass, TrendingUp, LucideIcon } from 'lucide-react';
-import introBackground from "@/assets/Slide 16_9 - 2.png";
+import introBackground from "@/assets/BG_1.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
+import sophiaOrb from "@/assets/sophia-orb-brown.svg";
 
 interface QuizQuestion {
   id: number;
@@ -87,20 +89,10 @@ interface ChatMessage {
 function SophiaAvatar() {
   return (
     <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
-      <div 
-        className="w-full h-full rounded-full"
-        style={{
-          background: `
-            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 245, 0.9) 30%, rgba(255, 245, 240, 0.7) 50%, transparent 75%),
-            radial-gradient(ellipse 120% 100% at 85% 60%, rgba(245, 166, 35, 0.45) 0%, rgba(255, 167, 38, 0.3) 30%, transparent 60%),
-            radial-gradient(ellipse 80% 100% at 25% 25%, rgba(255, 181, 160, 0.4) 0%, rgba(255, 154, 139, 0.25) 30%, transparent 55%),
-            linear-gradient(145deg, rgba(255, 252, 250, 0.95) 0%, rgba(255, 248, 244, 0.9) 50%, rgba(255, 250, 248, 0.95) 100%)
-          `,
-          boxShadow: `
-            inset 0 0 15px rgba(255, 255, 255, 0.6),
-            0 0 20px rgba(245, 166, 35, 0.2)
-          `,
-        }}
+      <img 
+        src={sophiaOrb} 
+        alt="Sophia" 
+        className="w-full h-full object-contain"
       />
     </div>
   );
@@ -276,6 +268,14 @@ export function ChatOnboarding({ onComplete }: ChatOnboardingProps) {
   };
 
   const handleContinue = () => {
+    // Mark quiz as completed and store the quiz data
+    markQuizCompleted({
+      spiritualBackground: data.spiritualBackground,
+      learningStyle: data.learningStyle,
+      communityPreference: data.communityPreference,
+      currentSeason: data.currentSeason,
+    });
+    
     if (onComplete) {
       onComplete();
     } else {
@@ -325,8 +325,6 @@ export function ChatOnboarding({ onComplete }: ChatOnboardingProps) {
         ref={chatContainerRef}
         className="flex-1 relative z-10 overflow-y-auto px-4 pb-32 pt-32 flex flex-col"
       >
-        {/* Spacer to push content to bottom initially */}
-        <div className="flex-1 min-h-0" />
         <div className="max-w-2xl mx-auto w-full space-y-8">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (

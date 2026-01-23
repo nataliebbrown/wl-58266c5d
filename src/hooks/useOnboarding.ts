@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { OnboardingData, PersonaResult, calculatePersona } from '@/types/onboarding';
 
-const STORAGE_KEY = 'scripture-ai-onboarding';
+const STORAGE_KEY = 'wl-onboarding';
 
 const initialData: OnboardingData = {
   spiritualBackground: null,

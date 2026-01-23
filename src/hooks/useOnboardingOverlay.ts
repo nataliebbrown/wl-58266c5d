@@ -1,4 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
+import { 
+  shouldShowTour, 
+  markTourOffered, 
+  markTourCompleted, 
+  markTourSkipped,
+  markFullyOnboarded,
+  getOnboardingState,
+  resetOnboarding
+} from '@/lib/onboardingState';
 
 interface OverlayState {
   showOverlay: boolean;
@@ -18,7 +27,13 @@ interface OverlayData {
   pathSkipped: boolean;
 }
 
-const STORAGE_KEY = 'scripture_ai_overlay_data';
+const STORAGE_KEY = 'wl_overlay_data';
+
+// Legacy function - kept for backward compatibility but now uses new state
+export const initializeOverlayForNewUser = () => {
+  // This is now handled by markQuizCompleted in onboardingState
+  console.log('[Legacy] initializeOverlayForNewUser called - using new state management');
+};
 
 const getStoredData = (): OverlayData => {
   try {
@@ -62,11 +77,16 @@ export function useOnboardingOverlay() {
   const [overlayData, setOverlayData] = useState<OverlayData>(getStoredData);
 
   useEffect(() => {
-    const data = getStoredData();
-    setOverlayData(data);
+    const legacyData = getStoredData();
+    setOverlayData(legacyData);
     
-    // Show overlay only on first visit
-    if (data.firstVisit && !data.tourCompleted && !data.pathSkipped) {
+    // Use the new unified state to determine if tour should show
+    const showTourFromNewState = shouldShowTour();
+    const showTourFromLegacy = legacyData.firstVisit && !legacyData.tourCompleted && !legacyData.pathSkipped;
+    
+    // Show tour if either new state or legacy state says so
+    if (showTourFromNewState || showTourFromLegacy) {
+      markTourOffered(); // Update the new state
       setState(prev => ({
         ...prev,
         showOverlay: true,
@@ -117,6 +137,7 @@ export function useOnboardingOverlay() {
         isTransitioning: false,
       }));
       saveStoredData({ tourSkipped: true });
+      // Don't mark as skipped yet - they might still choose a pathway
     }, 400);
   }, []);
 
@@ -134,6 +155,8 @@ export function useOnboardingOverlay() {
         showPathways: false,
         isTransitioning: false,
       }));
+      
+      // Update legacy storage
       saveStoredData({
         firstVisit: false,
         tourCompleted: true,
@@ -145,6 +168,10 @@ export function useOnboardingOverlay() {
         tourCompleted: true,
         chosenStart,
       }));
+      
+      // Update new unified state
+      markTourCompleted();
+      markFullyOnboarded();
     }, 600);
   }, []);
 
@@ -161,6 +188,8 @@ export function useOnboardingOverlay() {
         showPathways: false,
         isTransitioning: false,
       }));
+      
+      // Update legacy storage
       saveStoredData({
         firstVisit: false,
         tourSkipped: true,
@@ -172,6 +201,10 @@ export function useOnboardingOverlay() {
         tourSkipped: true,
         chosenPath: pathId,
       }));
+      
+      // Update new unified state - pathway selection counts as completing tour
+      markTourCompleted();
+      markFullyOnboarded();
     }, 600);
   }, []);
 
@@ -189,6 +222,8 @@ export function useOnboardingOverlay() {
         showPathways: false,
         isTransitioning: false,
       }));
+      
+      // Update legacy storage
       saveStoredData({
         firstVisit: false,
         tourSkipped: true,
@@ -200,11 +235,20 @@ export function useOnboardingOverlay() {
         tourSkipped: true,
         pathSkipped: true,
       }));
+      
+      // Update new unified state - skipping still marks as onboarded
+      markTourSkipped();
+      markFullyOnboarded();
     }, 500);
   }, []);
 
   const resetOverlay = useCallback(() => {
+    // Reset legacy storage
     localStorage.removeItem(STORAGE_KEY);
+    
+    // Reset new unified state
+    resetOnboarding();
+    
     setOverlayData({
       firstVisit: true,
       tourCompleted: false,

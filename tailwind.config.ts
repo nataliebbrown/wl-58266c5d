@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         spiritual: ['Crimson Pro', 'serif'],
+        lato: ['Lato', 'Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

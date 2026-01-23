@@ -26,7 +26,7 @@ export interface OnboardingOverlayState {
 export const SOPHIA_GREETINGS: Record<string, string> = {
   'new_to_faith': "I see you're new to faith and the Bible. I'm here to make this journey welcoming and judgment-free. You can ask me anything, and we'll explore together at your own pace.",
   'believer_going_deeper': "After years of studying scripture, you're ready to go deeper. I'm here to help you discover patterns and connections you've never noticed, even in familiar passages.",
-  'pastor_leader': "As a ministry leader, you need tools that serve both your own growth and help you serve others. Let me show you how Scripture AI can enhance your teaching and leadership.",
+  'pastor_leader': "As a ministry leader, you need tools that serve both your own growth and help you serve others. Let me show you how WL can enhance your teaching and leadership.",
   'seminary_student': "Academic rigor meets spiritual formation here. I can help you explore original languages, scholarly patterns, and theological insights while deepening your personal walk.",
   'exploring_faith': "Exploring faith takes courage. This is a safe space where you can ask anything, challenge assumptions, and discover what resonates with you—no pressure, no judgment.",
   default: "Welcome to your spiritual formation journey. I'm here to guide you through meaningful discoveries and help you grow in your faith."

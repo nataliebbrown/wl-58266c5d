@@ -1,110 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Scripture AI Design System - Warm, contemplative aesthetic */
+/* WL (Wholelicity) Design System - Warm, contemplative aesthetic */
 
 @layer base {
   :root {
-    /* Core brand colors - HSL format */
-    --terracotta: 16 52% 48%;
-    --terracotta-light: 16 52% 58%;
-    --terracotta-dark: 16 52% 38%;
+    /* Core brand colors - Wholelicity earthy palette HSL format */
     
-    --sage: 100 26% 53%;
-    --sage-light: 100 26% 63%;
-    --sage-dark: 100 26% 43%;
+    /* Carbon Black #262721 - Dark backgrounds */
+    --carbon: 72 10% 14%;
     
-    --ochre: 30 52% 64%;
-    --ochre-light: 30 52% 74%;
-    --ochre-dark: 30 52% 54%;
+    /* Stone Brown #5A4C3A */
+    --terracotta: 34 22% 29%;
+    --terracotta-light: 34 22% 39%;
+    --terracotta-dark: 34 22% 22%;
     
-    --cream: 40 33% 96%;
-    --cream-dark: 40 25% 92%;
+    /* Olive Wood #756653 */
+    --olive: 34 18% 39%;
+    --olive-light: 34 18% 49%;
+    --olive-dark: 34 18% 29%;
     
-    --charcoal: 215 25% 23%;
-    --charcoal-light: 215 20% 35%;
+    /* Faded Copper #8A7356 - Primary accent */
+    --sage: 34 24% 44%;
+    --sage-light: 34 24% 54%;
+    --sage-dark: 34 24% 34%;
+    
+    /* Khaki Beige #C5B49B */
+    --ochre: 37 27% 69%;
+    --ochre-light: 37 27% 79%;
+    --ochre-dark: 37 27% 59%;
+    
+    /* Soft Linen #F4EFE6 */
+    --cream: 39 42% 93%;
+    --cream-dark: 39 30% 88%;
+    
+    /* Pale Oak #DED1BA */
+    --charcoal: 72 10% 14%;
+    --charcoal-light: 37 27% 79%;
     
     /* Semantic tokens */
-    --background: 40 33% 96%;
-    --foreground: 215 25% 23%;
+    --background: 39 42% 93%;
+    --foreground: 34 22% 22%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 23%;
+    --card-foreground: 34 22% 22%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 23%;
+    --popover-foreground: 34 22% 22%;
 
-    --primary: 16 52% 48%;
-    --primary-foreground: 40 33% 96%;
+    /* Primary - Faded Copper */
+    --primary: 34 24% 44%;
+    --primary-foreground: 39 42% 96%;
 
-    --secondary: 100 26% 53%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - Khaki Beige */
+    --secondary: 37 27% 69%;
+    --secondary-foreground: 34 22% 22%;
 
-    --muted: 40 25% 92%;
-    --muted-foreground: 215 20% 45%;
+    /* Muted - Pale Oak */
+    --muted: 37 30% 80%;
+    --muted-foreground: 34 22% 35%;
 
-    --accent: 30 52% 64%;
-    --accent-foreground: 215 25% 23%;
+    /* Accent - Khaki Beige */
+    --accent: 37 27% 69%;
+    --accent-foreground: 34 22% 22%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 20% 85%;
-    --input: 30 20% 85%;
-    --ring: 16 52% 48%;
+    --border: 37 25% 80%;
+    --input: 37 25% 80%;
+    --ring: 34 24% 44%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 40 33% 96%;
-    --sidebar-foreground: 215 25% 23%;
-    --sidebar-primary: 16 52% 48%;
-    --sidebar-primary-foreground: 40 33% 96%;
-    --sidebar-accent: 40 25% 92%;
-    --sidebar-accent-foreground: 215 25% 23%;
-    --sidebar-border: 30 20% 85%;
-    --sidebar-ring: 16 52% 48%;
+    --sidebar-background: 39 42% 93%;
+    --sidebar-foreground: 34 22% 22%;
+    --sidebar-primary: 34 24% 44%;
+    --sidebar-primary-foreground: 39 42% 96%;
+    --sidebar-accent: 37 30% 80%;
+    --sidebar-accent-foreground: 34 22% 22%;
+    --sidebar-border: 37 25% 80%;
+    --sidebar-ring: 34 24% 44%;
   }
 
   .dark {
-    --background: 215 25% 13%;
-    --foreground: 40 33% 96%;
+    /* Carbon Black #262721 based dark theme */
+    --background: 72 10% 14%;
+    --foreground: 39 42% 93%;
 
-    --card: 215 25% 18%;
-    --card-foreground: 40 33% 96%;
+    --card: 72 10% 18%;
+    --card-foreground: 39 42% 93%;
 
-    --popover: 215 25% 18%;
-    --popover-foreground: 40 33% 96%;
+    --popover: 72 10% 18%;
+    --popover-foreground: 39 42% 93%;
 
-    --primary: 16 52% 55%;
-    --primary-foreground: 215 25% 13%;
+    --primary: 34 24% 50%;
+    --primary-foreground: 72 10% 14%;
 
-    --secondary: 100 26% 45%;
-    --secondary-foreground: 40 33% 96%;
+    --secondary: 34 18% 39%;
+    --secondary-foreground: 39 42% 93%;
 
-    --muted: 215 20% 25%;
-    --muted-foreground: 40 20% 70%;
+    --muted: 72 10% 22%;
+    --muted-foreground: 37 25% 70%;
 
-    --accent: 30 52% 55%;
-    --accent-foreground: 40 33% 96%;
+    --accent: 37 27% 50%;
+    --accent-foreground: 39 42% 93%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 20% 30%;
-    --input: 215 20% 30%;
-    --ring: 16 52% 55%;
+    --border: 72 10% 28%;
+    --input: 72 10% 28%;
+    --ring: 34 24% 50%;
 
-    --sidebar-background: 215 25% 13%;
-    --sidebar-foreground: 40 33% 96%;
-    --sidebar-primary: 16 52% 55%;
-    --sidebar-primary-foreground: 215 25% 13%;
-    --sidebar-accent: 215 20% 25%;
-    --sidebar-accent-foreground: 40 33% 96%;
-    --sidebar-border: 215 20% 30%;
-    --sidebar-ring: 16 52% 55%;
+    --sidebar-background: 72 10% 14%;
+    --sidebar-foreground: 39 42% 93%;
+    --sidebar-primary: 34 24% 50%;
+    --sidebar-primary-foreground: 72 10% 14%;
+    --sidebar-accent: 72 10% 22%;
+    --sidebar-accent-foreground: 39 42% 93%;
+    --sidebar-border: 72 10% 28%;
+    --sidebar-ring: 34 24% 50%;
   }
 }
 

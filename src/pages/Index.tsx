@@ -1,36 +1,51 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CinematicIntro } from '@/components/onboarding/CinematicIntro';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
-
-const ONBOARDING_COMPLETED_KEY = 'scripture_ai_onboarding_completed';
-const ONBOARDING_DATA_KEY = 'scripture-ai-onboarding';
+import { 
+  getOnboardingState, 
+  hasCompletedQuiz, 
+  isReturningUser,
+  markIntroSeen,
+  migrateFromLegacyStorage 
+} from '@/lib/onboardingState';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [showCinematicIntro, setShowCinematicIntro] = useState(true);
   const [introCompleted, setIntroCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user has already completed the full onboarding
-    const hasCompletedOnboarding = localStorage.getItem(ONBOARDING_COMPLETED_KEY);
-    if (hasCompletedOnboarding) {
-      // Skip both intro and onboarding - user has completed everything
-      setShowCinematicIntro(false);
-      setIntroCompleted(true);
+    // Migrate any legacy storage on first load
+    migrateFromLegacyStorage();
+    
+    const state = getOnboardingState();
+    
+    // If returning user, redirect to dashboard
+    if (isReturningUser()) {
+      navigate('/dashboard');
+      return;
     }
+    
+    // If quiz was completed but tour not done, go straight to dashboard for tour
+    if (hasCompletedQuiz()) {
+      navigate('/dashboard');
+      return;
+    }
+    
+    // Otherwise show the intro for first-time users
     setIsLoading(false);
-  }, []);
+  }, [navigate]);
 
   const handleIntroComplete = () => {
-    // Clear any previous onboarding data so quiz starts fresh
-    localStorage.removeItem(ONBOARDING_DATA_KEY);
+    markIntroSeen();
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
 
   const handleIntroSkip = () => {
-    // Clear any previous onboarding data so quiz starts fresh
-    localStorage.removeItem(ONBOARDING_DATA_KEY);
+    markIntroSeen();
     setShowCinematicIntro(false);
     setIntroCompleted(true);
   };
@@ -40,7 +55,7 @@ const Index = () => {
     return null;
   }
 
-  // Show cinematic intro first (every time until onboarding is complete)
+  // Show cinematic intro first
   if (showCinematicIntro) {
     return (
       <CinematicIntro 
@@ -50,7 +65,7 @@ const Index = () => {
     );
   }
 
-  // After intro, show onboarding flow starting at the quiz
+  // After intro, show onboarding quiz
   if (introCompleted) {
     return <OnboardingFlow startAtQuiz />;
   }

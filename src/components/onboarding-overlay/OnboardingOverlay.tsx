@@ -61,7 +61,7 @@ export function OnboardingOverlay({ userName, spiritualBackground, overlayState 
 
   const handleTourComplete = useCallback((route: string) => {
     completeTour(route);
-    toast.success("Welcome to Scripture AI!", {
+    toast.success("Welcome to WL!", {
       description: "Wisdom Guide coming in Phase 3!"
     });
   }, [completeTour]);

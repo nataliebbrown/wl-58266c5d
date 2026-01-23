@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserProfile, UserStats, Insight } from '@/types/dashboard';
+import { 
+  hasCompletedQuiz, 
+  getQuizData, 
+  isFirstTimeUser, 
+  isReturningUser,
+  markFullyOnboarded 
+} from '@/lib/onboardingState';
 
-const PROFILE_STORAGE_KEY = 'scripture-ai-profile';
-const STATS_STORAGE_KEY = 'scripture-ai-stats';
-const INSIGHTS_STORAGE_KEY = 'scripture-ai-insights';
-const FIRST_ACTION_KEY = 'scripture-ai-first-action-taken';
+const PROFILE_STORAGE_KEY = 'wl-profile';
+const STATS_STORAGE_KEY = 'wl-stats';
+const INSIGHTS_STORAGE_KEY = 'wl-insights';
+const FIRST_ACTION_KEY = 'wl-first-action-taken';
 
 const DEMO_INSIGHTS: Insight[] = [
   {
@@ -58,9 +65,11 @@ export function useUserProfile() {
     const savedInsights = localStorage.getItem(INSIGHTS_STORAGE_KEY);
     const firstActionTaken = localStorage.getItem(FIRST_ACTION_KEY);
 
-    // Determine if this is a first-time user
-    const hasFirstAction = firstActionTaken === 'true';
-    setIsFirstTime(!hasFirstAction);
+    // Determine if this is a first-time user using new unified state first
+    const isFirstTimeFromNewState = isFirstTimeUser();
+    const hasFirstAction = firstActionTaken === 'true' || !isFirstTimeFromNewState;
+    
+    setIsFirstTime(!hasFirstAction && isFirstTimeFromNewState);
 
     if (savedProfile) {
       try {
@@ -114,7 +123,13 @@ export function useUserProfile() {
   };
 
   const hasCompletedOnboarding = (): boolean => {
-    const onboardingData = localStorage.getItem('scripture-ai-onboarding');
+    // First check new unified state
+    if (hasCompletedQuiz()) {
+      return true;
+    }
+    
+    // Fallback to legacy storage
+    const onboardingData = localStorage.getItem('wl-onboarding');
     if (!onboardingData) return false;
     try {
       const parsed = JSON.parse(onboardingData);
@@ -128,7 +143,14 @@ export function useUserProfile() {
   };
 
   const getPersonaFromOnboarding = () => {
-    const onboardingData = localStorage.getItem('scripture-ai-onboarding');
+    // First check new unified state
+    const quizData = getQuizData();
+    if (quizData.spiritualBackground) {
+      return quizData;
+    }
+    
+    // Fallback to legacy storage
+    const onboardingData = localStorage.getItem('wl-onboarding');
     if (!onboardingData) return null;
     try {
       const parsed = JSON.parse(onboardingData);
@@ -140,12 +162,17 @@ export function useUserProfile() {
 
   // Mark that user has taken their first action (transition from first-time to regular view)
   const markFirstActionTaken = useCallback(() => {
+    // Update legacy key
     localStorage.setItem(FIRST_ACTION_KEY, 'true');
     localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify({
       daysActive: 1,
       conversationCount: 0,
       insightsCount: 0,
     }));
+    
+    // Update new unified state
+    markFullyOnboarded();
+    
     setIsFirstTime(false);
     setStats({
       daysActive: 1,
@@ -156,6 +183,12 @@ export function useUserProfile() {
 
   // Check if user is first-time (hasn't taken any action yet)
   const checkIsFirstTime = useCallback((): boolean => {
+    // First check new unified state
+    if (isReturningUser()) {
+      return false;
+    }
+    
+    // Fallback to legacy
     const firstActionTaken = localStorage.getItem(FIRST_ACTION_KEY);
     return firstActionTaken !== 'true';
   }, []);

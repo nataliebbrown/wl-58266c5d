@@ -75,13 +75,14 @@ export default function Chat() {
   // Get suggested topics based on persona
   const suggestedTopics = getSuggestedTopics(userPersona || undefined);
 
-  // Initialize dark mode from system preference or localStorage
+  // Initialize dark mode from localStorage (default to light mode)
   useEffect(() => {
-    const savedMode = localStorage.getItem('scripture-ai-dark-mode');
+    const savedMode = localStorage.getItem('wl-dark-mode');
     if (savedMode !== null) {
       setIsDarkMode(savedMode === 'true');
     } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      // Default to light mode
+      setIsDarkMode(false);
     }
   }, []);
 
@@ -92,7 +93,7 @@ export default function Chat() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('scripture-ai-dark-mode', String(isDarkMode));
+    localStorage.setItem('wl-dark-mode', String(isDarkMode));
   }, [isDarkMode]);
 
   // Redirect to onboarding if not completed

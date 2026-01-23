@@ -26,7 +26,7 @@ export function WelcomeSplash({ onBegin }: WelcomeSplashProps) {
             <Sparkles className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-4xl md:text-5xl font-spiritual font-semibold text-foreground tracking-tight">
-            Scripture AI
+            WL
           </h1>
         </motion.div>
 

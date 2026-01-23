@@ -61,7 +61,7 @@ export function VisionCast({ onContinue, onLearnMore }: VisionCastProps) {
           transition={{ delay: 0.2 }}
           className="text-3xl md:text-4xl font-spiritual font-semibold text-center text-foreground mb-6"
         >
-          Welcome to Scripture AI
+          Welcome to WL
         </motion.h1>
 
         {/* Body text */}

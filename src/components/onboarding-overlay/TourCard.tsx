@@ -51,7 +51,7 @@ export function TourCard({
               {greeting}
             </p>
             <p className="text-muted-foreground mt-4">
-              Would you like a quick tour of how Scripture AI can serve your spiritual formation?
+              Would you like a quick tour of how WL can serve your spiritual formation?
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
               <span>⏱️</span>
@@ -126,7 +126,7 @@ export function TourCard({
               Everything Works Together
             </h2>
             <p className="text-muted-foreground leading-relaxed mt-4 max-w-md">
-              Scripture AI isn't just separate tools—it's an integrated ecosystem. 
+              WL isn't just separate tools—it's an integrated ecosystem. 
               Discoveries in one area enhance everything else:
             </p>
             <ul className="text-sm text-muted-foreground mt-4 space-y-2 max-w-md">

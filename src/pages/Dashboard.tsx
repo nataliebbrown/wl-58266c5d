@@ -1,18 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '@/components/dashboard/Navbar';
-import { HeroSection } from '@/components/dashboard/HeroSection';
-import { FormationFocusCard } from '@/components/dashboard/FormationFocusCard';
-import { StatsSection } from '@/components/dashboard/StatsSection';
-import { InsightsSection } from '@/components/dashboard/InsightsSection';
-import { QuickActionsSection } from '@/components/dashboard/QuickActionsSection';
-import { ComingSoonSection } from '@/components/dashboard/ComingSoonSection';
-import { OnboardingOverlay } from '@/components/onboarding-overlay/OnboardingOverlay';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useOnboardingOverlay } from '@/hooks/useOnboardingOverlay';
-import { Button } from '@/components/ui/button';
-import { RotateCcw } from 'lucide-react';
-import FirstTimeDashboard from './FirstTimeDashboard';
+import { WelcomeDashboard } from '@/components/dashboard/WelcomeDashboard';
+import { MainDashboard } from '@/components/dashboard/MainDashboard';
+import { OnboardingOverlay } from '@/components/onboarding-overlay/OnboardingOverlay';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -36,8 +28,8 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse-gentle text-muted-foreground">Loading...</div>
+      <div className="min-h-screen bg-[#F4EFE6] flex items-center justify-center">
+        <div className="animate-pulse text-[#8A7356]">Loading...</div>
       </div>
     );
   }
@@ -46,56 +38,44 @@ export default function Dashboard() {
   const userName = "Friend";
   const spiritualBackground = personaData?.spiritualBackground || 'default';
 
-  // Show first-time dashboard for new users
+  // Show first-time welcome dashboard for new users
   if (isFirstTime) {
     return (
-      <FirstTimeDashboard
-        userName={userName}
-        spiritualBackground={spiritualBackground}
-        onFirstActionTaken={markFirstActionTaken}
-      />
+      <>
+        {/* Onboarding overlay for first-time visitors */}
+        <OnboardingOverlay 
+          userName={userName}
+          spiritualBackground={spiritualBackground}
+          overlayState={overlayState}
+        />
+        
+        <WelcomeDashboard
+          userName={userName}
+          spiritualBackground={spiritualBackground}
+          onStartJourney={markFirstActionTaken}
+        />
+      </>
     );
   }
 
-  // Regular dashboard for returning users
+  // Main dashboard for returning users
   return (
-    <div className="min-h-screen bg-background">
-      {/* Onboarding overlay for first-time visitors */}
-      <OnboardingOverlay 
-        userName={userName}
-        spiritualBackground={spiritualBackground}
-        overlayState={overlayState}
-      />
-      
-      {/* Dashboard content */}
-      <Navbar />
-      <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
-        <HeroSection 
+    <>
+      {/* Onboarding overlay if needed */}
+      {overlayState.showOverlay && (
+        <OnboardingOverlay 
           userName={userName}
           spiritualBackground={spiritualBackground}
+          overlayState={overlayState}
         />
-        <FormationFocusCard />
-        <div className="my-8" />
-        <StatsSection stats={stats} />
-        <InsightsSection insights={insights} />
-        <QuickActionsSection />
-        <ComingSoonSection />
-        
-        {/* Reset Tour Button - for testing */}
-        {!overlayState.showOverlay && (
-          <div className="mt-8 flex justify-center">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={overlayState.resetOverlay}
-              className="gap-2 text-muted-foreground"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Replay Sophia's Tour
-            </Button>
-          </div>
-        )}
-      </main>
-    </div>
+      )}
+      
+      <MainDashboard
+        userName={userName}
+        spiritualBackground={spiritualBackground}
+        stats={stats}
+        insights={insights}
+      />
+    </>
   );
 }

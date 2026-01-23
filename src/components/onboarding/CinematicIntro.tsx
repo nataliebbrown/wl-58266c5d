@@ -1,12 +1,11 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import introBackground from "@/assets/intro-background.png";
+import introBackground from "@/assets/BG_1.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
+import wholelicityLogo2 from "@/assets/logo_white_2.svg";
+import sophiaOrb from "@/assets/sophia-orb-brown.svg";
 import ErrorBoundary from "@/components/ErrorBoundary";
-
-// Lazy load the 3D orb component
-const AnimatedOrb = lazy(() => import("@/components/AnimatedOrb"));
 
 interface CinematicIntroProps {
   onComplete: () => void;
@@ -51,7 +50,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       { phase: 'overlay-fade', delay: 800 }, // Logo gone, overlay/tagline/glow start (0% opacity)
       { phase: 'orb-rise', delay: 4000 }, // Sophia rises at 5x
       { phase: 'orb-shrink', delay: 4800 }, // ** Sophia starts shrinking while still rising (600ms overlap) **
-      { phase: 'logo-appear', delay: 8400 }, // Shrink done, show Scripture AI text
+      { phase: 'logo-appear', delay: 8400 }, // Shrink done, show WL text
       { phase: 'transform-button', delay: 9900 }, // Sophia becomes transparent arrow button
       { phase: 'expand-cta', delay: 10600 }, // Pill expands, arrow slides right
       { phase: 'typing', delay: 11400 }, // Cursor appears and starts typing
@@ -128,7 +127,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   const showInitialLogo = phase === 'initial';
   // Sophia is always rendered - stays visible throughout entire animation
   const showOrb = true;
-  // Scripture AI text reveals AS Sophia shrinks (during orb-shrink phase)
+  // WL text reveals AS Sophia shrinks (during orb-shrink phase)
   const showLogo = ['orb-shrink', 'logo-appear'].includes(phase);
   // Logo is fully settled after logo-appear phase - locks in place
   const logoSettled = ['logo-appear', 'transform-button'].includes(phase);
@@ -179,7 +178,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <motion.div 
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to bottom, rgba(37, 37, 28, 0.5) 0%, rgba(37, 37, 28, 0.85) 50%, rgba(37, 37, 28, 0.95) 100%)',
+          background: 'linear-gradient(to bottom, rgba(54, 46, 35, 0.5) 0%, rgba(54, 46, 35, 0.85) 50%, rgba(54, 46, 35, 0.95) 100%)',
         }}
         initial={{ opacity: 0 }}
         animate={{ 
@@ -195,7 +194,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <motion.div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300vw] h-[80vh] pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at center bottom, rgba(194, 112, 60, 0.5) 0%, rgba(212, 160, 48, 0.3) 20%, rgba(156, 174, 166, 0.15) 40%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center bottom, rgba(138, 115, 86, 0.5) 0%, rgba(197, 180, 155, 0.3) 20%, rgba(222, 209, 186, 0.15) 40%, transparent 70%)',
         }}
         initial={{ opacity: 0 }}
         animate={{ 
@@ -246,7 +245,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
             <motion.div
               className="relative"
               animate={{
-                x: arrowSlidRight ? 186 : 0, // Half of 500px minus half of button (128px) = 186px
+                x: arrowSlidRight ? 299 : 0, // Half of 725px minus half of button (128px) = 299px
                 marginTop: showButton ? 0 : -40, // No offset in button mode
               }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -286,90 +285,40 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                 <div className="relative w-32 h-32 md:w-40 md:h-40">
                   {/* Sophia orb - 3D animated version */}
                   <motion.div 
-                    className="absolute inset-0 rounded-full overflow-hidden cursor-pointer"
+                    className="absolute inset-0 rounded-full overflow-hidden cursor-pointer transition-all duration-200"
                     animate={{ 
                       boxShadow: showSophiaGlow 
                         ? `
-                          0 0 100px 50px rgba(194, 112, 60, 0.4),
-                          0 0 200px 100px rgba(212, 160, 48, 0.3),
-                          0 0 300px 150px rgba(156, 174, 166, 0.2)
+                          0 0 100px 50px rgba(138, 115, 86, 0.4),
+                          0 0 200px 100px rgba(197, 180, 155, 0.3),
+                          0 0 300px 150px rgba(222, 209, 186, 0.2)
                         `
                         : showButton 
                           ? '0 0 40px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.2)'
                           : `
-                            0 0 60px rgba(194, 112, 60, 0.25),
-                            0 0 100px rgba(212, 160, 48, 0.2)
+                            0 0 60px rgba(138, 115, 86, 0.25),
+                            0 0 100px rgba(197, 180, 155, 0.2)
                           `,
                     }}
                     whileHover={showButton ? { 
                       scale: 1.05,
-                      boxShadow: '0 0 50px rgba(255, 255, 255, 0.5), 0 12px 40px rgba(0, 0, 0, 0.25)',
+                      boxShadow: '0 0 50px rgba(255, 255, 255, 0.5), 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 0 0 3px rgba(90, 76, 58, 0.3)',
                     } : {}}
                     transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                     onClick={showButton ? handleCtaClick : undefined}
                   >
-                    {/* 3D Animated Orb with fallback */}
-                    <ErrorBoundary
-                      fallback={
-                        <motion.div
-                          className="absolute inset-0 rounded-full"
-                          style={{
-                            background: `
-                              radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 245, 0.9) 30%, rgba(255, 245, 240, 0.7) 50%, transparent 75%),
-                              radial-gradient(ellipse 120% 100% at 85% 60%, rgba(245, 166, 35, 0.45) 0%, rgba(255, 167, 38, 0.3) 30%, transparent 60%),
-                              radial-gradient(ellipse 100% 80% at 75% 85%, rgba(245, 166, 35, 0.35) 0%, transparent 50%),
-                              radial-gradient(ellipse 80% 100% at 25% 25%, rgba(255, 181, 160, 0.4) 0%, rgba(255, 154, 139, 0.25) 30%, transparent 55%),
-                              radial-gradient(ellipse 60% 80% at 15% 40%, rgba(255, 181, 160, 0.25) 0%, transparent 45%),
-                              linear-gradient(145deg, rgba(255, 252, 250, 0.95) 0%, rgba(255, 248, 244, 0.9) 50%, rgba(255, 250, 248, 0.95) 100%)
-                            `,
-                            boxShadow: `
-                              inset 0 0 80px rgba(255, 255, 255, 0.6),
-                              inset 30px 40px 60px rgba(255, 181, 160, 0.12),
-                              inset -30px -30px 70px rgba(245, 166, 35, 0.15),
-                              0 0 40px rgba(255, 212, 168, 0.25),
-                              0 0 80px rgba(245, 166, 35, 0.15)
-                            `,
-                          }}
-                          animate={{ opacity: showButton ? 0 : 1 }}
-                          transition={{ duration: 0.5 }}
-                        />
-                      }
+                    {/* Sophia Orb SVG */}
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center"
+                      animate={{ opacity: showButton ? 0 : 1 }}
+                      transition={{ duration: 0.5 }}
                     >
-                      <Suspense
-                        fallback={
-                          <motion.div
-                            className="absolute inset-0 rounded-full"
-                            style={{
-                              background: `
-                                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 245, 0.9) 30%, rgba(255, 245, 240, 0.7) 50%, transparent 75%),
-                                radial-gradient(ellipse 120% 100% at 85% 60%, rgba(245, 166, 35, 0.45) 0%, rgba(255, 167, 38, 0.3) 30%, transparent 60%),
-                                radial-gradient(ellipse 100% 80% at 75% 85%, rgba(245, 166, 35, 0.35) 0%, transparent 50%),
-                                radial-gradient(ellipse 80% 100% at 25% 25%, rgba(255, 181, 160, 0.4) 0%, rgba(255, 154, 139, 0.25) 30%, transparent 55%),
-                                radial-gradient(ellipse 60% 80% at 15% 40%, rgba(255, 181, 160, 0.25) 0%, transparent 45%),
-                                linear-gradient(145deg, rgba(255, 252, 250, 0.95) 0%, rgba(255, 248, 244, 0.9) 50%, rgba(255, 250, 248, 0.95) 100%)
-                              `,
-                              boxShadow: `
-                                inset 0 0 80px rgba(255, 255, 255, 0.6),
-                                inset 30px 40px 60px rgba(255, 181, 160, 0.12),
-                                inset -30px -30px 70px rgba(245, 166, 35, 0.15),
-                                0 0 40px rgba(255, 212, 168, 0.25),
-                                0 0 80px rgba(245, 166, 35, 0.15)
-                              `,
-                            }}
-                            animate={{ opacity: showButton ? 0 : 1 }}
-                            transition={{ duration: 0.5 }}
-                          />
-                        }
-                      >
-                        <motion.div
-                          className="absolute inset-0"
-                          animate={{ opacity: showButton ? 0 : 1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <AnimatedOrb />
-                        </motion.div>
-                      </Suspense>
-                    </ErrorBoundary>
+                      <img 
+                        src={sophiaOrb} 
+                        alt="Sophia Orb" 
+                        className="w-full h-full object-contain"
+                      />
+                    </motion.div>
 
                     {/* White background for button state */}
                     <motion.div
@@ -389,7 +338,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                       }}
                       transition={{ duration: 0.4, delay: showButton ? 0.2 : 0 }}
                     >
-                      <ArrowRight className="w-12 h-12 md:w-14 md:h-14 text-charcoal" />
+                      <ArrowRight className="w-12 h-12 md:w-14 md:h-14" style={{ color: '#5A4C3A' }} />
                     </motion.div>
                   </motion.div>
                 </div>
@@ -407,7 +356,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                   opacity: { duration: 0.8, ease: 'easeOut' },
                 }}
               >
-                <img src={wholelicityLogo} alt="Wholelicity" className="w-[400px] md:w-[500px] h-auto" />
+                <img src={wholelicityLogo2} alt="Wholelicity" className="w-[400px] md:w-[500px] h-auto" />
               </motion.div>
             </motion.div>
           </motion.div>
@@ -425,7 +374,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               zIndex: 15, // Behind Sophia (z-index 20)
             }}
             initial={{ width: 128, opacity: 0 }}
-            animate={{ width: 500, opacity: 1 }}
+            animate={{ width: 725, opacity: 1 }}
             transition={{ 
               width: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
               opacity: { duration: 0.2 }
@@ -439,12 +388,13 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
               animate={{ opacity: isTyping ? 1 : 0 }}
               transition={{ duration: 0.3, delay: 0.5 }}
             >
-              <span className="font-spiritual text-2xl md:text-3xl text-charcoal font-medium whitespace-nowrap">
+              <span className="font-sans text-2xl md:text-3xl text-charcoal font-light whitespace-nowrap uppercase tracking-[0.3em]">
                 {typedText}
               </span>
               {/* Typing cursor */}
               <motion.span
-                className="inline-block w-0.5 h-8 md:h-9 bg-blue-500 ml-1"
+                className="inline-block w-0.5 h-8 md:h-9 ml-1"
+                style={{ backgroundColor: '#8A7356' }}
                 animate={{ opacity: showCursor ? 1 : 0 }}
                 transition={{ duration: 0.1 }}
               />

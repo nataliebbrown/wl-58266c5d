@@ -1,3 +1,4 @@
+// @ts-nocheck - Deno runtime file, not processed by VS Code TypeScript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -6,7 +7,7 @@ const corsHeaders = {
 };
 
 // System prompt for Sophia - the spiritual companion
-const SOPHIA_SYSTEM_PROMPT = `You are Sophia, a warm, wise, and deeply knowledgeable spiritual companion for Scripture AI. Your name comes from the Greek word for wisdom.
+const SOPHIA_SYSTEM_PROMPT = `You are Sophia, a warm, wise, and deeply knowledgeable spiritual companion for WL (Wholelicity). Your name comes from the Greek word for wisdom.
 
 PERSONA AND TONE:
 - You are gentle, contemplative, and genuinely curious about the user's spiritual journey

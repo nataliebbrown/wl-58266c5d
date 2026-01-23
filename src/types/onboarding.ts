@@ -75,11 +75,11 @@ export function calculatePersona(data: OnboardingData): PersonaResult | null {
 
 function getPersonaDescription(data: OnboardingData): string {
   const descriptions: Record<SpiritualBackground, string> = {
-    new_to_faith: "You're beginning an exciting journey of faith discovery. Scripture AI will be your patient guide, introducing you to the richness of Scripture in accessible, meaningful ways.",
-    believer_going_deeper: "You've walked with God for years and hunger for more. Scripture AI will help you uncover fresh insights and deeper connections in familiar passages.",
-    pastor_leader: "As a shepherd of God's people, you need robust tools. Scripture AI will enhance your sermon preparation, counseling, and teaching with scholarly resources.",
-    seminary_student: "Your academic pursuit of theology is noble. Scripture AI will support your studies with original language tools, historical context, and theological connections.",
-    exploring_faith: "Your questions are welcome here. Scripture AI will create a safe space to explore, investigate, and discover truth at your own pace.",
+    new_to_faith: "You're beginning an exciting journey of faith discovery. WL will be your patient guide, introducing you to the richness of Scripture in accessible, meaningful ways.",
+    believer_going_deeper: "You've walked with God for years and hunger for more. WL will help you uncover fresh insights and deeper connections in familiar passages.",
+    pastor_leader: "As a shepherd of God's people, you need robust tools. WL will enhance your sermon preparation, counseling, and teaching with scholarly resources.",
+    seminary_student: "Your academic pursuit of theology is noble. WL will support your studies with original language tools, historical context, and theological connections.",
+    exploring_faith: "Your questions are welcome here. WL will create a safe space to explore, investigate, and discover truth at your own pace.",
   };
 
   return descriptions[data.spiritualBackground!];
