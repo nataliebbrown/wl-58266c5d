@@ -9,25 +9,27 @@ const KEYS = {
 } as const;
 
 // Onboarding phases in order
-export type OnboardingPhase = 
+export type OnboardingPhase =
   | 'not-started'      // Never visited
   | 'intro-seen'       // Saw cinematic intro
+  | 'quiz-started'     // Started quiz but hasn't finished
   | 'quiz-completed'   // Completed the quiz
-  | 'tour-offered'     // Sophia tour was offered
-  | 'tour-completed'   // Completed full tour
-  | 'tour-skipped'     // Skipped the tour
   | 'fully-onboarded'; // Completed everything, is now a "returning user"
 
 export interface OnboardingState {
   phase: OnboardingPhase;
   quizCompletedAt?: string;
-  tourCompletedAt?: string;
   firstActionAt?: string;
   lastVisitAt: string;
   visitCount: number;
+  quizProgress?: {
+    currentQuestionIndex: number;
+    answers: Record<number, string>; // questionIndex -> answer value
+  };
 }
 
 export interface QuizData {
+  name: string | null;
   spiritualBackground: string | null;
   learningStyle: string | null;
   communityPreference: string | null;
@@ -41,6 +43,7 @@ const defaultState: OnboardingState = {
 };
 
 const defaultQuizData: QuizData = {
+  name: 'Natalie',
   spiritualBackground: null,
   learningStyle: null,
   communityPreference: null,
@@ -85,7 +88,7 @@ export function getQuizData(): QuizData {
   try {
     const stored = localStorage.getItem(KEYS.QUIZ_DATA);
     if (stored) {
-      return JSON.parse(stored);
+      return { ...defaultQuizData, ...JSON.parse(stored) };
     }
   } catch (e) {
     console.error('Error reading quiz data:', e);
@@ -107,29 +110,27 @@ export function markIntroSeen(): OnboardingState {
   return setOnboardingState({ phase: 'intro-seen' });
 }
 
+export function markQuizStarted(): OnboardingState {
+  return setOnboardingState({ phase: 'quiz-started' });
+}
+
+export function saveQuizProgress(currentQuestionIndex: number, answers: Record<number, string>): void {
+  setOnboardingState({
+    phase: 'quiz-started',
+    quizProgress: { currentQuestionIndex, answers },
+  });
+}
+
+export function getQuizProgress(): { currentQuestionIndex: number; answers: Record<number, string> } | null {
+  const state = getOnboardingState();
+  return state.quizProgress ?? null;
+}
+
 export function markQuizCompleted(quizData: QuizData): OnboardingState {
   setQuizData(quizData);
   return setOnboardingState({
     phase: 'quiz-completed',
     quizCompletedAt: new Date().toISOString(),
-  });
-}
-
-export function markTourOffered(): OnboardingState {
-  return setOnboardingState({ phase: 'tour-offered' });
-}
-
-export function markTourCompleted(): OnboardingState {
-  return setOnboardingState({
-    phase: 'tour-completed',
-    tourCompletedAt: new Date().toISOString(),
-  });
-}
-
-export function markTourSkipped(): OnboardingState {
-  return setOnboardingState({
-    phase: 'tour-skipped',
-    tourCompletedAt: new Date().toISOString(),
   });
 }
 
@@ -144,41 +145,30 @@ export function markFullyOnboarded(): OnboardingState {
 
 export function isFirstTimeUser(): boolean {
   const state = getOnboardingState();
-  return state.phase === 'not-started' || 
-         state.phase === 'intro-seen' || 
-         state.phase === 'quiz-completed' ||
-         state.phase === 'tour-offered';
+  return state.phase === 'not-started' ||
+         state.phase === 'intro-seen' ||
+         state.phase === 'quiz-started' ||
+         state.phase === 'quiz-completed';
 }
 
 export function hasCompletedQuiz(): boolean {
   const state = getOnboardingState();
   const completedPhases: OnboardingPhase[] = [
     'quiz-completed', 
-    'tour-offered', 
-    'tour-completed', 
-    'tour-skipped', 
     'fully-onboarded'
   ];
   return completedPhases.includes(state.phase);
 }
 
-export function shouldShowTour(): boolean {
-  const state = getOnboardingState();
-  return state.phase === 'quiz-completed' || state.phase === 'tour-offered';
-}
-
 export function isReturningUser(): boolean {
   const state = getOnboardingState();
-  return state.phase === 'fully-onboarded' || 
-         state.phase === 'tour-completed' || 
-         state.phase === 'tour-skipped';
+  return state.phase === 'fully-onboarded';
 }
 
 export function shouldShowWelcomeDashboard(): boolean {
   const state = getOnboardingState();
-  // Show welcome dashboard if tour was just completed/skipped but first action not taken
-  return (state.phase === 'tour-completed' || state.phase === 'tour-skipped') && 
-         !state.firstActionAt;
+  // Show welcome dashboard if quiz completed but first action not taken
+  return state.phase === 'quiz-completed' && !state.firstActionAt;
 }
 
 // ============ Reset (for testing) ============
@@ -198,10 +188,9 @@ export function migrateFromLegacyStorage(): void {
 
   // Check for legacy quiz data
   const legacyQuiz = localStorage.getItem('wl-onboarding');
-  const legacyOverlay = localStorage.getItem('wl_overlay_data');
   const legacyFirstAction = localStorage.getItem('wl-first-action-taken');
 
-  if (legacyQuiz || legacyOverlay || legacyFirstAction) {
+  if (legacyQuiz || legacyFirstAction) {
     let phase: OnboardingPhase = 'not-started';
     let quizData: QuizData = { ...defaultQuizData };
 
@@ -215,20 +204,6 @@ export function migrateFromLegacyStorage(): void {
         }
       } catch (e) {
         console.error('Error parsing legacy quiz data:', e);
-      }
-    }
-
-    // Parse legacy overlay data
-    if (legacyOverlay) {
-      try {
-        const parsed = JSON.parse(legacyOverlay);
-        if (parsed.tourCompleted) {
-          phase = 'tour-completed';
-        } else if (parsed.tourSkipped || parsed.pathSkipped) {
-          phase = 'tour-skipped';
-        }
-      } catch (e) {
-        console.error('Error parsing legacy overlay data:', e);
       }
     }
 

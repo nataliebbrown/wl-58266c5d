@@ -71,7 +71,7 @@ export const PERSONA_CONFIGS: Record<string, {
   suggestedModules: ModuleType[];
   dashboardEmphasis: 'exploration' | 'depth' | 'community' | 'leadership';
 }> = {
-  'new-to-faith': {
+  'new_to_faith': {
     name: 'The Curious Explorer',
     greeting: "Let's explore together at your own pace",
     primaryAction: '/chat',
@@ -79,7 +79,7 @@ export const PERSONA_CONFIGS: Record<string, {
     suggestedModules: ['wisdom', 'formation', 'community'],
     dashboardEmphasis: 'exploration',
   },
-  'veteran-believer': {
+  'believer_going_deeper': {
     name: 'The Holistic Veteran',
     greeting: 'Ready to discover deeper insights today?',
     primaryAction: '/chat',
@@ -87,7 +87,7 @@ export const PERSONA_CONFIGS: Record<string, {
     suggestedModules: ['patterns', 'wisdom', 'translation'],
     dashboardEmphasis: 'depth',
   },
-  'ministry-leader': {
+  'pastor_leader': {
     name: 'The Ministry Leader',
     greeting: 'Ready to prepare and equip?',
     primaryAction: '/chat',
@@ -95,7 +95,7 @@ export const PERSONA_CONFIGS: Record<string, {
     suggestedModules: ['wisdom', 'community', 'patterns'],
     dashboardEmphasis: 'leadership',
   },
-  'theology-student': {
+  'seminary_student': {
     name: 'The Scholar',
     greeting: "Let's dive into the depths today",
     primaryAction: '/chat',
@@ -103,7 +103,7 @@ export const PERSONA_CONFIGS: Record<string, {
     suggestedModules: ['patterns', 'translation', 'wisdom'],
     dashboardEmphasis: 'depth',
   },
-  'exploring-faith': {
+  'exploring_faith': {
     name: 'The Seeker',
     greeting: 'Your questions are welcome here',
     primaryAction: '/chat',

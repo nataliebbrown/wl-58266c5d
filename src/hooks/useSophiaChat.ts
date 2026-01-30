@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Message, UserPersona, detectCrisis } from '@/types/chat';
+import { Message, UserPersona } from '@/types/chat';
+import { detectCrisis } from '@/lib/crisisDetection';
 import { toast } from 'sonner';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-sophia`;
@@ -51,10 +52,10 @@ export function useSophiaChat({
 
     setError(null);
     
-    // Check for crisis keywords
+    // Check for crisis keywords (with spiritual false-positive filtering)
     const crisis = detectCrisis(content);
-    if (crisis.detected && onCrisisDetected) {
-      onCrisisDetected(crisis.level);
+    if (crisis.detected && crisis.level !== 'none' && onCrisisDetected) {
+      onCrisisDetected(crisis.level as 'low' | 'medium' | 'high');
     }
 
     // Create user message

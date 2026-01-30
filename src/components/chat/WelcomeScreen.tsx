@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles, BookOpen, Heart, Compass } from 'lucide-react';
-import { SophiaAvatar } from '@/components/onboarding-overlay/SophiaAvatar';
+import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
 import { SuggestedTopic } from '@/types/chat';
 import { cn } from '@/lib/utils';
 

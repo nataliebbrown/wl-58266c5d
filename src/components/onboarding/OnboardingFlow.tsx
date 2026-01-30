@@ -4,7 +4,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { useNavigate } from 'react-router-dom';
 import { WelcomeSplash } from './screens/WelcomeSplash';
 import { VisionCast } from './screens/VisionCast';
-import { ChatOnboarding } from './ChatOnboarding';
+import { SplitOnboarding } from './SplitOnboarding';
 import { ProcessingScreen } from './screens/ProcessingScreen';
 import { ResultsScreen } from './screens/ResultsScreen';
 import { toast } from 'sonner';
@@ -40,9 +40,9 @@ export function OnboardingFlow({ startAtQuiz = false }: OnboardingFlowProps) {
     trackScreen,
   } = useOnboarding();
 
-  // If starting at quiz, use the chat-style onboarding
+  // If starting at quiz, use the split view onboarding
   if (startAtQuiz) {
-    return <ChatOnboarding onComplete={() => navigate('/dashboard')} />;
+    return <SplitOnboarding onComplete={() => navigate('/dashboard')} />;
   }
 
   // Track screen views

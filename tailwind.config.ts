@@ -17,6 +17,7 @@ export default {
         sans: ['Inter', 'sans-serif'],
         spiritual: ['Crimson Pro', 'serif'],
         lato: ['Lato', 'Inter', 'sans-serif'],
+        bodoni: ['"Libre Bodoni"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -85,6 +86,20 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Wholelicity brand tokens (direct hex for dashboard components)
+        "wl-khaki": "#C5B49B",
+        "wl-olive": "#756653",
+        "wl-copper": "#8A7356",
+        "wl-oak": "#DED1BA",
+        "wl-sage": "#87A96B",
+        "wl-navy": "#1A1A2E",
+        "wl-cream": "#F8F6F0",
+        // Highlight colors (Bible reader)
+        "hl-gold": "#C5B49B",
+        "hl-green": "#87A96B",
+        "hl-blue": "#6B9FBF",
+        "hl-purple": "#8B7BB5",
+        "hl-red": "#C47A6B",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -106,14 +121,34 @@ export default {
         },
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
+        "breathe": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.03)" },
+        },
+        "glow": {
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "0.6" },
+        },
+        "twinkle": {
+          "0%, 100%": { opacity: "0.6" },
+          "50%": { opacity: "1" },
+        },
+        "pulse-node": {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.15)", opacity: "0.85" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-gentle": "pulse-gentle 2s ease-in-out infinite",
-        "float": "float 3s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
+        "breathe": "breathe 5s ease-in-out infinite",
+        "glow": "glow 4s ease-in-out infinite",
+        "twinkle": "twinkle 3s ease-in-out infinite",
+        "pulse-node": "pulse-node 3s ease-in-out infinite",
       },
     },
   },

@@ -3,14 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useNavigate } from 'react-router-dom';
 import { markQuizCompleted } from '@/lib/onboardingState';
-import { 
-  SpiritualBackground, 
-  LearningStyle, 
-  CommunityPreference, 
+import {
+  SpiritualBackground,
+  LearningStyle,
+  CommunityPreference,
   CurrentSeason,
-  PERSONA_TITLES,
-  LEARNING_MODIFIERS,
+  DEFAULT_ONBOARDING_DATA,
 } from '@/types/onboarding';
+import { getPersonaName } from '@/lib/personaNames';
 import { Sprout, Heart, Users, GraduationCap, HelpCircle, BookOpen, Eye, MessageCircle, Hand, GitBranch, User, Crown, Search, Blend, CloudRain, Compass, TrendingUp, LucideIcon } from 'lucide-react';
 import introBackground from "@/assets/BG_1.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
@@ -231,11 +231,14 @@ export function ChatOnboarding({ onComplete }: ChatOnboardingProps) {
           const spiritualBg = questionIndex === 3 ? value as SpiritualBackground : data.spiritualBackground;
           const learningStyle = data.learningStyle;
           
-          // Use the first selection (spiritual background) to determine base persona
+          // Use all 4 dimensions to look up the unique persona name
           const selectedSpiritual = data.spiritualBackground || value as SpiritualBackground;
-          const baseTitle = PERSONA_TITLES[selectedSpiritual];
-          const modifier = learningStyle ? LEARNING_MODIFIERS[learningStyle] : 'Unique';
-          const personaTitle = `The ${modifier} ${baseTitle.replace('The ', '')}`;
+          const personaTitle = getPersonaName(
+            selectedSpiritual,
+            learningStyle ?? DEFAULT_ONBOARDING_DATA.learningStyle!,
+            data.communityPreference ?? DEFAULT_ONBOARDING_DATA.communityPreference!,
+            data.currentSeason ?? DEFAULT_ONBOARDING_DATA.currentSeason!,
+          );
           
           const personaDescriptions: Record<SpiritualBackground, string> = {
             new_to_faith: "You're beginning an exciting journey of faith discovery. I'll be your patient guide, introducing you to the richness of Scripture in accessible, meaningful ways.",

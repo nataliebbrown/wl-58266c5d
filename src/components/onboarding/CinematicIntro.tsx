@@ -46,16 +46,16 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
     if (!imageLoaded) return;
 
     const timeline: { phase: AnimationPhase; delay: number }[] = [
-      { phase: 'logo-fade', delay: 100 }, // Logo starts fading out
-      { phase: 'overlay-fade', delay: 800 }, // Logo gone, overlay/tagline/glow start (0% opacity)
-      { phase: 'orb-rise', delay: 4000 }, // Sophia rises at 5x
-      { phase: 'orb-shrink', delay: 4800 }, // ** Sophia starts shrinking while still rising (600ms overlap) **
-      { phase: 'logo-appear', delay: 8400 }, // Shrink done, show WL text
-      { phase: 'transform-button', delay: 9900 }, // Sophia becomes transparent arrow button
-      { phase: 'expand-cta', delay: 10600 }, // Pill expands, arrow slides right
-      { phase: 'typing', delay: 11400 }, // Cursor appears and starts typing
-      { phase: 'cursor-blink', delay: 13400 }, // Typing done, cursor blinks
-      { phase: 'complete', delay: 14900 }, // Cursor disappears, done
+      { phase: 'logo-fade', delay: 100 },       // Logo starts fading out
+      { phase: 'overlay-fade', delay: 800 },     // Overlay/tagline/glow start
+      { phase: 'orb-rise', delay: 2200 },        // Sophia rises at 5x
+      { phase: 'orb-shrink', delay: 2800 },      // Sophia starts shrinking
+      { phase: 'logo-appear', delay: 4500 },     // Shrink done, show WL text
+      { phase: 'transform-button', delay: 5200 }, // Sophia becomes arrow button (CTA clickable)
+      { phase: 'expand-cta', delay: 5700 },      // Pill expands, arrow slides right
+      { phase: 'typing', delay: 6200 },          // Cursor appears and starts typing
+      { phase: 'cursor-blink', delay: 8000 },    // Typing done, cursor blinks
+      { phase: 'complete', delay: 9200 },         // Cursor disappears, done
     ];
 
     const timeoutIds = timeline.map(({ phase: nextPhase, delay }) =>
@@ -353,10 +353,10 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                   opacity: showLogo ? 1 : 0,
                 }}
                 transition={{
-                  opacity: { duration: 0.8, ease: 'easeOut' },
+                  opacity: { duration: showLogo ? 0.8 : 0.25, ease: 'easeOut' },
                 }}
               >
-                <img src={wholelicityLogo2} alt="Wholelicity" className="w-[400px] md:w-[500px] h-auto" />
+                <img src={wholelicityLogo2} alt="Wholelicity" style={{ width: '225px', maxWidth: 'none', height: 'auto' }} />
               </motion.div>
             </motion.div>
           </motion.div>
@@ -412,7 +412,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
           className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
+          transition={{ delay: 0 }}
           onClick={onSkip}
         >
           Skip intro

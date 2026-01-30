@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -199,7 +199,7 @@
   /* Chat page background gradient - Dark Mode */
   .dark .chat-bg-light,
   .chat-bg-dark {
-    background: radial-gradient(circle at top right, #2D3748 0%, #1A1F2E 100%);
+    background: radial-gradient(circle at top right, #3D3E35 0%, #1E1F1A 100%);
   }
 
   /* Glassmorphism container - Light Mode */
@@ -343,5 +343,37 @@
 
   .chat-message-enter {
     animation: chat-message-enter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* ============================================ */
+  /* Dashboard Glassmorphic Design System         */
+  /* ============================================ */
+
+  /* Glass card - Light Mode */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Glass card - Dark Mode */
+  .dark .glass-card {
+    background: rgba(30, 30, 40, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Subtle noise overlay for page background texture */
+  .noise-overlay::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }

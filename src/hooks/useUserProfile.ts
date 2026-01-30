@@ -143,12 +143,12 @@ export function useUserProfile() {
   };
 
   const getPersonaFromOnboarding = () => {
-    // First check new unified state
+    // Always return quiz data (includes name + any completed quiz fields)
     const quizData = getQuizData();
-    if (quizData.spiritualBackground) {
+    if (quizData.spiritualBackground || quizData.name) {
       return quizData;
     }
-    
+
     // Fallback to legacy storage
     const onboardingData = localStorage.getItem('wl-onboarding');
     if (!onboardingData) return null;

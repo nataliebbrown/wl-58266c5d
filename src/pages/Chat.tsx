@@ -17,9 +17,101 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Message, getSuggestedTopics, SuggestedTopic, UserPersona } from '@/types/chat';
 import { Insight } from '@/types/dashboard';
 import { toast } from 'sonner';
-import { SophiaAvatar } from '@/components/onboarding-overlay/SophiaAvatar';
+import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
+import { getOnboardingState, markFullyOnboarded } from '@/lib/onboardingState';
+import { getPersonaGreeting, getPersonaTopics } from '@/lib/sophiaMessages';
+import { saveInsight as saveToConstellation } from '@/lib/insights';
 
-export default function Chat() {
+// ============ First Visit Greeting (uses persona-specific messages) ============
+
+function FirstVisitGreeting({
+  greetingTyping,
+  showGreeting,
+  spiritualBackground,
+  onSelectTopic,
+}: {
+  greetingTyping: boolean;
+  showGreeting: boolean;
+  spiritualBackground?: string;
+  onSelectTopic: (topic: SuggestedTopic) => void;
+}) {
+  const greeting = getPersonaGreeting(spiritualBackground);
+  const topics = getPersonaTopics(spiritualBackground);
+
+  return (
+    <div className="py-6">
+      <AnimatePresence>
+        {greetingTyping && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex items-start gap-3 mb-4"
+          >
+            <div className="chat-sophia-avatar rounded-full flex-shrink-0">
+              <SophiaAvatar size="sm" />
+            </div>
+            <div className="chat-bubble-sophia px-4 py-3 rounded-2xl rounded-tl-sm">
+              <TypingIndicator />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showGreeting && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-start gap-3 mb-8">
+              <div className="chat-sophia-avatar rounded-full flex-shrink-0">
+                <SophiaAvatar size="sm" />
+              </div>
+              <div className="chat-bubble-sophia px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%]">
+                {greeting.paragraphs.map((paragraph, i) => (
+                  <p key={i} className={`text-[15px] leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="flex flex-wrap gap-2 ml-12 mb-4"
+            >
+              {topics.slice(0, 4).map((topic, index) => (
+                <motion.button
+                  key={topic.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2, delay: 0.3 + index * 0.08 }}
+                  onClick={() => onSelectTopic({
+                    id: topic.id,
+                    title: topic.title,
+                    prompt: topic.prompt,
+                    category: 'exploration',
+                  })}
+                  className="px-4 py-2 rounded-full text-sm bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/90 hover:border-[#87A96B]/30 transition-all duration-200 text-foreground/80 hover:text-foreground"
+                >
+                  {topic.title}
+                </motion.button>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ============ Main Chat Component ============
+
+export default function Chat({ embedded }: { embedded?: boolean } = {}) {
   const navigate = useNavigate();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,6 +128,9 @@ export default function Chat() {
     message: null
   });
   const [savedMessageIds, setSavedMessageIds] = useState<Set<string>>(new Set());
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
+  const [greetingTyping, setGreetingTyping] = useState(false);
 
   // Hooks
   const { hasCompletedOnboarding, getPersonaFromOnboarding, addInsight } = useUserProfile();
@@ -96,12 +191,27 @@ export default function Chat() {
     localStorage.setItem('wl-dark-mode', String(isDarkMode));
   }, [isDarkMode]);
 
-  // Redirect to onboarding if not completed
+  // Redirect to onboarding if not completed (skip when embedded in modal)
   useEffect(() => {
-    if (!hasCompletedOnboarding()) {
+    if (!embedded && !hasCompletedOnboarding()) {
       navigate('/');
     }
-  }, [hasCompletedOnboarding, navigate]);
+  }, [embedded, hasCompletedOnboarding, navigate]);
+
+  // Detect first visit from quiz completion
+  useEffect(() => {
+    const state = getOnboardingState();
+    if (state.phase === 'quiz-completed') {
+      markFullyOnboarded();
+      setIsFirstVisit(true);
+      setGreetingTyping(true);
+      const timer = setTimeout(() => {
+        setGreetingTyping(false);
+        setShowGreeting(true);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Load messages when conversation changes
   useEffect(() => {
@@ -119,6 +229,11 @@ export default function Chat() {
 
   // Handle sending a message
   const handleSendMessage = useCallback(async (content: string) => {
+    // Clear first-visit greeting when user sends a message
+    if (isFirstVisit) {
+      setIsFirstVisit(false);
+    }
+
     // Create conversation if needed
     if (!currentConversation) {
       const conv = await createConversation(
@@ -130,7 +245,7 @@ export default function Chat() {
     }
 
     await sendMessage(content);
-  }, [currentConversation, createConversation, sendMessage, userPersona]);
+  }, [currentConversation, createConversation, sendMessage, userPersona, isFirstVisit]);
 
   // Handle topic selection
   const handleSelectTopic = useCallback(async (topic: SuggestedTopic) => {
@@ -155,19 +270,34 @@ export default function Chat() {
 
   const handleConfirmSaveInsight = useCallback((insight: Omit<Insight, 'id'>) => {
     addInsight(insight);
+
+    // Also save to the constellation data layer
+    saveToConstellation({
+      title: insight.title,
+      content: insight.fullContent || insight.preview,
+      theme: insight.title,
+      tags: [insight.category],
+      source: {
+        type: 'chat',
+        reference: currentConversation?.title,
+      },
+      conversationId: currentConversation?.id,
+    });
+
     if (saveInsightModal.message) {
       setSavedMessageIds(prev => new Set([...prev, saveInsightModal.message!.id]));
     }
-    toast.success('Insight saved to your dashboard');
-  }, [addInsight, saveInsightModal.message]);
+    toast.success('Insight saved to your constellation');
+  }, [addInsight, saveInsightModal.message, currentConversation]);
 
   // Get user name from persona
   const userName = personaData?.name || undefined;
 
-  const showWelcome = messages.length === 0 && !isTyping;
+  const showWelcome = messages.length === 0 && !isTyping && !isFirstVisit;
+  const showFirstVisitGreeting = messages.length === 0 && isFirstVisit;
 
   return (
-    <div className="h-screen flex chat-bg-light transition-colors duration-300">
+    <div className={`${embedded ? 'h-full' : 'h-screen'} flex chat-bg-light transition-colors duration-300`}>
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
@@ -189,50 +319,52 @@ export default function Chat() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-4 md:px-10">
-          <div className="flex items-center gap-3">
+        {!embedded && (
+          <header className="h-16 flex items-center justify-between px-4 md:px-10">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="gap-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="chat-sophia-avatar rounded-full">
+                <SophiaAvatar size="sm" />
+              </div>
+              <div className="text-left">
+                <h1 className="font-semibold text-sm text-foreground">Sophia</h1>
+                <p className="text-xs text-muted-foreground">
+                  {currentConversation?.title || 'Your spiritual companion'}
+                </p>
+              </div>
+            </div>
+
+            {/* Dark mode toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-              onClick={() => setSidebarOpen(true)}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
             >
-              <Menu className="h-5 w-5" />
+              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/dashboard')}
-              className="gap-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="chat-sophia-avatar rounded-full">
-              <SophiaAvatar size="sm" />
-            </div>
-            <div className="text-left">
-              <h1 className="font-semibold text-sm text-foreground">Sophia</h1>
-              <p className="text-xs text-muted-foreground">
-                {currentConversation?.title || 'Your spiritual companion'}
-              </p>
-            </div>
-          </div>
-
-          {/* Dark mode toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-          >
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
-        </header>
+          </header>
+        )}
 
         {/* Chat container with glassmorphism */}
         <div className="flex-1 flex flex-col min-h-0 px-4 md:px-10 pb-4 md:pb-6">
@@ -240,7 +372,17 @@ export default function Chat() {
             {/* Messages area */}
             <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 md:px-8 py-6">
               <div className="max-w-[900px] mx-auto">
-                {showWelcome ? (
+                {showFirstVisitGreeting ? (
+                  <FirstVisitGreeting
+                    greetingTyping={greetingTyping}
+                    showGreeting={showGreeting}
+                    spiritualBackground={userPersona?.spiritualBackground}
+                    onSelectTopic={(topic) => {
+                      setIsFirstVisit(false);
+                      handleSelectTopic(topic);
+                    }}
+                  />
+                ) : showWelcome ? (
                   <WelcomeScreen
                     userName={userName}
                     suggestedTopics={suggestedTopics}

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { SophiaAvatar } from '@/components/onboarding-overlay/SophiaAvatar';
+import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
 
 interface SophiaAudioOverlayProps {
   isOpen: boolean;
@@ -61,7 +61,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName }: SophiaAudioOve
   };
 
   const greeting = getTimeBasedGreeting();
-  const displayName = userName || 'Friend';
+  const displayName = userName || 'Natalie';
 
   return (
     <AnimatePresence>

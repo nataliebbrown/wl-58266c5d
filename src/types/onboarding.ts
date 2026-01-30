@@ -1,4 +1,6 @@
-export type SpiritualBackground = 
+import { getPersonaName, getPersonaKey } from '@/lib/personaNames';
+
+export type SpiritualBackground =
   | 'new_to_faith'
   | 'believer_going_deeper'
   | 'pastor_leader'
@@ -56,19 +58,31 @@ export const LEARNING_MODIFIERS: Record<LearningStyle, string> = {
   connections_patterns: 'Systematic',
 };
 
+/** Sensible defaults used when a user skips quiz questions. */
+export const DEFAULT_ONBOARDING_DATA: OnboardingData = {
+  spiritualBackground: 'exploring_faith',
+  learningStyle: 'reading_reflection',
+  communityPreference: 'both_personal_group',
+  currentSeason: 'spiritual_growth',
+};
+
 export function calculatePersona(data: OnboardingData): PersonaResult | null {
   if (!data.spiritualBackground || !data.learningStyle) {
     return null;
   }
 
-  const baseTitle = PERSONA_TITLES[data.spiritualBackground];
-  const modifier = LEARNING_MODIFIERS[data.learningStyle];
-  
-  const code = `${data.spiritualBackground}-${data.learningStyle}-${data.communityPreference}-${data.currentSeason}`;
-  
+  // Use defaults for any missing dimensions
+  const bg = data.spiritualBackground;
+  const ls = data.learningStyle;
+  const cp = data.communityPreference ?? DEFAULT_ONBOARDING_DATA.communityPreference!;
+  const cs = data.currentSeason ?? DEFAULT_ONBOARDING_DATA.currentSeason!;
+
+  const code = getPersonaKey(bg, ls, cp, cs);
+  const title = getPersonaName(bg, ls, cp, cs);
+
   return {
     code,
-    title: `The ${modifier} ${baseTitle.replace('The ', '')}`,
+    title,
     description: getPersonaDescription(data),
   };
 }

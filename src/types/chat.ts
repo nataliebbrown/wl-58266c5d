@@ -30,41 +30,6 @@ export interface UserPersona {
   currentSeason: string;
 }
 
-// Crisis detection keywords
-export const CRISIS_KEYWORDS = [
-  'suicide', 'suicidal', 'kill myself', 'end my life', 'want to die',
-  'self-harm', 'hurt myself', 'cutting', 'overdose',
-  'abuse', 'being abused', 'domestic violence', 'violence',
-  'hopeless', 'no reason to live', 'better off dead'
-];
-
-export function detectCrisis(message: string): { detected: boolean; level: 'low' | 'medium' | 'high' } {
-  const lowerMessage = message.toLowerCase();
-  
-  const highRisk = ['suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'better off dead'];
-  const mediumRisk = ['self-harm', 'hurt myself', 'cutting', 'overdose', 'abuse', 'being abused'];
-  
-  for (const keyword of highRisk) {
-    if (lowerMessage.includes(keyword)) {
-      return { detected: true, level: 'high' };
-    }
-  }
-  
-  for (const keyword of mediumRisk) {
-    if (lowerMessage.includes(keyword)) {
-      return { detected: true, level: 'medium' };
-    }
-  }
-  
-  for (const keyword of CRISIS_KEYWORDS) {
-    if (lowerMessage.includes(keyword)) {
-      return { detected: true, level: 'low' };
-    }
-  }
-  
-  return { detected: false, level: 'low' };
-}
-
 // Default suggested topics based on persona
 export function getSuggestedTopics(persona?: UserPersona): SuggestedTopic[] {
   const defaultTopics: SuggestedTopic[] = [
