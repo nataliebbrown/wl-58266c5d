@@ -5,6 +5,37 @@ import { ChevronLeft, ChevronRight, Sunrise } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useDrawerExpand } from './DrawerExpandContext';
+import { getQuizData } from '@/lib/onboardingState';
+
+// ============ Personalized Content ============
+
+const HORIZON_CONTENT: Record<string, { quote: string; cta: string; subtitle: string }> = {
+  new_to_faith: {
+    quote: 'Your horizon is wide open. As you explore, you\'ll begin to see what God has ahead for you.',
+    cta: 'Begin Exploring',
+    subtitle: 'What\'s taking shape ahead',
+  },
+  believer_going_deeper: {
+    quote: 'There are depths you haven\'t reached yet. As you press in, new themes will rise on your horizon.',
+    cta: 'Go Deeper',
+    subtitle: 'Depths emerging ahead',
+  },
+  pastor_leader: {
+    quote: 'Your next season of leadership is forming. Watch for the themes that will shape your teaching.',
+    cta: 'Explore What\'s Next',
+    subtitle: 'What\'s forming for your ministry',
+  },
+  seminary_student: {
+    quote: 'Every great scholar follows the questions. Your horizon will reveal where your studies lead next.',
+    cta: 'Follow the Thread',
+    subtitle: 'Where your studies are pointing',
+  },
+  exploring_faith: {
+    quote: 'The horizon is open. As you ask questions and explore, you\'ll start to see what draws you forward.',
+    cta: 'Start Exploring',
+    subtitle: 'Where your curiosity leads',
+  },
+};
 
 // ============ Types ============
 
@@ -29,6 +60,8 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
   const { expand } = useDrawerExpand();
   const isEmpty = items.length === 0;
   const [page, setPage] = useState(0);
+  const quizData = getQuizData();
+  const personalized = HORIZON_CONTENT[quizData.spiritualBackground ?? ''];
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const displayItems = items.slice(
@@ -65,8 +98,8 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
       <div className="px-5 pt-5">
         {/* Header — icon + pagination + expand */}
         <div className="flex items-center justify-between mb-4">
-          <div className="w-9 h-9 rounded-xl bg-[#DED1BA]/20 flex items-center justify-center">
-            <Sunrise className="w-4.5 h-4.5 text-[#C5B49B]" />
+          <div className="w-9 h-9 rounded-xl bg-[#DED1BA]/20 dark:bg-[#A5A597]/15 flex items-center justify-center">
+            <Sunrise className="w-4.5 h-4.5 text-[#C5B49B] dark:text-[#A5A597]" />
           </div>
           <div className="flex items-center gap-1">
             {!isEmpty && totalPages > 1 && (
@@ -74,14 +107,14 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
                 <button
                   onClick={() => setPage(p => p - 1)}
                   disabled={!canPrev}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] dark:text-[#A5A597] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={!canNext}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] dark:text-[#A5A597] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -96,12 +129,16 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
           On Your Horizon
         </h3>
         <p className="text-sm text-foreground/50 mt-1">
-          {isEmpty ? 'What\'s emerging ahead' : `${items.length} theme${items.length !== 1 ? 's' : ''} ahead`}
+          {isEmpty ? (personalized?.subtitle ?? 'What\'s emerging ahead') : `${items.length} theme${items.length !== 1 ? 's' : ''} ahead`}
         </p>
       </div>
 
       {isEmpty ? (
-        <EmptyState onExplore={() => navigate('/chat')} />
+        <EmptyState
+          onExplore={() => navigate('/chat')}
+          quote={personalized?.quote}
+          ctaText={personalized?.cta}
+        />
       ) : (
         <>
           {/* Horizon items */}
@@ -119,7 +156,7 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
           <div className="mt-auto px-5 pb-5 pt-3">
             <button
               onClick={() => navigate('/horizon')}
-              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] border border-[#756653]/25 hover:bg-[#756653]/8 transition-colors"
+              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
             >
               Explore Horizon
             </button>
@@ -133,7 +170,7 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
 // ============ Horizon Row ============
 
 function HorizonRow({ item, isLast }: { item: HorizonItem; isLast: boolean }) {
-  const dotStyle = getDotStyle(item.state);
+  const dotClassName = getDotClassName(item.state);
 
   return (
     <div
@@ -145,8 +182,7 @@ function HorizonRow({ item, isLast }: { item: HorizonItem; isLast: boolean }) {
         {/* Status dot */}
         <div className="mt-1.5 flex-shrink-0">
           <div
-            className="w-2.5 h-2.5 rounded-full"
-            style={dotStyle}
+            className={`w-2.5 h-2.5 rounded-full ${dotClassName}`}
           />
         </div>
 
@@ -174,23 +210,20 @@ function HorizonRow({ item, isLast }: { item: HorizonItem; isLast: boolean }) {
 
 // ============ Dot Styles ============
 
-function getDotStyle(state: HorizonItem['state']): React.CSSProperties {
+function getDotClassName(state: HorizonItem['state']): string {
   switch (state) {
     case 'near':
-      return { backgroundColor: '#756653' };
+      return 'bg-[#756653] dark:bg-[#A5A597]';
     case 'emerging':
-      return { backgroundColor: '#C5B49B', opacity: 0.5 };
+      return 'bg-[#C5B49B]/50 dark:bg-[#A5A597]/50';
     case 'distant':
-      return {
-        backgroundColor: 'transparent',
-        border: '2px solid rgba(197, 180, 155, 0.3)',
-      };
+      return 'border-2 border-[#C5B49B]/30 dark:border-[#A5A597]/30';
   }
 }
 
 // ============ Empty State ============
 
-function EmptyState({ onExplore }: { onExplore: () => void }) {
+function EmptyState({ onExplore, quote, ctaText }: { onExplore: () => void; quote?: string; ctaText?: string }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
       {/* Soft horizon glow visual */}
@@ -206,7 +239,7 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
       </div>
 
       <p className="text-sm italic text-muted-foreground text-center leading-relaxed max-w-[240px]">
-        "The horizon is forming. As you explore with Sophia, themes will emerge that point to what's next in your journey."
+        "{quote ?? 'The horizon is forming. As you explore with Sophia, themes will emerge that point to what\'s next in your journey.'}"
       </p>
 
       <motion.button
@@ -215,7 +248,7 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
         onClick={onExplore}
         className="mt-5 text-sm font-medium text-wl-olive hover:underline flex items-center gap-1"
       >
-        Start Exploring
+        {ctaText ?? 'Start Exploring'}
         <ChevronRight className="w-3.5 h-3.5" />
       </motion.button>
     </div>

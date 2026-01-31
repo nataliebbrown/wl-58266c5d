@@ -4,7 +4,33 @@ import { Route } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useDrawerExpand } from './DrawerExpandContext';
+import { getQuizData } from '@/lib/onboardingState';
 import sophiaOrb from '@/assets/sophia-orb-brown.svg';
+
+// ============ Personalized Content ============
+
+const JOURNEY_CONTENT: Record<string, { narration: string; subtitle: string }> = {
+  new_to_faith: {
+    narration: 'Every step of faith matters — even the first one. You\'re already on your way.',
+    subtitle: 'Your first steps in faith',
+  },
+  believer_going_deeper: {
+    narration: 'The deeper you go, the more you discover. This journey has no ceiling.',
+    subtitle: 'Going deeper from here',
+  },
+  pastor_leader: {
+    narration: 'Your journey shapes the journeys you lead. Walk with intention.',
+    subtitle: 'Leading from the path you walk',
+  },
+  seminary_student: {
+    narration: 'Knowledge becomes wisdom when it\'s lived. Let this journey be both.',
+    subtitle: 'Where study meets formation',
+  },
+  exploring_faith: {
+    narration: 'Questions are the beginning of every meaningful journey. Follow them.',
+    subtitle: 'Following your questions',
+  },
+};
 
 // ============ Types ============
 
@@ -34,9 +60,11 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
   const navigate = useNavigate();
   const { expand } = useDrawerExpand();
   const isEmpty = nodes.length === 0;
+  const quizData = getQuizData();
+  const personalized = JOURNEY_CONTENT[quizData.spiritualBackground ?? ''];
 
   const defaultNarration = isEmpty
-    ? 'Every journey begins with a single step. Yours just started.'
+    ? (personalized?.narration ?? 'Every journey begins with a single step. Yours just started.')
     : undefined;
 
   const displayNarration = narration ?? defaultNarration;
@@ -83,8 +111,8 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
       <div className="px-5 pt-5">
         {/* Header — icon + expand */}
         <div className="flex items-center justify-between mb-4">
-          <div className="w-9 h-9 rounded-xl bg-[#756653]/10 flex items-center justify-center">
-            <Route className="w-4.5 h-4.5 text-[#756653]" />
+          <div className="w-9 h-9 rounded-xl bg-[#756653]/10 dark:bg-[#A5A597]/10 flex items-center justify-center">
+            <Route className="w-4.5 h-4.5 text-[#756653] dark:text-[#A5A597]" />
           </div>
           <ExpandButton onClick={handleExpand} />
         </div>
@@ -94,7 +122,7 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
           Your Journey
         </h3>
         <p className="text-sm text-foreground/50 mt-1">
-          {isEmpty ? 'Your path is just beginning' : `${nodes.length} milestone${nodes.length !== 1 ? 's' : ''} reached`}
+          {isEmpty ? (personalized?.subtitle ?? 'Your path is just beginning') : `${nodes.length} milestone${nodes.length !== 1 ? 's' : ''} reached`}
         </p>
       </div>
 
@@ -138,7 +166,7 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
         <div className="mt-auto px-5 pb-5 pt-3">
           <button
             onClick={() => navigate('/journey')}
-            className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] border border-[#756653]/25 hover:bg-[#756653]/8 transition-colors"
+            className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
           >
             See Full Journey
           </button>
@@ -173,7 +201,8 @@ function EmptyPath() {
         cx={PATH_LEFT}
         cy={startY}
         r={NODE_RADIUS_CURRENT}
-        fill="#756653"
+        className="text-[#756653] dark:text-[#A5A597]"
+        fill="currentColor"
         animate={{ scale: [1, 1.15, 1] }}
         transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
       />
@@ -242,7 +271,8 @@ function PopulatedPath({ nodes }: { nodes: JourneyNode[] }) {
                 cx={PATH_LEFT}
                 cy={y}
                 r={NODE_RADIUS_CURRENT}
-                fill="#756653"
+                className="text-[#756653] dark:text-[#A5A597]"
+                fill="currentColor"
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
               />

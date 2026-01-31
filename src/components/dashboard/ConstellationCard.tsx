@@ -10,7 +10,38 @@ import {
   getPatternNotice,
   type Insight,
 } from '@/lib/insights';
+import { getQuizData } from '@/lib/onboardingState';
 import sophiaOrb from '@/assets/sophia-orb-brown.svg';
+
+// ============ Personalized Content ============
+
+const CONSTELLATION_CONTENT: Record<string, { quote: string; cta: string; subtitle: string }> = {
+  new_to_faith: {
+    quote: 'Every new discovery becomes a star in your sky. You\'ll be amazed at what you find.',
+    cta: 'Ask Sophia a Question to Find Your First Star',
+    subtitle: 'Discoveries you make become stars',
+  },
+  believer_going_deeper: {
+    quote: 'Years of faith hold hidden connections. As you explore, watch the patterns emerge.',
+    cta: 'Go Deeper with Sophia to Uncover New Stars',
+    subtitle: 'Connections waiting to be found',
+  },
+  pastor_leader: {
+    quote: 'Every insight you collect strengthens the wisdom you share. Build your constellation.',
+    cta: 'Explore with Sophia to Grow Your Constellation',
+    subtitle: 'Wisdom for the journey you lead',
+  },
+  seminary_student: {
+    quote: 'Great theology is a constellation — ideas connected across centuries. Start mapping yours.',
+    cta: 'Study with Sophia to Map Your First Star',
+    subtitle: 'Mapping your theological landscape',
+  },
+  exploring_faith: {
+    quote: 'Every honest question leads to a discovery. Save what resonates — it becomes a star.',
+    cta: 'Start Exploring with Sophia to Find Your First Star',
+    subtitle: 'Questions that become constellations',
+  },
+};
 
 // ============ Component ============
 
@@ -20,6 +51,8 @@ export function ConstellationCard() {
   const insights = getAllInsights();
   const count = getInsightCount();
   const patternNotice = getPatternNotice();
+  const quizData = getQuizData();
+  const personalized = CONSTELLATION_CONTENT[quizData.spiritualBackground ?? ''];
 
   // Show max 3 recent insights in the card
   const displayInsights = insights.slice(0, 3);
@@ -30,11 +63,7 @@ export function ConstellationCard() {
         <h2 className="text-2xl font-semibold text-foreground">Your Constellation</h2>
         {count > 0 && (
           <span
-            className="text-sm px-3 py-1.5 rounded-full"
-            style={{
-              background: 'rgba(222, 209, 186, 0.3)',
-              color: '#756653',
-            }}
+            className="text-xs px-3 py-1.5 rounded-full bg-[#DED1BA]/30 dark:bg-[#A5A597]/15 text-[#756653] dark:text-[#A5A597]"
           >
             {count} stars
           </span>
@@ -76,16 +105,12 @@ export function ConstellationCard() {
         {/* Header — icon + expand */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#C5B49B]/15 flex items-center justify-center">
-              <Stars className="w-4.5 h-4.5 text-[#C5B49B]" />
+            <div className="w-9 h-9 rounded-xl bg-[#C5B49B]/15 dark:bg-[#A5A597]/15 flex items-center justify-center">
+              <Stars className="w-4.5 h-4.5 text-[#C5B49B] dark:text-[#A5A597]" />
             </div>
             {count > 0 && (
               <span
-                className="text-xs px-2.5 py-1 rounded-full font-medium"
-                style={{
-                  background: 'rgba(222, 209, 186, 0.25)',
-                  color: '#756653',
-                }}
+                className="text-xs px-2.5 py-1 rounded-full font-medium bg-[#DED1BA]/25 dark:bg-[#A5A597]/15 text-[#756653] dark:text-[#A5A597]"
               >
                 {count} stars
               </span>
@@ -100,13 +125,17 @@ export function ConstellationCard() {
         </h3>
         <p className="text-sm text-foreground/50 mt-1">
           {count === 0
-            ? 'Insights you save become stars'
+            ? (personalized?.subtitle ?? 'Insights you save become stars')
             : `${count} insight${count !== 1 ? 's' : ''} collected`}
         </p>
       </div>
 
       {count === 0 ? (
-        <EmptyState onStartConversation={() => navigate('/chat')} />
+        <EmptyState
+          onStartConversation={() => navigate('/chat')}
+          quote={personalized?.quote}
+          ctaText={personalized?.cta}
+        />
       ) : (
         <>
           {/* Insight list */}
@@ -140,7 +169,7 @@ export function ConstellationCard() {
           <div className="mt-auto px-5 pb-5 pt-3">
             <button
               onClick={() => navigate('/insights')}
-              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] border border-[#756653]/25 hover:bg-[#756653]/8 transition-colors"
+              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
             >
               {patternNotice ? 'Explore This Connection' : 'View All Insights'}
             </button>
@@ -155,7 +184,9 @@ export function ConstellationCard() {
 
 function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) {
   const isScripture = insight.source?.type === 'bible';
-  const thumbnailBg = isScripture ? 'rgba(117, 102, 83, 0.08)' : 'rgba(197, 180, 155, 0.12)';
+  const thumbnailClasses = isScripture
+    ? 'bg-[#756653]/[0.08] dark:bg-[#A5A597]/[0.08]'
+    : 'bg-[#C5B49B]/[0.12] dark:bg-[#A5A597]/[0.12]';
   const starColor = isScripture ? '#756653' : '#C5B49B';
   const glowColor = isScripture
     ? 'rgba(117, 102, 83, 0.1)'
@@ -169,8 +200,7 @@ function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) 
     >
       {/* Star thumbnail */}
       <div
-        className="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center relative"
-        style={{ background: thumbnailBg }}
+        className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center relative ${thumbnailClasses}`}
       >
         {isScripture ? (
           <svg width="20" height="20" viewBox="0 0 24 24" className="opacity-70">
@@ -206,7 +236,7 @@ function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) 
             {insight.theme || insight.title}
           </p>
           {isScripture && insight.source?.reference && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#756653]/10 text-[#756653]/70 flex-shrink-0">
+            <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#756653]/10 dark:bg-[#A5A597]/10 text-[#756653]/70 dark:text-[#A5A597]/70 flex-shrink-0">
               {insight.source.reference}
             </span>
           )}
@@ -221,7 +251,7 @@ function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) 
 
 // ============ Empty State ============
 
-function EmptyState({ onStartConversation }: { onStartConversation: () => void }) {
+function EmptyState({ onStartConversation, quote, ctaText }: { onStartConversation: () => void; quote?: string; ctaText?: string }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
       {/* Decorative faint stars */}
@@ -241,7 +271,7 @@ function EmptyState({ onStartConversation }: { onStartConversation: () => void }
       </div>
 
       <p className="text-sm italic text-muted-foreground text-center leading-relaxed max-w-[220px]">
-        "Every insight you save becomes a star. Over time, they'll form patterns you never expected."
+        "{quote ?? 'Every insight you save becomes a star. Over time, they\'ll form patterns you never expected.'}"
       </p>
 
       <motion.button
@@ -250,7 +280,7 @@ function EmptyState({ onStartConversation }: { onStartConversation: () => void }
         onClick={onStartConversation}
         className="mt-5 text-sm font-medium text-wl-olive hover:underline flex items-center gap-1"
       >
-        Start a Conversation to Discover Your First Star
+        {ctaText ?? 'Start a Conversation to Discover Your First Star'}
         <ChevronRight className="w-3.5 h-3.5" />
       </motion.button>
     </div>

@@ -5,6 +5,7 @@ import {
   MessageCircle,
   BookOpen,
   Calendar,
+  Compass,
   Lightbulb,
   GitBranch,
   Clock,
@@ -36,6 +37,7 @@ const quickAccessItems: QuickAccessItem[] = [
   { icon: Home, label: 'Home', id: 'home', available: true },
   { icon: MessageCircle, label: 'Chat', id: 'chat', available: true, moduleType: 'wisdom' },
   { icon: BookOpen, label: 'Bible', id: 'bible', available: true },
+  { icon: Compass, label: 'Learn', id: 'learn', available: true },
   { icon: Calendar, label: 'Today', id: 'today', available: false, moduleType: 'formation' },
   { icon: Lightbulb, label: 'Insights', id: 'insights', available: true },
   { icon: GitBranch, label: 'Patterns', id: 'patterns', available: false, moduleType: 'patterns' },
@@ -75,8 +77,8 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
   const personaData = getPersonaFromOnboarding();
   const userName = personaData?.name || 'Natalie';
 
-  const iconColor = isDarkMode ? '#F4EFE6' : '#5A4C3A';
-  const navIconColor = isDarkMode ? '#F4EFE6' : '#5A4C3A';
+  const iconColor = isDarkMode ? '#F1F1EF' : '#5A4C3A';
+  const navIconColor = isDarkMode ? '#F1F1EF' : '#5A4C3A';
 
   const handleNavClick = (item: QuickAccessItem) => {
     if (!item.available) {
@@ -93,6 +95,9 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
         break;
       case 'bible':
         expand(<ExpandedBible />, 'bible');
+        break;
+      case 'learn':
+        navigate('/learn');
         break;
       case 'insights':
         navigate('/insights');
@@ -120,7 +125,7 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
               (item.id === 'home' && expandedId === null) ||
               (item.id !== 'home' && expandedId === item.id);
             const activeBg = isDarkMode
-              ? 'rgba(255, 255, 255, 0.15)'
+              ? 'rgba(241, 241, 239, 0.15)'
               : 'rgba(90, 76, 58, 0.12)';
 
             return (
@@ -152,8 +157,8 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
                 {!isActive && (
                   <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150"
                     style={{
-                      background: isDarkMode ? '#F4EFE6' : '#3D3E35',
-                      color: isDarkMode ? '#1E1F1A' : '#F4EFE6',
+                      background: isDarkMode ? '#F1F1EF' : '#2E2E28',
+                      color: isDarkMode ? '#171714' : '#F1F1EF',
                     }}
                   >
                     {item.label}
@@ -177,7 +182,7 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
             <div
               className="w-9 h-9 rounded-full flex items-center justify-center"
               style={{
-                background: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(90, 76, 58, 0.1)',
+                background: isDarkMode ? 'rgba(241, 241, 239, 0.12)' : 'rgba(90, 76, 58, 0.1)',
               }}
             >
               <User className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles } from 'lucide-react';
+import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles, HelpCircle } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useDrawerExpand } from './DrawerExpandContext';
@@ -9,6 +9,9 @@ import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useTimePeriod } from '@/lib/timeAwareness';
 import { getQuizData } from '@/lib/onboardingState';
+import { getReadingHistory } from '@/lib/bibleApi';
+import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
+import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import type { Message } from '@/types/chat';
 import type { LucideIcon } from 'lucide-react';
 
@@ -29,31 +32,47 @@ const STARTERS: Record<string, StarterCard[]> = {
     { icon: Compass, label: 'Who is Jesus?', prompt: 'Can you help me understand who Jesus is and why He matters?' },
     { icon: Heart, label: 'What does it mean to have faith?', prompt: 'What does it actually mean to have faith? I\'m just starting out.' },
     { icon: Sparkles, label: 'How do I pray?', prompt: 'How do I pray? I\'ve never really done it before.' },
+    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm not sure where to start or what to ask. Can you guide me?" },
   ],
   believer_going_deeper: [
     { icon: BookOpen, label: 'Help me study a passage', prompt: 'Can you help me study a passage of Scripture more deeply today?' },
     { icon: Compass, label: 'Explore a biblical theme', prompt: 'I\'d like to explore a biblical theme — what themes are worth going deeper on?' },
     { icon: Heart, label: 'How do I grow spiritually?', prompt: 'What are practical ways I can grow deeper in my relationship with God?' },
     { icon: Sparkles, label: 'Connect the Old and New Testaments', prompt: 'How does the Old Testament connect to the New Testament? Help me see the big picture.' },
+    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I want to go deeper but I'm not sure where to start. Can you guide me?" },
   ],
   pastor_leader: [
     { icon: BookOpen, label: 'Help me prepare a teaching', prompt: 'I\'m preparing a teaching — can you help me explore a passage for my sermon or lesson?' },
     { icon: Compass, label: 'Leadership wisdom from Scripture', prompt: 'What does Scripture teach about leading with integrity and humility?' },
     { icon: Heart, label: 'Caring for my own soul', prompt: 'As a leader, how do I take care of my own spiritual health while serving others?' },
     { icon: Sparkles, label: 'Walk through a difficult text', prompt: 'Can you help me work through a difficult or controversial passage in Scripture?' },
+    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I have a lot on my plate and I'm not sure where to start today. Can you help me figure that out?" },
   ],
   seminary_student: [
     { icon: BookOpen, label: 'Exegete a passage', prompt: 'Can you help me do an exegetical study of a passage I\'m working on?' },
     { icon: Compass, label: 'Trace a theological theme', prompt: 'Help me trace a theological theme across Scripture — like covenant, redemption, or kingdom.' },
     { icon: Heart, label: 'From study to devotion', prompt: 'How do I keep my personal devotional life alive while doing intense academic study?' },
     { icon: Sparkles, label: 'Historical context deep dive', prompt: 'Can you give me the historical and cultural context behind a passage I\'m studying?' },
+    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm feeling overwhelmed with my studies and not sure what to focus on. Can you help me prioritize?" },
   ],
   exploring_faith: [
     { icon: BookOpen, label: 'What is the Bible about?', prompt: 'What is the Bible actually about? Give me the big picture.' },
     { icon: Compass, label: 'I have questions about faith', prompt: 'I have some honest questions about faith. Can we talk through them?' },
     { icon: Heart, label: 'Does God care about me?', prompt: 'Does God actually care about individual people? What does the Bible say?' },
     { icon: Sparkles, label: 'Tell me a story from the Bible', prompt: 'Tell me an interesting story from the Bible that I might not have heard before.' },
+    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm curious but I don't really know where to start. Can you help me figure out what to explore first?" },
   ],
+};
+
+// ============ Season-based Sublines ============
+
+const SEASON_SUBLINES: Record<string, string> = {
+  deeper_relationship: "Let's draw closer to God together today.",
+  questions_doubts: 'Your questions are welcome here.',
+  difficult_situation: "Whatever you're carrying, you don't have to carry it alone.",
+  ministry_preparation: "Let's prepare something meaningful for those you serve.",
+  understand_bible: "Let's open Scripture and see what we find.",
+  spiritual_growth: 'Every conversation is a step forward.',
 };
 
 const DEFAULT_STARTERS: StarterCard[] = [
@@ -61,6 +80,7 @@ const DEFAULT_STARTERS: StarterCard[] = [
   { icon: Compass, label: 'What should I read next?', prompt: 'What should I read next in the Bible based on where I am in my journey?' },
   { icon: Heart, label: 'I need encouragement', prompt: 'I could use some encouragement today. What does Scripture say about hope?' },
   { icon: Sparkles, label: 'Teach me something new', prompt: 'Teach me something surprising or beautiful from the Bible that I might not know.' },
+  { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm not sure where to start or what to ask. Can you guide me?" },
 ];
 
 // ============ Mini Chat Bubble ============
@@ -78,7 +98,7 @@ function MiniChatBubble({ message }: { message: Message }) {
       <div
         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
-            ? 'bg-[#756653]/20 text-foreground'
+            ? 'bg-[#756653]/20 dark:bg-[#A5A597]/20 text-foreground'
             : 'bg-white/60 text-foreground'
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
@@ -124,27 +144,27 @@ function PillChatInput({
       onClick={() => inputRef.current?.focus()}
       style={{
         background: isFocused
-          ? (isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.95)')
-          : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.85)'),
+          ? (isDarkMode ? 'rgba(241,241,239,0.14)' : 'rgba(255,255,255,0.95)')
+          : (isDarkMode ? 'rgba(241,241,239,0.1)' : 'rgba(255,255,255,0.85)'),
         boxShadow: isFocused
           ? (isDarkMode
-              ? '0 0 0 2px rgba(117,102,83,0.3), inset 0 1px 0 rgba(255,255,255,0.08)'
+              ? '0 0 0 2px rgba(165,165,151,0.3), inset 0 1px 0 rgba(241,241,239,0.08)'
               : '0 0 0 2px rgba(117,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
           : (isDarkMode
-              ? 'inset 0 1px 0 rgba(255,255,255,0.06)'
+              ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
               : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
       }}
       onMouseEnter={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? '0 0 0 1px rgba(117,102,83,0.2), inset 0 1px 0 rgba(255,255,255,0.08)'
+            ? '0 0 0 1px rgba(165,165,151,0.2), inset 0 1px 0 rgba(241,241,239,0.08)'
             : '0 0 0 1px rgba(117,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? 'inset 0 1px 0 rgba(255,255,255,0.06)'
+            ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
             : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
@@ -160,12 +180,12 @@ function PillChatInput({
         placeholder="Ask Anything..."
         className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
         style={{
-          color: isDarkMode ? '#F4EFE6' : undefined,
+          color: isDarkMode ? '#F1F1EF' : undefined,
         }}
       />
       <button
         className="flex-shrink-0 p-1 transition-opacity opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#F4EFE6' : '#5A4C3A' }}
+        style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
       >
         <Mic className="w-5 h-5" />
       </button>
@@ -173,7 +193,7 @@ function PillChatInput({
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
         className="flex-shrink-0 p-1 transition-opacity disabled:opacity-20 opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#F4EFE6' : '#5A4C3A' }}
+        style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
       >
         <Send className="w-5 h-5" />
       </button>
@@ -227,10 +247,14 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
   })();
 
   const hasMessages = messages.length > 0;
-  const textColor = isDarkMode ? '#F4EFE6' : '#2D3748';
+  const textColor = isDarkMode ? '#D0D0C8' : '#262721';
 
   const quizData = getQuizData();
   const starters = STARTERS[quizData.spiritualBackground ?? ''] ?? DEFAULT_STARTERS;
+  const readingHistory = getReadingHistory();
+  const curriculum = getCurriculumForUser(quizData);
+  const curriculumProgress = getProgressPercentage(curriculum);
+  const isFirstVisit = readingHistory.length === 0 && curriculumProgress === 0;
 
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
@@ -242,66 +266,76 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
       <div className="flex flex-col h-full">
         {/* Default state: Orb + Greeting + Starters */}
         {!hasMessages && (
-          <div className="flex-1 flex flex-col items-center text-center px-5 pt-8 min-h-0 overflow-hidden">
-            {/* Animated Orb */}
-            <div className="mb-4 flex-shrink-0">
-              <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
-                <NoiseOrb
-                  size={100}
-                  preset="white"
-                  noiseIntensity={0.3}
-                  speed={0.6}
-                />
-              </Suspense>
+          <div className="flex-1 flex flex-col min-h-0">
+            {/* Fixed header: Orb + Greeting */}
+            <div className="flex flex-col items-center text-center px-5 pt-6">
+              {/* Animated Orb */}
+              <div className="mb-3">
+                <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
+                  <NoiseOrb
+                    size={100}
+                    preset="white"
+                    noiseIntensity={0.3}
+                    speed={0.6}
+                  />
+                </Suspense>
+              </div>
+
+              {/* Greeting */}
+              <div className="mb-4">
+                <h2
+                  className="text-2xl leading-snug"
+                  style={{ color: textColor }}
+                >
+                  {isFirstVisit ? (
+                    <>
+                      Welcome{userName && <> <span className="font-semibold">{userName}</span></>},
+                      <br />
+                      <span className="italic">I'm Sophia.</span>
+                    </>
+                  ) : (
+                    <>
+                      {salutation}
+                      {userName && <> <span className="font-semibold">{userName}</span>,</>}
+                      <br />
+                      <span className="italic">What's on your mind?</span>
+                    </>
+                  )}
+                </h2>
+                <p
+                  className="text-sm mt-1 text-foreground/40"
+                >
+                  {isFirstVisit
+                    ? "I've prepared a few things for you — explore at your own pace."
+                    : (quizData.currentSeason && SEASON_SUBLINES[quizData.currentSeason]) || ''}
+                </p>
+              </div>
             </div>
 
-            {/* Greeting */}
-            <h2
-              className="text-2xl leading-snug mb-12 flex-shrink-0"
-              style={{ color: textColor }}
-            >
-              {salutation}
-              {userName && <> <span className="font-semibold">{userName}</span>,</>}
-              <br />
-              <span className="italic">What's on your mind?</span>
-            </h2>
-
-            {/* Conversation Starters — 2 rows × 2 columns */}
-            <div className="grid grid-cols-2 gap-2.5 w-full flex-shrink-0">
-              {starters.map((starter) => (
-                <button
-                  key={starter.label}
-                  onClick={() => sendMessage(starter.prompt)}
-                  className="flex flex-col items-center justify-center gap-2.5 rounded-xl px-4 py-5 text-center transition-all duration-200"
-                  style={{
-                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.7)',
-                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}`,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)';
-                    e.currentTarget.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(117,102,83,0.2)';
-                    e.currentTarget.style.boxShadow = isDarkMode
-                      ? '0 2px 8px rgba(0,0,0,0.2)'
-                      : '0 2px 8px rgba(0,0,0,0.06)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.7)';
-                    e.currentTarget.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <starter.icon
-                    className="w-4 h-4 flex-shrink-0"
-                    style={{ color: isDarkMode ? 'rgba(244,239,230,0.5)' : '#756653', opacity: 0.7 }}
-                  />
-                  <span
-                    className="text-[12px] leading-snug font-medium"
-                    style={{ color: textColor, opacity: 0.7 }}
+            {/* Scrollable content — starters */}
+            <div className="flex-1 overflow-y-auto px-5 py-3">
+              <div className="grid grid-cols-2 gap-3 w-full">
+                {starters.map((starter, index) => (
+                  <button
+                    key={starter.label}
+                    onClick={() => sendMessage(starter.prompt)}
+                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200 ${
+                      index === starters.length - 1
+                        ? 'col-span-2 flex-row'
+                        : 'flex-col text-center'
+                    }`}
                   >
-                    {starter.label}
-                  </span>
-                </button>
-              ))}
+                    <starter.icon
+                      className="w-5 h-5 flex-shrink-0 text-[#756653]/60 dark:text-[#A5A597]/60"
+                    />
+                    <span
+                      className="text-base leading-snug font-semibold text-foreground/85 dark:text-[#D0D0C8]"
+                    >
+                      {starter.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -329,7 +363,7 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-[#756653]"
+                    className="w-1.5 h-1.5 rounded-full bg-[#756653] dark:bg-[#A5A597]"
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{
                       duration: 1,

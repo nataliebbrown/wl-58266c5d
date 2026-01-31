@@ -361,9 +361,9 @@
 
   /* Glass card - Dark Mode */
   .dark .glass-card {
-    background: rgba(30, 30, 40, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(145deg, #2E2E28, #21211D);
+    border: 2px solid rgba(241, 241, 239, 0.08);
+    box-shadow: 0 4px 24px rgba(12, 12, 10, 0.35);
   }
 
   /* Subtle noise overlay for page background texture */

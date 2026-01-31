@@ -5,13 +5,18 @@ import { Search, X } from 'lucide-react';
 import { useTimePeriod } from '@/lib/timeAwareness';
 import { formatDate } from '@/types/wholelicity';
 import { DashboardHeader } from './DashboardHeader';
+import { ContinueReadingCard } from './ContinueReadingCard';
+import { CurriculumCard } from './CurriculumCard';
 import { JourneyCard } from './JourneyCard';
 import { ConstellationCard } from './ConstellationCard';
 import { HorizonCard } from './HorizonCard';
-import { ContinueReadingCard } from './ContinueReadingCard';
 import { DashboardSophiaPanel } from './DashboardSophiaPanel';
 import { DrawerExpandContext } from './DrawerExpandContext';
 import { getInsightCount } from '@/lib/insights';
+import { getReadingHistory } from '@/lib/bibleApi';
+import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
+import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
+import { getQuizData } from '@/lib/onboardingState';
 
 // ============ Stagger Animation ============
 
@@ -55,14 +60,18 @@ export function SacredRhythmDashboard() {
   const contextValue = useMemo(() => ({ expand, collapse, expandedId }), [expand, collapse, expandedId]);
 
   const hasInsights = getInsightCount() > 0;
+  const quizData = getQuizData();
+  const readingHistory = getReadingHistory();
+  const curriculum = useMemo(() => getCurriculumForUser(quizData), [quizData]);
+  const isFirstVisit = readingHistory.length === 0 && getProgressPercentage(curriculum) === 0;
 
   // Determine if we're in a dark time period (evening/night)
   const isDarkMode = config.textColor !== '#2D3748';
 
   // Drawer background — slightly elevated from the page
-  const drawerBg = isDarkMode ? '#262721' : '#F1EDE9';
-  const outerBg = isDarkMode ? '#1E1F1A' : '#E3DCD3';
-  const drawerTextColor = isDarkMode ? '#F4EFE6' : '#5A4C3A';
+  const drawerBg = isDarkMode ? '#21211D' : '#F1EDE9';
+  const outerBg = isDarkMode ? '#171714' : '#E3DCD3';
+  const drawerTextColor = isDarkMode ? '#F1F1EF' : '#5A4C3A';
 
   const dateStr = formatDate();
   const timeStr = new Date().toLocaleTimeString('en-US', {
@@ -74,7 +83,7 @@ export function SacredRhythmDashboard() {
   return (
     <DrawerExpandContext.Provider value={contextValue}>
       <div
-        className="h-screen lg:overflow-hidden overflow-auto flex flex-col"
+        className={`h-screen lg:overflow-hidden overflow-auto flex flex-col${isDarkMode ? ' dark' : ''}`}
         style={{ background: outerBg }}
       >
         {/* Noise overlay for subtle texture */}
@@ -101,7 +110,7 @@ export function SacredRhythmDashboard() {
                   className="absolute inset-0 backdrop-blur-md"
                   style={{
                     background: isDarkMode
-                      ? 'rgba(30, 31, 26, 0.6)'
+                      ? 'rgba(23, 23, 20, 0.6)'
                       : 'rgba(237, 232, 223, 0.6)',
                   }}
                 />
@@ -111,13 +120,13 @@ export function SacredRhythmDashboard() {
                   className="absolute top-5 right-6 z-30 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
                   style={{
                     background: isDarkMode
-                      ? 'rgba(255, 255, 255, 0.12)'
+                      ? 'rgba(241, 241, 239, 0.12)'
                       : 'rgba(90, 76, 58, 0.1)',
                   }}
                 >
                   <X
                     className="w-5 h-5"
-                    style={{ color: isDarkMode ? '#F4EFE6' : '#5A4C3A' }}
+                    style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
                   />
                 </button>
               </motion.div>
@@ -131,10 +140,10 @@ export function SacredRhythmDashboard() {
           style={{
             background: drawerBg,
             boxShadow: isDarkMode
-              ? '0 -8px 40px rgba(0, 0, 0, 0.5), 0 -2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06)'
+              ? '0 -8px 40px rgba(12, 12, 10, 0.6), 0 -2px 12px rgba(12, 12, 10, 0.4), inset 0 1px 0 rgba(241, 241, 239, 0.06)'
               : '0 -8px 40px rgba(90, 76, 58, 0.12), 0 -2px 12px rgba(90, 76, 58, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
             borderTop: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.06)'
+              ? '1px solid rgba(241, 241, 239, 0.06)'
               : '1px solid rgba(255, 255, 255, 0.6)',
           }}
         >
@@ -164,15 +173,19 @@ export function SacredRhythmDashboard() {
               >
                 {/* Search + Date/Time — top of drawer */}
                 <div className="flex items-center justify-between mb-5 md:mb-6 px-1">
-                  <div
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => navigate('/search')}
-                  >
-                    <Search className="w-4 h-4 flex-shrink-0" style={{ color: drawerTextColor, opacity: 0.5 }} />
-                    <span className="text-sm" style={{ color: drawerTextColor, opacity: 0.45 }}>
-                      Search...
-                    </span>
-                  </div>
+                  {!isFirstVisit ? (
+                    <div
+                      className="flex items-center gap-2 cursor-pointer"
+                      onClick={() => navigate('/search')}
+                    >
+                      <Search className="w-4 h-4 flex-shrink-0" style={{ color: drawerTextColor, opacity: 0.5 }} />
+                      <span className="text-sm" style={{ color: drawerTextColor, opacity: 0.45 }}>
+                        Search...
+                      </span>
+                    </div>
+                  ) : (
+                    <div />
+                  )}
                   <div
                     className="flex items-center gap-2 text-sm"
                     style={{ color: drawerTextColor, opacity: 0.6 }}
@@ -184,54 +197,35 @@ export function SacredRhythmDashboard() {
                 </div>
 
                 <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 md:gap-8 flex-1 min-h-0">
-                  {hasInsights ? (
-                    <>
-                      {/* Left 2/3 — 2x2 Card Grid */}
-                      <motion.div
-                        variants={stagger.item}
-                        className="flex-1 lg:w-2/3 min-h-0"
-                      >
-                        <div className="flex flex-col gap-6 md:gap-8 h-full" style={{ minHeight: 0 }}>
-                          {/* Row 1: Bible (narrow) + Journey (wide) */}
-                          <div className="grid grid-cols-1 sm:grid-cols-[1fr_2fr] gap-6 md:gap-8 flex-1 min-h-0">
-                            <ContinueReadingCard />
-                            <JourneyCard />
-                          </div>
-                          {/* Row 2: Constellation (wide) + Horizon (narrow) */}
-                          <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-6 md:gap-8 flex-1 min-h-0">
-                            <ConstellationCard />
-                            <HorizonCard />
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      {/* Right 1/3 — Sophia Chat Panel */}
-                      <motion.div
-                        variants={stagger.item}
-                        className="lg:w-1/3 max-h-[500px] lg:max-h-none"
-                      >
-                        <DashboardSophiaPanel isDarkMode={isDarkMode} />
-                      </motion.div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Left 2/3 — Bible Card only */}
-                      <motion.div
-                        variants={stagger.item}
-                        className="flex-1 lg:w-2/3 min-h-0"
-                      >
+                  {/* Left 2/3 — two rows of cards */}
+                  <motion.div
+                    variants={stagger.item}
+                    className="flex-1 lg:w-2/3 min-h-0 max-h-[500px] lg:max-h-none"
+                  >
+                    <div className="flex flex-col gap-6 md:gap-8 h-full" style={{ minHeight: 0 }}>
+                      {/* Row 1: Bible | Curriculum (equal width) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 flex-1 min-h-0">
                         <ContinueReadingCard />
-                      </motion.div>
+                        <CurriculumCard />
+                      </div>
+                      {/* Row 2: Constellation | Journey | Horizon (shown once user has insights) */}
+                      {hasInsights && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 flex-1 min-h-0">
+                          <ConstellationCard />
+                          <JourneyCard />
+                          <HorizonCard />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
 
-                      {/* Right 1/3 — Sophia Chat Panel */}
-                      <motion.div
-                        variants={stagger.item}
-                        className="lg:w-1/3 max-h-[500px] lg:max-h-none"
-                      >
-                        <DashboardSophiaPanel isDarkMode={isDarkMode} />
-                      </motion.div>
-                    </>
-                  )}
+                  {/* Right 1/3 — Sophia Chat Panel (fixed) */}
+                  <motion.div
+                    variants={stagger.item}
+                    className="lg:w-1/3 max-h-[500px] lg:max-h-none"
+                  >
+                    <DashboardSophiaPanel isDarkMode={isDarkMode} />
+                  </motion.div>
                 </div>
               </motion.div>
             )}
