@@ -367,6 +367,34 @@
   }
 
   /* Subtle noise overlay for page background texture */
+  /* Pulsating glow for recommended starting card */
+  @keyframes card-glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(117, 102, 83, 0), 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
+    50% {
+      box-shadow: 0 0 24px 6px rgba(117, 102, 83, 0.18), 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  @keyframes card-glow-pulse-dark {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(165, 165, 151, 0), 0 4px 24px rgba(12, 12, 10, 0.35);
+    }
+    50% {
+      box-shadow: 0 0 24px 6px rgba(165, 165, 151, 0.2), 0 4px 24px rgba(12, 12, 10, 0.35);
+    }
+  }
+
+  .animate-card-glow {
+    animation: card-glow-pulse 3s ease-in-out infinite;
+    border-radius: 20px;
+  }
+
+  .dark .animate-card-glow {
+    animation: card-glow-pulse-dark 3s ease-in-out infinite;
+  }
+
   .noise-overlay::before {
     content: '';
     position: fixed;

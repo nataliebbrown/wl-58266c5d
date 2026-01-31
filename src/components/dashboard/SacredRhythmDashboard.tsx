@@ -18,6 +18,16 @@ import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import { getQuizData } from '@/lib/onboardingState';
 
+// ============ Persona → Starting Card ============
+
+const PERSONA_START_CARD: Record<string, 'scripture' | 'curriculum' | 'sophia'> = {
+  new_to_faith: 'sophia',
+  believer_going_deeper: 'scripture',
+  pastor_leader: 'curriculum',
+  seminary_student: 'scripture',
+  exploring_faith: 'sophia',
+};
+
 // ============ Stagger Animation ============
 
 const stagger = {
@@ -39,6 +49,18 @@ const stagger = {
   },
 };
 
+// ============ Start Here Badge ============
+
+function StartHereBadge() {
+  return (
+    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+      <span className="px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-[#8A7356] dark:bg-[#A5A597] text-white dark:text-[#171714] shadow-sm">
+        Start Here
+      </span>
+    </div>
+  );
+}
+
 // ============ Component ============
 
 export function SacredRhythmDashboard() {
@@ -46,6 +68,7 @@ export function SacredRhythmDashboard() {
   const { config } = useTimePeriod();
   const [expandedContent, setExpandedContent] = useState<ReactNode>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [dismissedStartHint, setDismissedStartHint] = useState(false);
   const isExpanded = expandedContent !== null;
 
   const collapse = useCallback(() => {
@@ -55,6 +78,7 @@ export function SacredRhythmDashboard() {
   const expand = useCallback((content: ReactNode, id?: string) => {
     setExpandedContent(content);
     setExpandedId(id ?? null);
+    setDismissedStartHint(true);
   }, []);
 
   const contextValue = useMemo(() => ({ expand, collapse, expandedId }), [expand, collapse, expandedId]);
@@ -64,6 +88,11 @@ export function SacredRhythmDashboard() {
   const readingHistory = getReadingHistory();
   const curriculum = useMemo(() => getCurriculumForUser(quizData), [quizData]);
   const isFirstVisit = readingHistory.length === 0 && getProgressPercentage(curriculum) === 0;
+
+  // Persona-based starting card recommendation (dismissed after first interaction)
+  const startCard = isFirstVisit && !dismissedStartHint
+    ? (PERSONA_START_CARD[quizData.spiritualBackground ?? ''] ?? 'sophia')
+    : null;
 
   // Determine if we're in a dark time period (evening/night)
   const isDarkMode = config.textColor !== '#2D3748';
@@ -205,8 +234,14 @@ export function SacredRhythmDashboard() {
                     <div className="flex flex-col gap-6 md:gap-8 h-full" style={{ minHeight: 0 }}>
                       {/* Row 1: Bible | Curriculum (equal width) */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 flex-1 min-h-0">
-                        <ContinueReadingCard />
-                        <CurriculumCard />
+                        <div className={`min-h-0 relative ${startCard === 'scripture' ? 'animate-card-glow' : ''}`}>
+                          {startCard === 'scripture' && <StartHereBadge />}
+                          <ContinueReadingCard />
+                        </div>
+                        <div className={`min-h-0 relative ${startCard === 'curriculum' ? 'animate-card-glow' : ''}`}>
+                          {startCard === 'curriculum' && <StartHereBadge />}
+                          <CurriculumCard />
+                        </div>
                       </div>
                       {/* Row 2: Constellation | Journey | Horizon (shown once user has insights) */}
                       {hasInsights && (
@@ -222,8 +257,9 @@ export function SacredRhythmDashboard() {
                   {/* Right 1/3 — Sophia Chat Panel (fixed) */}
                   <motion.div
                     variants={stagger.item}
-                    className="lg:w-1/3 max-h-[500px] lg:max-h-none"
+                    className={`lg:w-1/3 max-h-[500px] lg:max-h-none relative ${startCard === 'sophia' ? 'animate-card-glow' : ''}`}
                   >
+                    {startCard === 'sophia' && <StartHereBadge />}
                     <DashboardSophiaPanel isDarkMode={isDarkMode} />
                   </motion.div>
                 </div>
