@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles, HelpCircle } from 'lucide-react';
+import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
+import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { useTimePeriod } from '@/lib/timeAwareness';
@@ -23,44 +24,40 @@ const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 interface StarterCard {
   icon: LucideIcon;
   label: string;
+  description: string;
   prompt: string;
 }
 
 const STARTERS: Record<string, StarterCard[]> = {
   new_to_faith: [
-    { icon: BookOpen, label: 'Where do I start reading the Bible?', prompt: 'Where should I start reading the Bible as someone new to faith?' },
-    { icon: Compass, label: 'Who is Jesus?', prompt: 'Can you help me understand who Jesus is and why He matters?' },
-    { icon: Heart, label: 'What does it mean to have faith?', prompt: 'What does it actually mean to have faith? I\'m just starting out.' },
-    { icon: Sparkles, label: 'How do I pray?', prompt: 'How do I pray? I\'ve never really done it before.' },
-    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm not sure where to start or what to ask. Can you guide me?" },
+    { icon: BookOpen, label: 'Where do I start reading?', description: 'Find a beginner-friendly place to start exploring Scripture.', prompt: 'Where should I start reading the Bible as someone new to faith?' },
+    { icon: Compass, label: 'Who is Jesus?', description: 'Learn about who Jesus is and why He matters.', prompt: 'Can you help me understand who Jesus is and why He matters?' },
+    { icon: Heart, label: 'What does faith mean?', description: 'Understand what it means to believe and trust God.', prompt: 'What does it actually mean to have faith? I\'m just starting out.' },
+    { icon: Sparkles, label: 'How do I pray?', description: 'A gentle introduction to talking with God.', prompt: 'How do I pray? I\'ve never really done it before.' },
   ],
   believer_going_deeper: [
-    { icon: BookOpen, label: 'Help me study a passage', prompt: 'Can you help me study a passage of Scripture more deeply today?' },
-    { icon: Compass, label: 'Explore a biblical theme', prompt: 'I\'d like to explore a biblical theme — what themes are worth going deeper on?' },
-    { icon: Heart, label: 'How do I grow spiritually?', prompt: 'What are practical ways I can grow deeper in my relationship with God?' },
-    { icon: Sparkles, label: 'Connect the Old and New Testaments', prompt: 'How does the Old Testament connect to the New Testament? Help me see the big picture.' },
-    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I want to go deeper but I'm not sure where to start. Can you guide me?" },
+    { icon: BookOpen, label: 'Study a passage deeply', description: 'Dive into a passage with context, meaning, and reflection.', prompt: 'Can you help me study a passage of Scripture more deeply today?' },
+    { icon: Compass, label: 'Explore a biblical theme', description: 'Trace a thread like grace, covenant, or redemption across Scripture.', prompt: 'I\'d like to explore a biblical theme — what themes are worth going deeper on?' },
+    { icon: Heart, label: 'Grow spiritually', description: 'Practical steps to deepen your relationship with God.', prompt: 'What are practical ways I can grow deeper in my relationship with God?' },
+    { icon: Sparkles, label: 'Old & New Testament connections', description: 'See how the full biblical narrative fits together.', prompt: 'How does the Old Testament connect to the New Testament? Help me see the big picture.' },
   ],
   pastor_leader: [
-    { icon: BookOpen, label: 'Help me prepare a teaching', prompt: 'I\'m preparing a teaching — can you help me explore a passage for my sermon or lesson?' },
-    { icon: Compass, label: 'Leadership wisdom from Scripture', prompt: 'What does Scripture teach about leading with integrity and humility?' },
-    { icon: Heart, label: 'Caring for my own soul', prompt: 'As a leader, how do I take care of my own spiritual health while serving others?' },
-    { icon: Sparkles, label: 'Walk through a difficult text', prompt: 'Can you help me work through a difficult or controversial passage in Scripture?' },
-    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I have a lot on my plate and I'm not sure where to start today. Can you help me figure that out?" },
+    { icon: BookOpen, label: 'Prepare a teaching', description: 'Explore a passage for your next sermon or lesson.', prompt: 'I\'m preparing a teaching — can you help me explore a passage for my sermon or lesson?' },
+    { icon: Compass, label: 'Leadership in Scripture', description: 'What the Bible teaches about leading with integrity.', prompt: 'What does Scripture teach about leading with integrity and humility?' },
+    { icon: Heart, label: 'Care for my own soul', description: 'Nurture your own spiritual health while serving others.', prompt: 'As a leader, how do I take care of my own spiritual health while serving others?' },
+    { icon: Sparkles, label: 'Difficult texts', description: 'Work through a challenging or controversial passage.', prompt: 'Can you help me work through a difficult or controversial passage in Scripture?' },
   ],
   seminary_student: [
-    { icon: BookOpen, label: 'Exegete a passage', prompt: 'Can you help me do an exegetical study of a passage I\'m working on?' },
-    { icon: Compass, label: 'Trace a theological theme', prompt: 'Help me trace a theological theme across Scripture — like covenant, redemption, or kingdom.' },
-    { icon: Heart, label: 'From study to devotion', prompt: 'How do I keep my personal devotional life alive while doing intense academic study?' },
-    { icon: Sparkles, label: 'Historical context deep dive', prompt: 'Can you give me the historical and cultural context behind a passage I\'m studying?' },
-    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm feeling overwhelmed with my studies and not sure what to focus on. Can you help me prioritize?" },
+    { icon: BookOpen, label: 'Exegete a passage', description: 'Walk through observation, context, and meaning.', prompt: 'Can you help me do an exegetical study of a passage I\'m working on?' },
+    { icon: Compass, label: 'Trace a theological theme', description: 'Follow a thread like covenant or kingdom across Scripture.', prompt: 'Help me trace a theological theme across Scripture — like covenant, redemption, or kingdom.' },
+    { icon: Heart, label: 'From study to devotion', description: 'Keep your devotional life alive during intense study.', prompt: 'How do I keep my personal devotional life alive while doing intense academic study?' },
+    { icon: Sparkles, label: 'Historical context deep dive', description: 'Uncover the world behind the text.', prompt: 'Can you give me the historical and cultural context behind a passage I\'m studying?' },
   ],
   exploring_faith: [
-    { icon: BookOpen, label: 'What is the Bible about?', prompt: 'What is the Bible actually about? Give me the big picture.' },
-    { icon: Compass, label: 'I have questions about faith', prompt: 'I have some honest questions about faith. Can we talk through them?' },
-    { icon: Heart, label: 'Does God care about me?', prompt: 'Does God actually care about individual people? What does the Bible say?' },
-    { icon: Sparkles, label: 'Tell me a story from the Bible', prompt: 'Tell me an interesting story from the Bible that I might not have heard before.' },
-    { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm curious but I don't really know where to start. Can you help me figure out what to explore first?" },
+    { icon: BookOpen, label: 'What is the Bible about?', description: 'Get the big picture of what Scripture is and why it matters.', prompt: 'What is the Bible actually about? Give me the big picture.' },
+    { icon: Compass, label: 'I have questions', description: 'Bring your honest questions — no judgment here.', prompt: 'I have some honest questions about faith. Can we talk through them?' },
+    { icon: Heart, label: 'Does God care about me?', description: 'What the Bible says about God\u2019s love for you personally.', prompt: 'Does God actually care about individual people? What does the Bible say?' },
+    { icon: Sparkles, label: 'Tell me a story', description: 'Hear an interesting story from the Bible you might not know.', prompt: 'Tell me an interesting story from the Bible that I might not have heard before.' },
   ],
 };
 
@@ -76,11 +73,10 @@ const SEASON_SUBLINES: Record<string, string> = {
 };
 
 const DEFAULT_STARTERS: StarterCard[] = [
-  { icon: BookOpen, label: 'Help me explore Scripture', prompt: 'Can you help me explore a passage of Scripture today?' },
-  { icon: Compass, label: 'What should I read next?', prompt: 'What should I read next in the Bible based on where I am in my journey?' },
-  { icon: Heart, label: 'I need encouragement', prompt: 'I could use some encouragement today. What does Scripture say about hope?' },
-  { icon: Sparkles, label: 'Teach me something new', prompt: 'Teach me something surprising or beautiful from the Bible that I might not know.' },
-  { icon: HelpCircle, label: "I don't know where to begin", prompt: "I'm not sure where to start or what to ask. Can you guide me?" },
+  { icon: BookOpen, label: 'Explore Scripture', description: 'Find a meaningful passage to read and reflect on today.', prompt: 'Can you help me explore a passage of Scripture today?' },
+  { icon: Compass, label: 'What should I read next?', description: 'Get a personalized suggestion based on your journey.', prompt: 'What should I read next in the Bible based on where I am in my journey?' },
+  { icon: Heart, label: 'I need encouragement', description: 'Let Scripture speak hope and comfort into your day.', prompt: 'I could use some encouragement today. What does Scripture say about hope?' },
+  { icon: Sparkles, label: 'Teach me something new', description: 'Discover something surprising or beautiful from the Bible.', prompt: 'Teach me something surprising or beautiful from the Bible that I might not know.' },
 ];
 
 // ============ Mini Chat Bubble ============
@@ -211,8 +207,30 @@ export function DashboardSophiaPanel() {
   const personaData = getPersonaFromOnboarding();
   const userName = personaData?.name || null;
   const scrollRef = useRef<HTMLDivElement>(null);
+  const convIdRef = useRef<string | null>(null);
 
-  const { messages, isTyping, sendMessage } = useSophiaChat();
+  const quizData = getQuizData();
+  const { createConversation } = useConversations();
+
+  const { messages, isTyping, sendMessage } = useSophiaChat({
+    conversationId: convIdRef.current,
+  });
+
+  const handleSend = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || isTyping) return;
+
+    // Create conversation on first message
+    if (!convIdRef.current) {
+      const title = trimmed.length > 60 ? trimmed.slice(0, 60) + '…' : trimmed;
+      const conv = await createConversation(title, 'dashboard', quizData.spiritualBackground || undefined);
+      if (conv) {
+        convIdRef.current = conv.id;
+      }
+    }
+
+    await sendMessage(trimmed);
+  };
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -234,7 +252,6 @@ export function DashboardSophiaPanel() {
 
   const hasMessages = messages.length > 0;
 
-  const quizData = getQuizData();
   const starters = STARTERS[quizData.spiritualBackground ?? ''] ?? DEFAULT_STARTERS;
   const readingHistory = getReadingHistory();
   const curriculum = getCurriculumForUser(quizData);
@@ -298,25 +315,26 @@ export function DashboardSophiaPanel() {
 
             {/* Scrollable content — starters */}
             <div className="flex-1 overflow-y-auto px-5 py-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                {starters.map((starter, index) => (
+              <div className="flex flex-col gap-2.5 w-full">
+                {starters.map((starter) => (
                   <button
                     key={starter.label}
-                    onClick={() => sendMessage(starter.prompt)}
-                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200 ${
-                      index === starters.length - 1
-                        ? 'sm:col-span-2 flex-row'
-                        : 'flex-col text-center'
-                    }`}
+                    onClick={() => handleSend(starter.prompt)}
+                    className="flex items-start gap-3.5 rounded-xl px-4 py-3.5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200 text-left"
                   >
-                    <starter.icon
-                      className="w-5 h-5 flex-shrink-0 text-wl-olive/60 dark:text-wl-olive-300/60"
-                    />
-                    <span
-                      className="text-base leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200"
-                    >
-                      {starter.label}
-                    </span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full border border-wl-olive/20 dark:border-wl-olive-300/20 flex items-center justify-center mt-0.5">
+                      <starter.icon
+                        className="w-4 h-4 text-wl-olive/50 dark:text-wl-olive-300/50"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-[15px] leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200">
+                        {starter.label}
+                      </span>
+                      <span className="block text-[13px] leading-snug mt-0.5 text-foreground/45 dark:text-wl-olive-300/50">
+                        {starter.description}
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -364,7 +382,7 @@ export function DashboardSophiaPanel() {
         {/* Input + Link */}
         <div className="p-4 pt-2 space-y-3">
           <PillChatInput
-            onSend={sendMessage}
+            onSend={handleSend}
             isLoading={isTyping}
             isDarkMode={isDarkMode}
           />

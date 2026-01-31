@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, X, BookOpen, Compass, Heart, Sparkles, HelpCircle, BookMarked, GraduationCap, Link2, MessageCircleQuestion } from 'lucide-react';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
+import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { useTimePeriod } from '@/lib/timeAwareness';
@@ -226,6 +227,10 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   const userName = personaData?.name || null;
   const scrollRef = useRef<HTMLDivElement>(null);
   const initialPromptSentRef = useRef(false);
+  const convIdRef = useRef<string | null>(null);
+
+  const quizData = getQuizData();
+  const { createConversation } = useConversations();
 
   // Build system context so Sophia knows what the user is currently viewing
   const systemContext = (() => {
@@ -239,7 +244,28 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
     return undefined;
   })();
 
-  const { messages, isTyping, sendMessage } = useSophiaChat({ systemContext });
+  const { messages, isTyping, sendMessage } = useSophiaChat({
+    systemContext,
+    conversationId: convIdRef.current,
+  });
+
+  const handleSend = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || isTyping) return;
+
+    // Create conversation on first message
+    if (!convIdRef.current) {
+      const topic = context === 'bible' ? 'bible' : context === 'learn' ? 'learn' : 'general';
+      const passage = bibleReference ? `${bibleReference.book} ${bibleReference.chapter}` : null;
+      const title = passage ? `Bible: ${passage}` : trimmed.length > 60 ? trimmed.slice(0, 60) + '…' : trimmed;
+      const conv = await createConversation(title, topic, quizData.spiritualBackground || undefined);
+      if (conv) {
+        convIdRef.current = conv.id;
+      }
+    }
+
+    await sendMessage(trimmed);
+  };
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -252,9 +278,10 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   useEffect(() => {
     if (initialPrompt && !initialPromptSentRef.current) {
       initialPromptSentRef.current = true;
-      sendMessage(initialPrompt);
+      handleSend(initialPrompt);
     }
-  }, [initialPrompt, sendMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrompt]);
 
   // Time-based salutation
   const salutation = (() => {
@@ -329,7 +356,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
               {starters.map((starter) => (
                 <button
                   key={starter.label}
-                  onClick={() => sendMessage(starter.prompt)}
+                  onClick={() => handleSend(starter.prompt)}
                   className="flex items-start gap-3.5 rounded-xl px-4 py-3.5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm transition-all duration-200 text-left"
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-full border border-wl-olive/20 dark:border-wl-olive-300/20 flex items-center justify-center mt-0.5">
@@ -392,7 +419,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
       {/* Input (no "View full chat history" link) */}
       <div className="p-4 pt-2">
         <PillChatInput
-          onSend={sendMessage}
+          onSend={handleSend}
           isLoading={isTyping}
           isDarkMode={isDarkMode}
         />

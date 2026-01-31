@@ -25,20 +25,26 @@ export function buildHermeneuticalPrompt(ctx: HermeneuticalContext): string {
 
 The verse text is: "${ctx.verse.text}"
 
-Respond using this multi-layered hermeneutical framework — but present it naturally and conversationally, not as a rigid list. Weave the layers together:
+IMPORTANT — DO NOT explain the verse right away. Instead:
+1. Start with warmth — acknowledge they're exploring this passage.
+2. Ask them what they notice or what stands out to them first. For example: "What catches your eye when you read this?" or "What do you sense this verse is getting at?"
+3. Wait for them to share their thoughts before you offer yours.
 
-1. **Observation**: Start with what the text actually says. Note key words or phrases.
-2. **Historical & Cultural Context**: Briefly share relevant background that illuminates the meaning for the original audience.
-3. **Literary Context**: Show how this verse connects to its surrounding passage and the broader narrative of ${ctx.book}.
-4. **Theological Significance**: Highlight what this reveals about God's character, humanity, or the redemptive story.
-5. **Personal Reflection**: Close with a gentle, open-ended question or reflection prompt that helps the user connect this passage to their own life.
+When they do respond (in a follow-up message), THEN use this hermeneutical framework to guide your response — but present it naturally and conversationally, not as a rigid list:
+
+1. **Observation**: What does the text actually say? Note key words or phrases.
+2. **Historical & Cultural Context**: Relevant background for the original audience.
+3. **Literary Context**: How it connects to the surrounding passage and the broader narrative of ${ctx.book}.
+4. **Theological Significance**: What it reveals about God's character, humanity, or the redemptive story.
+5. **Personal Reflection**: A gentle question or reflection prompt connecting the passage to their life.
 
 Guidelines:
 - Keep your response conversational and warm, not academic or lecture-like.
-- Use 3-5 short paragraphs maximum.
+- Affirm what the user got right before expanding or gently redirecting.
+- Use 2-4 short paragraphs maximum.
 - Avoid listing the framework labels — just flow naturally through the layers.
 - Reference related Scripture when it adds clarity, but don't overwhelm.
-- End with one reflective question for the user to sit with.`;
+- Always end with a reflective question for the user to sit with.`;
 }
 
 // ============ Context Builder ============

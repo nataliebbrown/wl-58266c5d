@@ -24,6 +24,11 @@ export function useSophiaChat({
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Keep a ref so the save logic always reads the latest conversationId,
+  // even when it was set mid-request via lazy conversation creation.
+  const conversationIdRef = useRef(conversationId);
+  conversationIdRef.current = conversationId;
+
   const loadMessages = useCallback(async (convId: string) => {
     try {
       const { data, error: fetchError } = await supabase
@@ -163,14 +168,16 @@ export function useSophiaChat({
         }
       }
 
-      // Save messages to database if we have a conversation
-      if (conversationId) {
+      // Save messages to database if we have a conversation.
+      // Read from ref so lazy-created conversations are picked up.
+      const activeConvId = conversationIdRef.current;
+      if (activeConvId) {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           // Save user message
           await supabase.from('messages').insert({
             id: userMessage.id,
-            conversation_id: conversationId,
+            conversation_id: activeConvId,
             user_id: user.id,
             role: 'user',
             content: userMessage.content
@@ -179,7 +186,7 @@ export function useSophiaChat({
           // Save assistant message
           await supabase.from('messages').insert({
             id: assistantMessage.id,
-            conversation_id: conversationId,
+            conversation_id: activeConvId,
             user_id: user.id,
             role: 'assistant',
             content: assistantContent
@@ -188,11 +195,11 @@ export function useSophiaChat({
           // Update conversation message count
           await supabase
             .from('conversations')
-            .update({ 
+            .update({
               message_count: messages.length + 2,
               updated_at: new Date().toISOString()
             })
-            .eq('id', conversationId);
+            .eq('id', activeConvId);
         }
       }
 
