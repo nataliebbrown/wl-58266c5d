@@ -11,6 +11,8 @@ import {
   Clock,
   Settings,
   User,
+  Sun,
+  Moon,
   LucideIcon,
 } from 'lucide-react';
 import logoBlack from '@/assets/logo_black.svg';
@@ -22,6 +24,7 @@ import { useDrawerExpand } from './DrawerExpandContext';
 
 const Chat = lazy(() => import('@/pages/Chat'));
 const Bible = lazy(() => import('@/pages/Bible'));
+const CurriculumOverview = lazy(() => import('@/components/curriculum/CurriculumOverview').then(m => ({ default: m.CurriculumOverview })));
 
 // ============ Quick Access Items ============
 
@@ -62,14 +65,23 @@ function ExpandedBible() {
   );
 }
 
+function ExpandedLearn() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
+      <CurriculumOverview />
+    </Suspense>
+  );
+}
+
 // ============ Component ============
 
 interface DashboardHeaderProps {
   timeLabel?: string;
   isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
-export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
+export function DashboardHeader({ isDarkMode, onToggleDarkMode }: DashboardHeaderProps) {
   const navigate = useNavigate();
   const { expand, collapse, expandedId } = useDrawerExpand();
   const [previewModule, setPreviewModule] = useState<ModuleType | null>(null);
@@ -97,7 +109,7 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
         expand(<ExpandedBible />, 'bible');
         break;
       case 'learn':
-        navigate('/learn');
+        expand(<ExpandedLearn />, 'learn');
         break;
       case 'insights':
         navigate('/insights');
@@ -196,6 +208,20 @@ export function DashboardHeader({ isDarkMode }: DashboardHeaderProps) {
           >
             <Settings className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
           </button>
+
+          {/* Dark/Light mode toggle */}
+          {onToggleDarkMode && (
+            <button
+              onClick={onToggleDarkMode}
+              className="transition-opacity hover:opacity-70"
+              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode
+                ? <Sun className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
+                : <Moon className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
+              }
+            </button>
+          )}
         </div>
       </header>
 

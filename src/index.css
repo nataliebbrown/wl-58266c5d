@@ -395,6 +395,15 @@
     animation: card-glow-pulse-dark 3s ease-in-out infinite;
   }
 
+  /* Scripture preview fade-out gradient (ContinueReadingCard) */
+  .scripture-preview-fade {
+    background: linear-gradient(to bottom, rgba(245, 242, 237, 0), #F5F2ED);
+  }
+
+  .dark .scripture-preview-fade {
+    background: linear-gradient(to bottom, rgba(36, 36, 31, 0), #24241F);
+  }
+
   .noise-overlay::before {
     content: '';
     position: fixed;

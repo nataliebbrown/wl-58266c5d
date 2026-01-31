@@ -7,7 +7,15 @@ import { BibleNavigator } from '@/components/bible/BibleNavigator';
 import { ReadingView } from '@/components/bible/ReadingView';
 import type { BibleReference, BibleVerse } from '@/lib/bibleApi';
 
-export default function Bible({ embedded, initialReference }: { embedded?: boolean; initialReference?: BibleReference } = {}) {
+export default function Bible({
+  embedded,
+  initialReference,
+  onAskSophia: externalAskSophia,
+}: {
+  embedded?: boolean;
+  initialReference?: BibleReference;
+  onAskSophia?: (verse: BibleVerse, ref: BibleReference) => void;
+} = {}) {
   const navigate = useNavigate();
   const [reference, setReference] = useState<BibleReference | null>(initialReference ?? null);
   const [showNav, setShowNav] = useState(true);
@@ -22,10 +30,14 @@ export default function Bible({ embedded, initialReference }: { embedded?: boole
 
   const handleAskSophia = useCallback(
     (verse: BibleVerse, ref: BibleReference) => {
-      const prompt = `Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`;
-      navigate(`/chat?prompt=${encodeURIComponent(prompt)}`);
+      if (externalAskSophia) {
+        externalAskSophia(verse, ref);
+      } else {
+        const prompt = `Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`;
+        navigate(`/chat?prompt=${encodeURIComponent(prompt)}`);
+      }
     },
-    [navigate]
+    [navigate, externalAskSophia]
   );
 
   return (

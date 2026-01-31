@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, BookOpen, MessageCircle, Lightbulb, MoreHorizontal } from 'lucide-react';
+import { Home, BookOpen, MessageCircle, GraduationCap, MoreHorizontal } from 'lucide-react';
 
 interface Tab {
   icon: typeof Home;
@@ -11,8 +11,8 @@ interface Tab {
 const tabs: Tab[] = [
   { icon: Home, label: 'Home', path: '/dashboard' },
   { icon: BookOpen, label: 'Scripture', path: '/bible' },
+  { icon: GraduationCap, label: 'Learn', path: '/learn' },
   { icon: MessageCircle, label: 'Sophia', path: '/chat' },
-  { icon: Lightbulb, label: 'Insights', path: '/insights' },
   { icon: MoreHorizontal, label: 'More', path: '/more' },
 ];
 

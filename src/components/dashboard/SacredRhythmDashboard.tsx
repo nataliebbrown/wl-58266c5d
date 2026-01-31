@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useTimePeriod } from '@/lib/timeAwareness';
 import { formatDate } from '@/types/wholelicity';
 import { DashboardHeader } from './DashboardHeader';
@@ -17,6 +17,7 @@ import { getReadingHistory } from '@/lib/bibleApi';
 import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import { getQuizData } from '@/lib/onboardingState';
+import { GlobalSophia } from '@/components/sophia/GlobalSophia';
 
 // ============ Persona → Starting Card ============
 
@@ -94,8 +95,13 @@ export function SacredRhythmDashboard() {
     ? (PERSONA_START_CARD[quizData.spiritualBackground ?? ''] ?? 'sophia')
     : null;
 
-  // Determine if we're in a dark time period (evening/night)
-  const isDarkMode = config.textColor !== '#2D3748';
+  // Dark mode: defaults to time-based (evening/night = dark), with manual override
+  const timeBasedDark = config.textColor !== '#2D3748';
+  const [darkOverride, setDarkOverride] = useState<boolean | null>(null);
+  const isDarkMode = darkOverride !== null ? darkOverride : timeBasedDark;
+  const toggleDarkMode = useCallback(() => {
+    setDarkOverride(prev => prev !== null ? !prev : !timeBasedDark);
+  }, [timeBasedDark]);
 
   // Drawer background — slightly elevated from the page
   const drawerBg = isDarkMode ? '#21211D' : '#F1EDE9';
@@ -118,49 +124,9 @@ export function SacredRhythmDashboard() {
         {/* Noise overlay for subtle texture */}
         <div className="noise-overlay" />
 
-        {/* Header area — relative for blur overlay positioning */}
-        <div className="relative">
-          <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8">
-            <DashboardHeader isDarkMode={isDarkMode} />
-          </div>
-
-          {/* Blur overlay + dismiss button when expanded */}
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                className="absolute inset-0 z-20"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-              >
-                {/* Blur overlay */}
-                <div
-                  className="absolute inset-0 backdrop-blur-md"
-                  style={{
-                    background: isDarkMode
-                      ? 'rgba(23, 23, 20, 0.6)'
-                      : 'rgba(237, 232, 223, 0.6)',
-                  }}
-                />
-                {/* Dismiss button — top right */}
-                <button
-                  onClick={collapse}
-                  className="absolute top-5 right-6 z-30 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-                  style={{
-                    background: isDarkMode
-                      ? 'rgba(241, 241, 239, 0.12)'
-                      : 'rgba(90, 76, 58, 0.1)',
-                  }}
-                >
-                  <X
-                    className="w-5 h-5"
-                    style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
-                  />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Header */}
+        <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8">
+          <DashboardHeader isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />
         </div>
 
         {/* Bottom drawer container — full width */}
@@ -268,6 +234,9 @@ export function SacredRhythmDashboard() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Floating Sophia orb — visible when expanded to non-chat/bible content */}
+      {isExpanded && expandedId !== 'chat' && expandedId !== 'bible' && <GlobalSophia />}
     </DrawerExpandContext.Provider>
   );
 }

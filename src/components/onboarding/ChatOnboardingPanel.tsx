@@ -731,7 +731,7 @@ export function ChatOnboardingPanel({ onComplete }: ChatOnboardingPanelProps) {
             className="w-full py-3 px-6 rounded-full text-white font-medium text-base shadow-lg hover:shadow-xl transition-all"
             style={{ backgroundColor: '#262721', outline: '7px solid rgba(38, 39, 33, 0.25)', outlineOffset: '0px' }}
           >
-            Start My Journey
+            Let's go!
           </motion.button>
         </motion.div>
       )}

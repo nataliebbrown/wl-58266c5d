@@ -1,10 +1,9 @@
 import { useEffect, Component, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { hasCompletedQuiz } from '@/lib/onboardingState';
-import { SacredRhythmDashboard } from '@/components/dashboard/SacredRhythmDashboard';
+import { CurriculumOverview } from '@/components/curriculum/CurriculumOverview';
 
-// Diagnostic error boundary — shows the error on screen
-class DashboardErrorBoundary extends Component<
+class LearnErrorBoundary extends Component<
   { children: ReactNode },
   { error: Error | null }
 > {
@@ -16,13 +15,13 @@ class DashboardErrorBoundary extends Component<
     return { error };
   }
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('[Dashboard Error]', error, info);
+    console.error('[Learn Error]', error, info);
   }
   render() {
     if (this.state.error) {
       return (
         <div style={{ padding: 40, fontFamily: 'monospace', color: '#900' }}>
-          <h2>Dashboard Error</h2>
+          <h2>Learn Error</h2>
           <pre style={{ whiteSpace: 'pre-wrap' }}>
             {this.state.error.message}
           </pre>
@@ -36,19 +35,20 @@ class DashboardErrorBoundary extends Component<
   }
 }
 
-export default function Dashboard() {
+export default function Learn() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to onboarding if quiz not completed
     if (!hasCompletedQuiz()) {
       navigate('/');
     }
   }, [navigate]);
 
   return (
-    <DashboardErrorBoundary>
-      <SacredRhythmDashboard />
-    </DashboardErrorBoundary>
+    <LearnErrorBoundary>
+      <div className="h-screen bg-background">
+        <CurriculumOverview />
+      </div>
+    </LearnErrorBoundary>
   );
 }

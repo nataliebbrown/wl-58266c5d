@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { BookOpen, Sparkles, Compass, ChevronRight, Calendar, X } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
@@ -6,6 +7,9 @@ import { useDrawerExpand } from './DrawerExpandContext';
 import { getReadingHistory, fetchPassage, type BibleReference, type BiblePassage } from '@/lib/bibleApi';
 import { getRecommendedReading, getRecommendedReadingPair, type BibleRecommendation } from '@/lib/bibleRecommendations';
 import { getQuizData } from '@/lib/onboardingState';
+import { BibleSophiaPane } from '@/components/bible/BibleSophiaPane';
+import { FloatingSophiaButton } from '@/components/sophia/FloatingSophiaButton';
+import type { BibleVerse } from '@/lib/bibleApi';
 
 // ============ Topic Filters ============
 
@@ -378,10 +382,48 @@ function BrowseRow({ onClick }: { onClick: () => void }) {
 // ============ Expanded Content ============
 
 function ExpandedBible({ initialReference }: { initialReference?: BibleReference }) {
+  const [showSophia, setShowSophia] = useState(false);
+  const [sophiaVerse, setSophiaVerse] = useState<BibleVerse | undefined>();
+  const [sophiaRef, setSophiaRef] = useState<BibleReference | undefined>();
+  const [sophiaKey, setSophiaKey] = useState(0);
+
+  const handleAskSophia = useCallback((verse: BibleVerse, ref: BibleReference) => {
+    setSophiaVerse(verse);
+    setSophiaRef(ref);
+    setSophiaKey(k => k + 1);
+    setShowSophia(true);
+  }, []);
+
+  const handleOpenSophia = useCallback(() => {
+    setSophiaVerse(undefined);
+    setSophiaRef(undefined);
+    setSophiaKey(k => k + 1);
+    setShowSophia(true);
+  }, []);
+
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-      <Bible embedded initialReference={initialReference} />
-    </Suspense>
+    <div className="flex h-full">
+      <div className="flex-1 min-w-0">
+        <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
+          <Bible embedded initialReference={initialReference} onAskSophia={handleAskSophia} />
+        </Suspense>
+      </div>
+
+      <AnimatePresence>
+        {showSophia && (
+          <BibleSophiaPane
+            key={sophiaKey}
+            onClose={() => setShowSophia(false)}
+            verse={sophiaVerse}
+            reference={sophiaRef}
+          />
+        )}
+      </AnimatePresence>
+
+      {!showSophia && (
+        <FloatingSophiaButton onClick={handleOpenSophia} />
+      )}
+    </div>
   );
 }
 
@@ -615,15 +657,14 @@ function ActiveReadingCard({
       {/* Passage preview */}
       <button
         onClick={() => expandBible(resumeRef)}
-        className="mx-5 flex-1 min-h-0 rounded-xl relative overflow-hidden text-left transition-colors"
-        style={{ backgroundColor: '#F5F2ED' }}
+        className="mx-5 flex-1 min-h-0 rounded-xl relative overflow-hidden text-left transition-colors bg-[#F5F2ED] dark:bg-[#24241F]"
       >
         <div className="px-4 pt-3 pb-6">
           {preview ? (
-            <p className="text-[13px] leading-relaxed text-foreground/70">
+            <p className="text-[13px] leading-relaxed text-foreground/70 dark:text-[#A5A597]">
               {preview.verses.map((v) => (
                 <span key={v.number}>
-                  <sup className="text-[9px] text-foreground/30 mr-0.5">{v.number}</sup>
+                  <sup className="text-[9px] text-foreground/30 dark:text-[#A5A597]/40 mr-0.5">{v.number}</sup>
                   {v.text}{' '}
                 </span>
               ))}
@@ -638,10 +679,7 @@ function ActiveReadingCard({
         </div>
         {/* Fade-out gradient */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-28 z-10 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, rgba(245,242,237,0), #F5F2ED)',
-          }}
+          className="absolute bottom-0 left-0 right-0 h-28 z-10 pointer-events-none scripture-preview-fade"
         />
       </button>
 

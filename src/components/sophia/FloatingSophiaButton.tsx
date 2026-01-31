@@ -1,9 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, Suspense, lazy } from 'react';
+import { useState } from 'react';
 import { MessageCircle, History, Sparkles } from 'lucide-react';
-
-// Lazy load NoiseOrb for performance
-const NoiseOrb = lazy(() => import('../NoiseOrb'));
+import sophiaOrb from '@/assets/sophia-orb-brown.svg';
 
 interface FloatingSophiaButtonProps {
   onClick: () => void;
@@ -102,11 +100,11 @@ export function FloatingSophiaButton({ onClick, onOpenHistory, onLearnToday }: F
         whileTap={{ scale: 0.95 }}
         aria-label="Talk to Sophia"
       >
-        {/* Outer soft glow - Sophia brand colors */}
+        {/* Outer soft glow */}
         <motion.div
           className="absolute inset-0 w-16 h-16 rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(212, 160, 48, 0.4) 0%, rgba(194, 112, 60, 0.3) 50%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(220, 215, 205, 0.5) 0%, rgba(200, 195, 185, 0.3) 50%, transparent 70%)',
             filter: 'blur(10px)',
           }}
           animate={{
@@ -120,30 +118,20 @@ export function FloatingSophiaButton({ onClick, onOpenHistory, onLearnToday }: F
           }}
         />
 
-        {/* Main orb container with NoiseOrb */}
-        <motion.div 
+        {/* Main orb container — same SVG as cinematic intro */}
+        <motion.div
           className="relative w-16 h-16 rounded-full overflow-hidden"
           animate={{
             boxShadow: isHovered
-              ? `0 0 50px rgba(212, 160, 48, 0.4), 0 0 80px rgba(194, 112, 60, 0.25)`
-              : `0 0 40px rgba(212, 160, 48, 0.25), 0 0 60px rgba(194, 112, 60, 0.15)`,
+              ? `0 0 50px rgba(220, 215, 205, 0.5), 0 0 80px rgba(200, 195, 185, 0.3)`
+              : `0 0 40px rgba(220, 215, 205, 0.3), 0 0 60px rgba(200, 195, 185, 0.2)`,
           }}
         >
-          <Suspense fallback={
-            <div 
-              className="w-full h-full rounded-full"
-              style={{
-                background: 'radial-gradient(circle at 30% 30%, #D4A030, #C2703C, #9CAEA6)',
-              }}
-            />
-          }>
-            <NoiseOrb 
-              size="100%" 
-              preset="sophia" 
-              noiseIntensity={isHovered ? 0.5 : 0.35} 
-              speed={isHovered ? 1.2 : 0.8} 
-            />
-          </Suspense>
+          <img
+            src={sophiaOrb}
+            alt="Sophia"
+            className="w-full h-full object-cover rounded-full"
+          />
         </motion.div>
       </motion.button>
     </div>

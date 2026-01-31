@@ -11,6 +11,8 @@ export interface UserContext {
   questionsAsked: number;
   insightsSaved: number;
   persona: string | null;
+  currentSeason: string | null;
+  learningStyle: string | null;
   visitCount: number;
 }
 
@@ -57,11 +59,23 @@ export function getUserContext(): UserContext {
     questionsAsked,
     insightsSaved,
     persona: quiz.spiritualBackground,
+    currentSeason: quiz.currentSeason,
+    learningStyle: quiz.learningStyle,
     visitCount: onboarding.visitCount,
   };
 }
 
 // ============ Dashboard Message ============
+
+// ============ Persona-aware Messages ============
+
+const PERSONA_MESSAGES: Record<string, string> = {
+  new_to_faith: "Welcome to your journey. I'm here whenever you're ready to explore.",
+  believer_going_deeper: "Ready to go deeper? I have some things I'd love to show you.",
+  pastor_leader: "Let's find something that fuels your ministry today.",
+  seminary_student: "What text are you wrestling with? Let's dig in together.",
+  exploring_faith: "Bring your questions — there's no wrong place to start.",
+};
 
 /** Generate Sophia's contextual dashboard message based on user state. */
 export function generateDashboardMessage(context: UserContext): string {
@@ -80,12 +94,27 @@ export function generateDashboardMessage(context: UserContext): string {
     return `You've been thinking about ${context.recentThemes[0]} lately. I see something beautiful forming...`;
   }
 
-  // New user or no context — fall back to time-based greeting
+  // Persona-aware fallback
+  if (context.persona && PERSONA_MESSAGES[context.persona]) {
+    return PERSONA_MESSAGES[context.persona];
+  }
+
+  // Final fallback — time-based greeting
   const config = getTimeConfig();
   return config.greeting;
 }
 
 // ============ Contextual CTAs ============
+
+// ============ Persona-aware CTAs ============
+
+const PERSONA_CTAS: Record<string, { secondary: string; tertiary: string }> = {
+  new_to_faith: { secondary: 'Try Something New', tertiary: 'Explore the Bible' },
+  believer_going_deeper: { secondary: 'Something Fresh', tertiary: 'Deep Dive' },
+  pastor_leader: { secondary: 'Prepare a Teaching', tertiary: 'Personal Study' },
+  seminary_student: { secondary: 'New Research', tertiary: 'Exegetical Study' },
+  exploring_faith: { secondary: 'Ask a Question', tertiary: 'Browse Scripture' },
+};
 
 /** Generate contextual CTA buttons for the hero card. */
 export function getContextualCTAs(context: UserContext): CTAConfig[] {
@@ -112,10 +141,12 @@ export function getContextualCTAs(context: UserContext): CTAConfig[] {
     };
   }
 
+  const personaCtas = PERSONA_CTAS[context.persona ?? ''];
+
   return [
     primary,
-    { label: 'Something New', icon: '✨', action: 'new' },
-    { label: 'Explore on My Own', icon: '🔍', action: 'explore' },
+    { label: personaCtas?.secondary ?? 'Something New', icon: '✨', action: 'new' },
+    { label: personaCtas?.tertiary ?? 'Explore on My Own', icon: '🔍', action: 'explore' },
   ];
 }
 

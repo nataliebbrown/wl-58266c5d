@@ -1,10 +1,82 @@
 import { motion } from 'framer-motion';
 import { Bookmark, BookmarkCheck, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Message } from '@/types/chat';
 import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
+
+// ============ Lightweight Markdown Renderer ============
+
+function renderMarkdown(text: string): ReactNode[] {
+  const blocks = text.split(/\n{2,}/);
+
+  return blocks.map((block, blockIndex) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+
+    // Bullet list
+    if (/^[-•*]\s/m.test(trimmed)) {
+      const items = trimmed.split(/\n/).filter((l) => l.trim());
+      return (
+        <ul key={blockIndex} className="list-disc list-outside pl-5 my-2 space-y-1">
+          {items.map((item, i) => (
+            <li key={i} className="text-base leading-relaxed">
+              {renderInline(item.replace(/^[-•*]\s+/, ''))}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Numbered list
+    if (/^\d+[.)]\s/m.test(trimmed)) {
+      const items = trimmed.split(/\n/).filter((l) => l.trim());
+      return (
+        <ol key={blockIndex} className="list-decimal list-outside pl-5 my-2 space-y-1">
+          {items.map((item, i) => (
+            <li key={i} className="text-base leading-relaxed">
+              {renderInline(item.replace(/^\d+[.)]\s+/, ''))}
+            </li>
+          ))}
+        </ol>
+      );
+    }
+
+    // Regular paragraph
+    return (
+      <p key={blockIndex} className="text-base leading-relaxed mb-3 last:mb-0">
+        {renderInline(trimmed)}
+      </p>
+    );
+  });
+}
+
+function renderInline(text: string): ReactNode[] {
+  // Split on bold markers: **text** or *text* (single for italic)
+  const parts: ReactNode[] = [];
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    if (match[1]) {
+      parts.push(<strong key={match.index} className="font-semibold">{match[1]}</strong>);
+    } else if (match[2]) {
+      parts.push(<em key={match.index}>{match[2]}</em>);
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
 
 interface ChatMessageProps {
   message: Message;
@@ -16,6 +88,11 @@ interface ChatMessageProps {
 export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
+
+  const renderedContent = useMemo(
+    () => (isUser ? null : renderMarkdown(message.content)),
+    [isUser, message.content]
+  );
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -61,14 +138,20 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
         <div
           className={cn(
             "px-[18px] py-3",
-            isUser 
-              ? "chat-bubble-user" 
+            isUser
+              ? "chat-bubble-user"
               : "chat-bubble-sophia"
           )}
         >
-          <p className="text-base leading-relaxed whitespace-pre-wrap">
-            {message.content}
-          </p>
+          {isUser ? (
+            <p className="text-base leading-relaxed whitespace-pre-wrap">
+              {message.content}
+            </p>
+          ) : (
+            <div className="sophia-message-content">
+              {renderedContent}
+            </div>
+          )}
         </div>
 
         {/* Message actions - only for assistant messages */}
