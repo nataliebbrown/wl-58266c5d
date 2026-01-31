@@ -18,7 +18,7 @@ export function VerseText({ verse, highlight, isSelected, onSelect }: VerseTextP
   return (
     <span
       className={`inline cursor-pointer rounded-sm transition-colors duration-150 ${
-        isSelected ? 'ring-1 ring-[#87A96B]/30' : ''
+        isSelected ? 'ring-1 ring-hl-green/30' : ''
       }`}
       style={bgStyle}
       onClick={() => onSelect(verse.number)}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from '@/components/chat/ChatMessage';
@@ -96,7 +96,7 @@ function FirstVisitGreeting({
                     prompt: topic.prompt,
                     category: 'exploration',
                   })}
-                  className="px-4 py-2 rounded-full text-sm bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/90 hover:border-[#87A96B]/30 transition-all duration-200 text-foreground/80 hover:text-foreground"
+                  className="px-4 py-2 rounded-full text-sm bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/90 hover:border-hl-green/30 transition-all duration-200 text-foreground/80 hover:text-foreground"
                 >
                   {topic.title}
                 </motion.button>
@@ -111,14 +111,13 @@ function FirstVisitGreeting({
 
 // ============ Main Chat Component ============
 
-export default function Chat({ embedded }: { embedded?: boolean } = {}) {
+export default function Chat() {
   const navigate = useNavigate();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // State
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [crisisModal, setCrisisModal] = useState<{ open: boolean; level: 'low' | 'medium' | 'high' }>({
     open: false,
     level: 'low'
@@ -170,33 +169,12 @@ export default function Chat({ embedded }: { embedded?: boolean } = {}) {
   // Get suggested topics based on persona
   const suggestedTopics = getSuggestedTopics(userPersona || undefined);
 
-  // Initialize dark mode from localStorage (default to light mode)
+  // Redirect to onboarding if not completed
   useEffect(() => {
-    const savedMode = localStorage.getItem('wl-dark-mode');
-    if (savedMode !== null) {
-      setIsDarkMode(savedMode === 'true');
-    } else {
-      // Default to light mode
-      setIsDarkMode(false);
-    }
-  }, []);
-
-  // Apply dark mode class
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('wl-dark-mode', String(isDarkMode));
-  }, [isDarkMode]);
-
-  // Redirect to onboarding if not completed (skip when embedded in modal)
-  useEffect(() => {
-    if (!embedded && !hasCompletedOnboarding()) {
+    if (!hasCompletedOnboarding()) {
       navigate('/');
     }
-  }, [embedded, hasCompletedOnboarding, navigate]);
+  }, [hasCompletedOnboarding, navigate]);
 
   // Detect first visit from quiz completion
   useEffect(() => {
@@ -297,7 +275,7 @@ export default function Chat({ embedded }: { embedded?: boolean } = {}) {
   const showFirstVisitGreeting = messages.length === 0 && isFirstVisit;
 
   return (
-    <div className={`${embedded ? 'h-full' : 'h-screen'} flex chat-bg-light transition-colors duration-300`}>
+    <div className="h-full flex transition-colors duration-300">
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
@@ -318,57 +296,26 @@ export default function Chat({ embedded }: { embedded?: boolean } = {}) {
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        {!embedded && (
-          <header className="h-16 flex items-center justify-between px-4 md:px-10">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+        {/* Sidebar toggle (mobile) */}
+        <div className="flex items-center gap-3 px-4 py-2 md:hidden flex-shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          {currentConversation && (
+            <p className="text-sm font-medium text-foreground/60 truncate">
+              {currentConversation.title}
+            </p>
+          )}
+        </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/dashboard')}
-                className="gap-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="chat-sophia-avatar rounded-full">
-                <SophiaAvatar size="sm" />
-              </div>
-              <div className="text-left">
-                <h1 className="font-semibold text-sm text-foreground">Sophia</h1>
-                <p className="text-xs text-muted-foreground">
-                  {currentConversation?.title || 'Your spiritual companion'}
-                </p>
-              </div>
-            </div>
-
-            {/* Dark mode toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-            >
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-          </header>
-        )}
-
-        {/* Chat container with glassmorphism */}
-        <div className="flex-1 flex flex-col min-h-0 px-4 md:px-10 pb-4 md:pb-6">
-          <div className="flex-1 flex flex-col chat-container-glass overflow-hidden">
+        {/* Chat content */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 flex flex-col overflow-hidden">
             {/* Messages area */}
             <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 md:px-8 py-6">
               <div className="max-w-[900px] mx-auto">
@@ -399,7 +346,7 @@ export default function Chat({ embedded }: { embedded?: boolean } = {}) {
                         index={index}
                       />
                     ))}
-                    
+
                     <AnimatePresence>
                       {isTyping && <TypingIndicator />}
                     </AnimatePresence>

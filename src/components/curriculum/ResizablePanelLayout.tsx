@@ -114,7 +114,7 @@ export function ResizablePanelLayout({
               onMouseDown={() => handleMouseDown(i)}
               style={{ touchAction: 'none' }}
             >
-              <div className="absolute inset-y-0 left-0 right-0 bg-border/30 group-hover:bg-[#87A96B]/40 transition-colors" />
+              <div className="absolute inset-y-0 left-0 right-0 bg-border/30 group-hover:bg-hl-green/40 transition-colors" />
             </div>
           )}
         </div>

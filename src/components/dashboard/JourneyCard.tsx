@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Route } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
-import { useDrawerExpand } from './DrawerExpandContext';
 import { getQuizData } from '@/lib/onboardingState';
 import sophiaOrb from '@/assets/sophia-orb-brown.svg';
 
@@ -58,7 +57,6 @@ const HORIZON_RADIUS = 10;
 
 export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
   const navigate = useNavigate();
-  const { expand } = useDrawerExpand();
   const isEmpty = nodes.length === 0;
   const quizData = getQuizData();
   const personalized = JOURNEY_CONTENT[quizData.spiritualBackground ?? ''];
@@ -73,48 +71,15 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
   const nodeCount = isEmpty ? 1 : nodes.length;
   const svgHeight = (nodeCount + 1) * NODE_SPACING + 40; // +1 for horizon, +40 for padding
 
-  // Expanded modal: unconstrained height for the full journey
-  const expandedSvgHeight = (nodeCount + 1) * NODE_SPACING + 40;
-
-  const handleExpand = () => expand(
-    <div className="max-w-2xl mx-auto px-8 py-12">
-      <h2 className="text-2xl font-semibold text-foreground mb-8">Your Journey</h2>
-      <svg
-        width="100%"
-        height={expandedSvgHeight}
-        viewBox={`0 0 260 ${expandedSvgHeight}`}
-        className="block"
-      >
-        {isEmpty ? (
-          <EmptyPath />
-        ) : (
-          <PopulatedPath nodes={nodes} />
-        )}
-      </svg>
-      {displayNarration && (
-        <div className="flex items-start gap-2.5 mt-8">
-          <img
-            src={sophiaOrb}
-            alt=""
-            className="w-5 h-5 mt-0.5 flex-shrink-0 opacity-60"
-          />
-          <p className="text-sm italic text-muted-foreground leading-relaxed">
-            &ldquo;{displayNarration}&rdquo;
-          </p>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
       <div className="px-5 pt-5">
         {/* Header — icon + expand */}
         <div className="flex items-center justify-between mb-4">
-          <div className="w-9 h-9 rounded-xl bg-[#756653]/10 dark:bg-[#A5A597]/10 flex items-center justify-center">
-            <Route className="w-4.5 h-4.5 text-[#756653] dark:text-[#A5A597]" />
+          <div className="w-9 h-9 rounded-xl bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center">
+            <Route className="w-4.5 h-4.5 text-wl-olive dark:text-wl-olive-300" />
           </div>
-          <ExpandButton onClick={handleExpand} />
+          <ExpandButton onClick={() => navigate('/journey')} />
         </div>
 
         {/* Title */}
@@ -166,7 +131,7 @@ export function JourneyCard({ nodes = [], narration }: JourneyCardProps) {
         <div className="mt-auto px-5 pb-5 pt-3">
           <button
             onClick={() => navigate('/journey')}
-            className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
+            className="w-full py-2.5 rounded-xl text-sm font-medium text-wl-olive dark:text-wl-olive-300 border border-wl-olive/25 dark:border-wl-olive-300/25 hover:bg-wl-olive/8 dark:hover:bg-wl-olive-300/8 transition-colors"
           >
             See Full Journey
           </button>
@@ -201,7 +166,7 @@ function EmptyPath() {
         cx={PATH_LEFT}
         cy={startY}
         r={NODE_RADIUS_CURRENT}
-        className="text-[#756653] dark:text-[#A5A597]"
+        className="text-wl-olive dark:text-wl-olive-300"
         fill="currentColor"
         animate={{ scale: [1, 1.15, 1] }}
         transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
@@ -271,7 +236,7 @@ function PopulatedPath({ nodes }: { nodes: JourneyNode[] }) {
                 cx={PATH_LEFT}
                 cy={y}
                 r={NODE_RADIUS_CURRENT}
-                className="text-[#756653] dark:text-[#A5A597]"
+                className="text-wl-olive dark:text-wl-olive-300"
                 fill="currentColor"
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}

@@ -132,7 +132,7 @@ export const MODULE_INFO: Record<ModuleType, {
     name: 'Formation Hub',
     description: 'Your spiritual growth command center',
     icon: 'compass',
-    color: '#756653', // Olive Wood
+    color: '#746653', // Olive Wood
     available: true,
   },
   wisdom: {
@@ -160,7 +160,7 @@ export const MODULE_INFO: Record<ModuleType, {
     name: 'TimeWalk',
     description: 'Experience biblical history',
     icon: 'clock',
-    color: '#756653', // Olive Wood
+    color: '#746653', // Olive Wood
     available: false,
   },
   translation: {

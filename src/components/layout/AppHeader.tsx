@@ -1,122 +1,42 @@
-import { useState, lazy, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Home,
-  MessageCircle,
-  BookOpen,
-  Calendar,
-  Compass,
-  Lightbulb,
-  GitBranch,
-  Clock,
   Settings,
   User,
   Sun,
   Moon,
-  LucideIcon,
 } from 'lucide-react';
 import logoBlack from '@/assets/logo_black.svg';
 import logoWhite from '@/assets/logo_white.svg';
 import type { ModuleType } from '@/types/wholelicity';
 import { ModulePreviewModal } from '@/components/modules/ModulePreviewModal';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useDrawerExpand } from './DrawerExpandContext';
-
-const Chat = lazy(() => import('@/pages/Chat'));
-const Bible = lazy(() => import('@/pages/Bible'));
-const CurriculumOverview = lazy(() => import('@/components/curriculum/CurriculumOverview').then(m => ({ default: m.CurriculumOverview })));
-
-// ============ Quick Access Items ============
-
-interface QuickAccessItem {
-  icon: LucideIcon;
-  label: string;
-  id: string;
-  available: boolean;
-  moduleType?: ModuleType;
-}
-
-const quickAccessItems: QuickAccessItem[] = [
-  { icon: Home, label: 'Home', id: 'home', available: true },
-  { icon: MessageCircle, label: 'Chat', id: 'chat', available: true, moduleType: 'wisdom' },
-  { icon: BookOpen, label: 'Bible', id: 'bible', available: true },
-  { icon: Compass, label: 'Learn', id: 'learn', available: true },
-  { icon: Calendar, label: 'Today', id: 'today', available: false, moduleType: 'formation' },
-  { icon: Lightbulb, label: 'Insights', id: 'insights', available: true },
-  { icon: GitBranch, label: 'Patterns', id: 'patterns', available: false, moduleType: 'patterns' },
-  { icon: Clock, label: 'TimeWalk', id: 'timewalk', available: false, moduleType: 'timewalk' },
-];
-
-// ============ Lazy page wrappers ============
-
-function ExpandedChat() {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-      <Chat embedded />
-    </Suspense>
-  );
-}
-
-function ExpandedBible() {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-      <Bible embedded />
-    </Suspense>
-  );
-}
-
-function ExpandedLearn() {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-      <CurriculumOverview />
-    </Suspense>
-  );
-}
+import { navItems, type NavItem } from './navItems';
 
 // ============ Component ============
 
-interface DashboardHeaderProps {
-  timeLabel?: string;
+interface AppHeaderProps {
   isDarkMode?: boolean;
   onToggleDarkMode?: () => void;
 }
 
-export function DashboardHeader({ isDarkMode, onToggleDarkMode }: DashboardHeaderProps) {
+export function AppHeader({ isDarkMode, onToggleDarkMode }: AppHeaderProps) {
   const navigate = useNavigate();
-  const { expand, collapse, expandedId } = useDrawerExpand();
+  const location = useLocation();
   const [previewModule, setPreviewModule] = useState<ModuleType | null>(null);
   const { getPersonaFromOnboarding } = useUserProfile();
   const personaData = getPersonaFromOnboarding();
   const userName = personaData?.name || 'Natalie';
 
-  const iconColor = isDarkMode ? '#F1F1EF' : '#5A4C3A';
-  const navIconColor = isDarkMode ? '#F1F1EF' : '#5A4C3A';
+  const iconColor = isDarkMode ? '#FBF9F5' : '#5A4C3A';
+  const navIconColor = isDarkMode ? '#FBF9F5' : '#5A4C3A';
 
-  const handleNavClick = (item: QuickAccessItem) => {
+  const handleNavClick = (item: NavItem) => {
     if (!item.available) {
       if (item.moduleType) setPreviewModule(item.moduleType);
       return;
     }
-
-    switch (item.id) {
-      case 'home':
-        collapse();
-        break;
-      case 'chat':
-        expand(<ExpandedChat />, 'chat');
-        break;
-      case 'bible':
-        expand(<ExpandedBible />, 'bible');
-        break;
-      case 'learn':
-        expand(<ExpandedLearn />, 'learn');
-        break;
-      case 'insights':
-        navigate('/insights');
-        break;
-      default:
-        break;
-    }
+    navigate(item.path);
   };
 
   return (
@@ -129,13 +49,11 @@ export function DashboardHeader({ isDarkMode, onToggleDarkMode }: DashboardHeade
           className="h-7 flex-shrink-0"
         />
 
-        {/* Center — Quick Access Nav Icons */}
-        <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
-          {quickAccessItems.map((item) => {
+        {/* Center — Nav Icons (hidden on mobile/tablet where BottomTabBar shows) */}
+        <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8">
+          {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              (item.id === 'home' && expandedId === null) ||
-              (item.id !== 'home' && expandedId === item.id);
+            const isActive = location.pathname === item.path;
             const activeBg = isDarkMode
               ? 'rgba(241, 241, 239, 0.15)'
               : 'rgba(90, 76, 58, 0.12)';
@@ -169,8 +87,8 @@ export function DashboardHeader({ isDarkMode, onToggleDarkMode }: DashboardHeade
                 {!isActive && (
                   <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150"
                     style={{
-                      background: isDarkMode ? '#F1F1EF' : '#2E2E28',
-                      color: isDarkMode ? '#171714' : '#F1F1EF',
+                      background: isDarkMode ? '#FBF9F5' : '#2F2921',
+                      color: isDarkMode ? '#171411' : '#FBF9F5',
                     }}
                   >
                     {item.label}
@@ -211,16 +129,27 @@ export function DashboardHeader({ isDarkMode, onToggleDarkMode }: DashboardHeade
 
           {/* Dark/Light mode toggle */}
           {onToggleDarkMode && (
-            <button
-              onClick={onToggleDarkMode}
-              className="transition-opacity hover:opacity-70"
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {isDarkMode
-                ? <Sun className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
-                : <Moon className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
-              }
-            </button>
+            <div className="relative group flex items-center">
+              <button
+                onClick={onToggleDarkMode}
+                className="transition-opacity hover:opacity-70"
+                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDarkMode
+                  ? <Sun className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
+                  : <Moon className="w-[18px] h-[18px]" style={{ color: iconColor }} strokeWidth={1.5} />
+                }
+              </button>
+              <span
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150"
+                style={{
+                  background: isDarkMode ? '#FBF9F5' : '#2F2921',
+                  color: isDarkMode ? '#171411' : '#FBF9F5',
+                }}
+              >
+                {isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              </span>
+            </div>
           )}
         </div>
       </header>

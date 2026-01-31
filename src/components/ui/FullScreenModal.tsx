@@ -51,7 +51,7 @@ export function FullScreenModal({ open, onClose, children }: FullScreenModalProp
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            <div className="relative h-full w-full bg-[#F8F6F0] overflow-auto">
+            <div className="relative h-full w-full bg-wl-linen-300 overflow-auto">
               {/* Close button */}
               <button
                 onClick={onClose}

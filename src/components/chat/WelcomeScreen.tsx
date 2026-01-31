@@ -69,15 +69,15 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
                 "group flex items-start gap-4 p-5 rounded-xl text-left",
                 "bg-card/50 backdrop-blur-sm",
                 "border border-border/50",
-                "hover:bg-card/80 hover:border-[#87A96B]/30 hover:shadow-lg",
+                "hover:bg-card/80 hover:border-hl-green/30 hover:shadow-lg",
                 "transition-all duration-200"
               )}
             >
               <div className={cn(
                 "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
-                "bg-[#87A96B]/10 group-hover:bg-[#87A96B]/20 transition-colors"
+                "bg-hl-green/10 group-hover:bg-hl-green/20 transition-colors"
               )}>
-                <Icon className="h-5 w-5" style={{ color: '#87A96B' }} />
+                <Icon className="h-5 w-5 text-hl-green" />
               </div>
               <div>
                 <h3 className="font-medium text-foreground group-hover:text-[#B85A3E] transition-colors">

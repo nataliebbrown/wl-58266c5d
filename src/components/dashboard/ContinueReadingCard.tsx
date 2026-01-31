@@ -1,15 +1,11 @@
-import { lazy, Suspense, useState, useEffect, useCallback } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookOpen, Sparkles, Compass, ChevronRight, Calendar, X } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
-import { useDrawerExpand } from './DrawerExpandContext';
 import { getReadingHistory, fetchPassage, type BibleReference, type BiblePassage } from '@/lib/bibleApi';
-import { getRecommendedReading, getRecommendedReadingPair, type BibleRecommendation } from '@/lib/bibleRecommendations';
+import { getRecommendedReadingPair, type BibleRecommendation } from '@/lib/bibleRecommendations';
 import { getQuizData } from '@/lib/onboardingState';
-import { BibleSophiaPane } from '@/components/bible/BibleSophiaPane';
-import { FloatingSophiaButton } from '@/components/sophia/FloatingSophiaButton';
-import type { BibleVerse } from '@/lib/bibleApi';
 
 // ============ Topic Filters ============
 
@@ -330,8 +326,6 @@ const READING_PLANS: Record<string, ReadingPlan> = {
   },
 };
 
-const Bible = lazy(() => import('@/pages/Bible'));
-
 // ============ Sub-components ============
 
 function RecommendationRow({
@@ -344,16 +338,13 @@ function RecommendationRow({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 w-full text-left py-3.5 px-2 -mx-2 rounded-xl hover:bg-foreground/[0.03] transition-colors group"
+      className="flex items-center gap-3 w-full text-left py-3.5 px-5 rounded-xl border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm transition-all duration-200 group"
     >
-      <div className="w-9 h-9 rounded-lg bg-[#756653]/10 dark:bg-[#A5A597]/10 flex items-center justify-center flex-shrink-0">
-        <Sparkles className="w-4 h-4 text-[#756653]/70 dark:text-[#A5A597]/70" />
-      </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground/80 truncate">
           {recommendation.label}
         </p>
-        <p className="text-[11px] text-foreground/40">
+        <p className="text-[11px] text-foreground/40 mt-1">
           {recommendation.reason}
         </p>
       </div>
@@ -366,7 +357,7 @@ function BrowseRow({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 w-full text-left py-2 px-2 -mx-2 rounded-xl hover:bg-foreground/[0.03] transition-colors group"
+      className="flex items-center gap-3 w-full text-left py-2 px-2 rounded-xl hover:bg-foreground/[0.03] transition-colors group"
     >
       <div className="w-8 h-8 rounded-lg bg-foreground/[0.04] flex items-center justify-center flex-shrink-0">
         <Compass className="w-4 h-4 text-foreground/35" />
@@ -381,60 +372,13 @@ function BrowseRow({ onClick }: { onClick: () => void }) {
 
 // ============ Expanded Content ============
 
-function ExpandedBible({ initialReference }: { initialReference?: BibleReference }) {
-  const [showSophia, setShowSophia] = useState(false);
-  const [sophiaVerse, setSophiaVerse] = useState<BibleVerse | undefined>();
-  const [sophiaRef, setSophiaRef] = useState<BibleReference | undefined>();
-  const [sophiaKey, setSophiaKey] = useState(0);
-
-  const handleAskSophia = useCallback((verse: BibleVerse, ref: BibleReference) => {
-    setSophiaVerse(verse);
-    setSophiaRef(ref);
-    setSophiaKey(k => k + 1);
-    setShowSophia(true);
-  }, []);
-
-  const handleOpenSophia = useCallback(() => {
-    setSophiaVerse(undefined);
-    setSophiaRef(undefined);
-    setSophiaKey(k => k + 1);
-    setShowSophia(true);
-  }, []);
-
-  return (
-    <div className="flex h-full">
-      <div className="flex-1 min-w-0">
-        <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-          <Bible embedded initialReference={initialReference} onAskSophia={handleAskSophia} />
-        </Suspense>
-      </div>
-
-      <AnimatePresence>
-        {showSophia && (
-          <BibleSophiaPane
-            key={sophiaKey}
-            onClose={() => setShowSophia(false)}
-            verse={sophiaVerse}
-            reference={sophiaRef}
-          />
-        )}
-      </AnimatePresence>
-
-      {!showSophia && (
-        <FloatingSophiaButton onClick={handleOpenSophia} />
-      )}
-    </div>
-  );
-}
-
 // ============ Main Component ============
 
 export function ContinueReadingCard() {
-  const { expand } = useDrawerExpand();
+  const navigate = useNavigate();
   const history = getReadingHistory();
 
   const mostRecent = history[0];
-  const recommendation = getRecommendedReading(history, mostRecent?.book);
   const recommendationPair = getRecommendedReadingPair(history, mostRecent?.book);
   const quizData = getQuizData();
 
@@ -454,15 +398,11 @@ export function ContinueReadingCard() {
     }
   })();
 
-  const expandBible = (ref?: BibleReference) =>
-    expand(<ExpandedBible initialReference={ref} />, 'bible');
-
-  const handleNavigateToRec = () => {
-    expandBible({ book: recommendation.book, chapter: recommendation.chapter });
-  };
+  const navigateToBible = (ref?: BibleReference) =>
+    navigate('/bible', ref ? { state: { initialReference: ref } } : undefined);
 
   const handleExpand = () =>
-    expandBible(mostRecent ? { book: mostRecent.book, chapter: mostRecent.chapter } : undefined);
+    navigateToBible(mostRecent ? { book: mostRecent.book, chapter: mostRecent.chapter } : undefined);
 
   const readingPlan = READING_PLANS[quizData.spiritualBackground ?? ''] ?? READING_PLANS.exploring_faith;
 
@@ -476,13 +416,13 @@ export function ContinueReadingCard() {
 
         {/* Header */}
         <div className="px-5 pt-8 pb-4 text-center flex flex-col items-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#756653]/10 dark:bg-[#E3E3DE]/10 flex items-center justify-center mb-6">
-            <BookOpen className="w-8 h-8 text-[#756653]/60 dark:text-[#E3E3DE]/60" />
+          <div className="w-16 h-16 rounded-2xl bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center mb-6">
+            <BookOpen className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
           </div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-[#A5A597]">
+          <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300">
             Scripture
           </p>
-          <h3 className="text-2xl leading-snug mt-2 text-[#262721] dark:text-[#D0D0C8]">
+          <h3 className="text-2xl leading-snug mt-2 text-wl-earth dark:text-wl-olive-200">
             {emptyStateHeadline}
           </h3>
           <p className="text-sm text-foreground/40 mt-1">
@@ -503,8 +443,8 @@ export function ContinueReadingCard() {
                   className={`
                     flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200
                     ${isActive
-                      ? 'bg-[#756653]/12 border-[#756653]/40 text-foreground/80 dark:border-[#A5A597] dark:bg-[#A5A597]/12 dark:text-[#D0D0C8]'
-                      : 'border-[#756653]/10 bg-[#756653]/[0.03] text-foreground/60 hover:border-[#756653]/25 hover:bg-[#756653]/5 hover:text-foreground/80 dark:border-[#A5A597]/20 dark:bg-[#A5A597]/[0.06] dark:text-[#A5A597] dark:hover:border-[#A5A597]/50 dark:hover:bg-[#A5A597]/10'}
+                      ? 'bg-wl-olive/12 border-wl-olive/40 text-foreground/80 dark:border-wl-olive-300 dark:bg-wl-olive-300/12 dark:text-wl-olive-200'
+                      : 'border-wl-olive/10 bg-wl-olive/[0.03] text-foreground/60 hover:border-wl-olive/25 hover:bg-wl-olive/5 hover:text-foreground/80 dark:border-wl-olive-300/20 dark:bg-wl-olive-300/[0.06] dark:text-wl-olive-300 dark:hover:border-wl-olive-300/50 dark:hover:bg-wl-olive-300/10'}
                   `}
                 >
                   {filter.label}
@@ -521,11 +461,11 @@ export function ContinueReadingCard() {
             activeFilter.passages.map((passage) => (
               <button
                 key={passage.book + passage.chapter}
-                onClick={() => expandBible({ book: passage.book, chapter: passage.chapter })}
-                className="w-full rounded-xl text-left px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200"
+                onClick={() => navigateToBible({ book: passage.book, chapter: passage.chapter })}
+                className="w-full rounded-xl text-left px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <BookOpen className="w-4 h-4 text-[#756653]/60 dark:text-[#A5A597]/60 flex-shrink-0" />
+                  <BookOpen className="w-4 h-4 text-wl-olive/60 dark:text-wl-olive-300/60 flex-shrink-0" />
                   <span className="text-base font-semibold text-foreground/85">{passage.label}</span>
                 </div>
                 <p className="text-[13px] leading-relaxed text-foreground/55">
@@ -539,11 +479,11 @@ export function ContinueReadingCard() {
               {recommendationPair.map((rec) => (
                 <button
                   key={rec.book + rec.chapter}
-                  onClick={() => expandBible({ book: rec.book, chapter: rec.chapter })}
-                  className="w-full rounded-xl text-left px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200"
+                  onClick={() => navigateToBible({ book: rec.book, chapter: rec.chapter })}
+                  className="w-full rounded-xl text-left px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-4 h-4 text-[#756653]/60 dark:text-[#A5A597]/60 flex-shrink-0" />
+                    <Sparkles className="w-4 h-4 text-wl-olive/60 dark:text-wl-olive-300/60 flex-shrink-0" />
                     <span className="text-base font-semibold text-foreground/85">{rec.label}</span>
                     <span className="ml-auto text-[9px] font-medium uppercase tracking-wider text-foreground/30">
                       Start Here
@@ -557,15 +497,15 @@ export function ContinueReadingCard() {
 
               {/* Reading plan card */}
               <button
-                onClick={() => expandBible({ book: readingPlan.firstBook, chapter: readingPlan.firstChapter })}
-                className="w-full rounded-xl text-left px-5 py-5 border border-foreground/[0.08] hover:border-[#756653]/25 dark:hover:border-[#A5A597]/25 hover:bg-[#756653]/[0.03] dark:hover:bg-[#A5A597]/[0.03] hover:shadow-sm transition-all duration-200"
+                onClick={() => navigateToBible({ book: readingPlan.firstBook, chapter: readingPlan.firstChapter })}
+                className="w-full rounded-xl text-left px-5 py-5 border border-foreground/[0.08] hover:border-wl-olive/25 dark:hover:border-wl-olive-300/25 hover:bg-wl-olive/[0.03] dark:hover:bg-wl-olive-300/[0.03] hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 text-[#756653]/50 dark:text-[#A5A597]/50 flex-shrink-0" />
+                  <Calendar className="w-4 h-4 text-wl-olive/50 dark:text-wl-olive-300/50 flex-shrink-0" />
                   <span className="text-base font-semibold text-foreground/80">{readingPlan.name}</span>
                 </div>
                 <div className="flex items-center gap-2 mb-2.5">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-[#756653]/60 dark:text-[#A5A597]/60 bg-[#756653]/10 dark:bg-[#A5A597]/10 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-wl-olive/60 dark:text-wl-olive-300/60 bg-wl-olive/10 dark:bg-wl-olive-300/10 px-2 py-0.5 rounded-full">
                     {readingPlan.duration}
                   </span>
                   <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/30">
@@ -583,7 +523,7 @@ export function ContinueReadingCard() {
         {/* Browse all */}
         <div className="px-5 pb-4 pt-2 border-t border-foreground/[0.05]">
           <button
-            onClick={() => expandBible()}
+            onClick={() => navigateToBible()}
             className="flex items-center justify-center gap-1 w-full text-xs font-medium text-foreground/40 hover:text-foreground/60 transition-colors py-1"
           >
             Browse All Books
@@ -597,10 +537,9 @@ export function ContinueReadingCard() {
   return (
     <ActiveReadingCard
       mostRecent={mostRecent}
-      recommendation={recommendation}
-      expandBible={expandBible}
+      recommendations={recommendationPair}
+      navigateToBible={navigateToBible}
       handleExpand={handleExpand}
-      handleNavigateToRec={handleNavigateToRec}
     />
   );
 }
@@ -609,27 +548,45 @@ export function ContinueReadingCard() {
 
 function ActiveReadingCard({
   mostRecent,
-  recommendation,
-  expandBible,
+  recommendations,
+  navigateToBible,
   handleExpand,
-  handleNavigateToRec,
 }: {
   mostRecent: { book: string; chapter: number };
-  recommendation: BibleRecommendation;
-  expandBible: (ref?: BibleReference) => void;
+  recommendations: BibleRecommendation[];
+  navigateToBible: (ref?: BibleReference) => void;
   handleExpand: () => void;
-  handleNavigateToRec: () => void;
 }) {
   const [preview, setPreview] = useState<BiblePassage | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    fetchPassage({ book: mostRecent.book, chapter: mostRecent.chapter }).then(
-      (passage) => {
-        if (!cancelled) setPreview(passage);
-      }
-    );
-    return () => { cancelled = true; };
+    setPreviewFailed(false);
+    setPreview(null);
+
+    const timeout = setTimeout(() => {
+      if (!cancelled) setPreviewFailed(true);
+    }, 5000);
+
+    fetchPassage({ book: mostRecent.book, chapter: mostRecent.chapter })
+      .then((passage) => {
+        if (!cancelled) {
+          clearTimeout(timeout);
+          setPreview(passage);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          clearTimeout(timeout);
+          setPreviewFailed(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [mostRecent.book, mostRecent.chapter]);
 
   const resumeRef: BibleReference = { book: mostRecent.book, chapter: mostRecent.chapter };
@@ -639,10 +596,10 @@ function ActiveReadingCard({
       {/* Header — label + expand */}
       <div className="flex items-center justify-between px-5 pt-5">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-[#756653]/10 dark:bg-[#E3E3DE]/10 flex items-center justify-center flex-shrink-0">
-            <BookOpen className="w-4 h-4 text-[#756653]/70 dark:text-[#E3E3DE]/70" />
+          <div className="w-9 h-9 rounded-lg bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center flex-shrink-0">
+            <BookOpen className="w-4 h-4 text-wl-olive/70 dark:text-wl-olive-300/70" />
           </div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 dark:text-[#A5A597]">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 dark:text-wl-olive-300">
             Continue Reading
           </p>
         </div>
@@ -650,30 +607,34 @@ function ActiveReadingCard({
       </div>
 
       {/* Book + Chapter headline */}
-      <h3 className="text-lg font-semibold text-foreground dark:text-[#D0D0C8] leading-tight px-5 mt-2 mb-3">
+      <h3 className="text-lg font-semibold text-foreground dark:text-wl-olive-200 leading-tight px-5 mt-2 mb-3">
         {mostRecent.book} <span className="text-foreground/50 font-normal">{mostRecent.chapter}</span>
       </h3>
 
       {/* Passage preview */}
       <button
-        onClick={() => expandBible(resumeRef)}
-        className="mx-5 flex-1 min-h-0 rounded-xl relative overflow-hidden text-left transition-colors bg-[#F5F2ED] dark:bg-[#24241F]"
+        onClick={() => navigateToBible(resumeRef)}
+        className="mx-5 flex-1 min-h-0 rounded-xl relative overflow-hidden text-left transition-colors bg-wl-stone-50 dark:bg-wl-earth-800"
       >
         <div className="px-4 pt-3 pb-6">
           {preview ? (
-            <p className="text-[13px] leading-relaxed text-foreground/70 dark:text-[#A5A597]">
+            <p className="text-[13px] leading-relaxed text-foreground/70 dark:text-wl-olive-300">
               {preview.verses.map((v) => (
                 <span key={v.number}>
-                  <sup className="text-[9px] text-foreground/30 dark:text-[#A5A597]/40 mr-0.5">{v.number}</sup>
+                  <sup className="text-[9px] text-foreground/30 dark:text-wl-olive-300/40 mr-0.5">{v.number}</sup>
                   {v.text}{' '}
                 </span>
               ))}
             </p>
+          ) : previewFailed ? (
+            <p className="text-[13px] text-foreground/40 italic">
+              Couldn't load preview — tap to read the full passage.
+            </p>
           ) : (
             <div className="space-y-2 animate-pulse">
-              <div className="h-3 bg-foreground/[0.06] rounded w-full" />
-              <div className="h-3 bg-foreground/[0.06] rounded w-[90%]" />
-              <div className="h-3 bg-foreground/[0.06] rounded w-[75%]" />
+              <div className="h-3 bg-foreground/[0.06] dark:bg-foreground/[0.12] rounded w-full" />
+              <div className="h-3 bg-foreground/[0.06] dark:bg-foreground/[0.12] rounded w-[90%]" />
+              <div className="h-3 bg-foreground/[0.06] dark:bg-foreground/[0.12] rounded w-[75%]" />
             </div>
           )}
         </div>
@@ -686,8 +647,8 @@ function ActiveReadingCard({
       {/* Resume CTA */}
       <div className="px-5 pt-4 pb-4 border-b border-foreground/[0.06]">
         <button
-          onClick={() => expandBible(resumeRef)}
-          className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/10 dark:hover:bg-[#A5A597]/10 hover:border-[#756653]/40 dark:hover:border-[#A5A597]/40 hover:shadow-sm transition-all duration-200"
+          onClick={() => navigateToBible(resumeRef)}
+          className="w-full py-2.5 rounded-xl text-sm font-medium text-wl-olive dark:text-wl-olive-300 border border-wl-olive/25 dark:border-wl-olive-300/25 hover:bg-wl-olive/10 dark:hover:bg-wl-olive-300/10 hover:border-wl-olive/40 dark:hover:border-wl-olive-300/40 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
         >
           Resume Reading
         </button>
@@ -695,18 +656,28 @@ function ActiveReadingCard({
 
       {/* Recommended Reading */}
       <div className="px-5 pt-4 pb-4 border-b border-foreground/[0.06]">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 mb-1 px-2">
-          Recommended Reading
-        </p>
-        <RecommendationRow
-          recommendation={recommendation}
-          onClick={handleNavigateToRec}
-        />
+        <div className="flex items-center gap-2.5 mb-1">
+          <div className="w-9 h-9 rounded-lg bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-4 h-4 text-wl-olive/70 dark:text-wl-olive-300/70" />
+          </div>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 dark:text-wl-olive-300">
+            Recommended Reading
+          </p>
+        </div>
+        <div className="flex flex-col gap-2.5 mt-2">
+          {recommendations.map((rec) => (
+            <RecommendationRow
+              key={rec.book + rec.chapter}
+              recommendation={rec}
+              onClick={() => navigateToBible({ book: rec.book, chapter: rec.chapter })}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Browse All Books */}
       <div className="px-5 pt-3 pb-4">
-        <BrowseRow onClick={() => expandBible()} />
+        <BrowseRow onClick={() => navigateToBible()} />
       </div>
     </GlassCard>
   );

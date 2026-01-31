@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2, Circle, BookOpen, MessageCircle } from 'lucide-react';
 import type { Curriculum, Lesson } from '@/types/curriculum';
@@ -12,6 +12,7 @@ import {
   getPreviousLessonId,
   findLessonPosition,
 } from '@/lib/curriculum/curriculumProgress';
+import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import { ResizablePanelLayout } from './ResizablePanelLayout';
 import { CurriculumBiblePane } from './CurriculumBiblePane';
 import { CurriculumSophiaPanel } from './CurriculumSophiaPanel';
@@ -32,6 +33,19 @@ export function LessonView({ curriculum, lessonId, onBack, onNavigate }: LessonV
   const [isSophiaOpen, setIsSophiaOpen] = useState(false);
   const [bibleRef, setBibleRef] = useState<BibleReference | null>(null);
   const [completionToggle, setCompletionToggle] = useState(0); // trigger re-render
+  const [initialPrompt, setInitialPrompt] = useState<string | undefined>();
+
+  // Register orb intercept so floating Sophia orb opens the lesson chat pane
+  const { register, unregister, setHideOrb } = useSophiaOrbIntercept();
+
+  useEffect(() => {
+    register((prompt?: string) => {
+      setIsSophiaOpen(true);
+      setHideOrb(true);
+      if (prompt) setInitialPrompt(prompt);
+    });
+    return () => unregister();
+  }, [register, unregister, setHideOrb]);
 
   // Find the lesson in the curriculum
   const lesson = useMemo(() => {
@@ -130,7 +144,7 @@ export function LessonView({ curriculum, lessonId, onBack, onNavigate }: LessonV
                 <button
                   key={i}
                   onClick={() => handleScriptureClick(ref)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-[#87A96B] bg-[#87A96B]/10 hover:bg-[#87A96B]/20 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-hl-green bg-hl-green/10 hover:bg-hl-green/20 transition-colors"
                 >
                   <BookOpen className="w-3.5 h-3.5" />
                   {ref.label}
@@ -160,7 +174,7 @@ export function LessonView({ curriculum, lessonId, onBack, onNavigate }: LessonV
         {/* Ask Sophia button */}
         <div className="mb-8">
           <button
-            onClick={() => setIsSophiaOpen(true)}
+            onClick={() => { setIsSophiaOpen(true); setHideOrb(true); }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/70 bg-foreground/[0.04] hover:bg-foreground/[0.08] transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
@@ -174,7 +188,7 @@ export function LessonView({ curriculum, lessonId, onBack, onNavigate }: LessonV
             onClick={handleToggleComplete}
             className={`flex items-center gap-3 px-5 py-3 rounded-xl transition-colors w-full ${
               completed
-                ? 'bg-[#87A96B]/10 text-[#87A96B]'
+                ? 'bg-hl-green/10 text-hl-green'
                 : 'bg-foreground/[0.04] text-foreground/70 hover:bg-foreground/[0.08]'
             }`}
           >
@@ -212,8 +226,18 @@ export function LessonView({ curriculum, lessonId, onBack, onNavigate }: LessonV
     </div>
   );
 
+  const handleDismissSophia = () => {
+    setIsSophiaOpen(false);
+    setInitialPrompt(undefined);
+    setHideOrb(false);
+  };
+
   const sophiaPanel = isSophiaOpen ? (
-    <CurriculumSophiaPanel lesson={lesson} onDismiss={() => setIsSophiaOpen(false)} />
+    <CurriculumSophiaPanel
+      lesson={lesson}
+      onDismiss={handleDismissSophia}
+      initialPrompt={initialPrompt}
+    />
   ) : undefined;
 
   const biblePanel = isBibleOpen && bibleRef ? (

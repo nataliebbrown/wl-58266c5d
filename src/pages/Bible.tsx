@@ -1,24 +1,60 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, BookOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BibleNavigator } from '@/components/bible/BibleNavigator';
 import { ReadingView } from '@/components/bible/ReadingView';
+import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import type { BibleReference, BibleVerse } from '@/lib/bibleApi';
 
-export default function Bible({
-  embedded,
-  initialReference,
-  onAskSophia: externalAskSophia,
-}: {
+const ContextualSophiaPane = lazy(() =>
+  import('@/components/sophia/ContextualSophiaPane').then(m => ({ default: m.ContextualSophiaPane }))
+);
+
+interface BibleProps {
   embedded?: boolean;
   initialReference?: BibleReference;
-  onAskSophia?: (verse: BibleVerse, ref: BibleReference) => void;
-} = {}) {
+}
+
+export default function Bible({ embedded, initialReference }: BibleProps) {
   const navigate = useNavigate();
-  const [reference, setReference] = useState<BibleReference | null>(initialReference ?? null);
+  const location = useLocation();
+  const stateRef = !embedded
+    ? (location.state as { initialReference?: BibleReference } | null)?.initialReference
+    : undefined;
+  const [reference, setReference] = useState<BibleReference | null>(
+    initialReference ?? stateRef ?? null
+  );
   const [showNav, setShowNav] = useState(true);
+  const [isSophiaOpen, setIsSophiaOpen] = useState(false);
+  const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
+
+  // Register orb intercept (only when not embedded)
+  const { register, unregister, setHideOrb, setContextLabel } = useSophiaOrbIntercept();
+
+  useEffect(() => {
+    if (embedded) return;
+    register((prompt?: string) => {
+      setIsSophiaOpen(true);
+      setHideOrb(true);
+      if (prompt) setSophiaPrompt(prompt);
+    });
+    return () => unregister();
+  }, [embedded, register, unregister, setHideOrb]);
+
+  // Broadcast current passage to the orb so hover prompts are passage-aware
+  useEffect(() => {
+    if (embedded) return;
+    setContextLabel(reference ? `${reference.book} ${reference.chapter}` : null);
+  }, [embedded, reference, setContextLabel]);
+
+  // Update reference when initialReference prop changes (for embedded usage)
+  useEffect(() => {
+    if (initialReference) {
+      setReference(initialReference);
+    }
+  }, [initialReference]);
 
   const handleSelect = useCallback((ref: BibleReference) => {
     setReference(ref);
@@ -30,42 +66,30 @@ export default function Bible({
 
   const handleAskSophia = useCallback(
     (verse: BibleVerse, ref: BibleReference) => {
-      if (externalAskSophia) {
-        externalAskSophia(verse, ref);
-      } else {
-        const prompt = `Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`;
-        navigate(`/chat?prompt=${encodeURIComponent(prompt)}`);
-      }
+      if (embedded) return;
+      const prompt = `Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`;
+      setIsSophiaOpen(true);
+      setHideOrb(true);
+      setSophiaPrompt(prompt);
     },
-    [navigate, externalAskSophia]
+    [embedded, setHideOrb]
   );
 
+  const handleDismissSophia = useCallback(() => {
+    setIsSophiaOpen(false);
+    setSophiaPrompt(undefined);
+    setHideOrb(false);
+  }, [setHideOrb]);
+
   return (
-    <div className={`${embedded ? 'h-full' : 'h-screen'} flex flex-col bg-background`}>
-      {/* Header */}
+    <div className="h-full flex flex-col relative overflow-hidden">
+      {/* Mobile navigator toggle (hidden when embedded) */}
       {!embedded && (
-        <header className="h-14 flex items-center justify-between px-4 border-b border-border/30">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/dashboard')}
-              className="gap-2 text-foreground/70 hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-[#87A96B]" />
-            <h1 className="text-sm font-semibold text-foreground">Scripture</h1>
-          </div>
-
+        <div className="flex items-center gap-2 px-4 py-2 md:hidden flex-shrink-0">
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground md:hidden"
+            className="h-8 w-8 text-muted-foreground"
             onClick={() => setShowNav(!showNav)}
           >
             {showNav ? (
@@ -74,7 +98,7 @@ export default function Bible({
               <PanelLeftOpen className="w-4 h-4" />
             )}
           </Button>
-        </header>
+        </div>
       )}
 
       {/* Body */}
@@ -110,7 +134,57 @@ export default function Bible({
             </div>
           )}
         </div>
+
+        {/* Contextual Sophia chat pane — desktop sidebar */}
+        {!embedded && (
+          <AnimatePresence>
+            {isSophiaOpen && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 380, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                className="flex-shrink-0 border-l border-border/30 overflow-hidden hidden lg:block"
+              >
+                <div className="w-[380px] h-full">
+                  <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
+                    <ContextualSophiaPane
+                      onDismiss={handleDismissSophia}
+                      initialPrompt={sophiaPrompt}
+                      context="bible"
+                      bibleReference={reference}
+                    />
+                  </Suspense>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
+
+      {/* Contextual Sophia chat pane — mobile overlay within page bounds */}
+      {!embedded && (
+        <AnimatePresence>
+          {isSophiaOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              className="absolute inset-0 z-20 bg-background lg:hidden"
+            >
+              <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
+                <ContextualSophiaPane
+                  onDismiss={handleDismissSophia}
+                  initialPrompt={sophiaPrompt}
+                  context="bible"
+                  bibleReference={reference}
+                />
+              </Suspense>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
   );
 }

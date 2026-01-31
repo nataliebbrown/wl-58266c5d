@@ -140,7 +140,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
   // Don't render anything until image is loaded - prevents white flash
   if (!imageLoaded) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#C4A77D]" /> // Match dominant color of background
+      <div className="fixed inset-0 z-50 bg-wl-sage-600" /> // Match dominant color of background
     );
   }
 

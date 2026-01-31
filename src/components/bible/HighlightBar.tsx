@@ -89,7 +89,7 @@ export function HighlightBar({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 px-2 text-[#87A96B] hover:text-[#87A96B] hover:bg-[#87A96B]/10"
+          className="h-8 px-2 text-hl-green hover:text-hl-green hover:bg-hl-green/10"
           onClick={() => {
             onAskSophia(selectedVerse);
             onClose();

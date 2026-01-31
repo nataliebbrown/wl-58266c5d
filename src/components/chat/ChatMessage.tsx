@@ -129,7 +129,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
       )}>
         {/* Sophia label */}
         {!isUser && (
-          <span className="text-sm font-medium mb-1 ml-1" style={{ color: '#87A96B' }}>
+          <span className="text-sm font-medium mb-1 ml-1 text-hl-green">
             Sophia
           </span>
         )}
@@ -164,7 +164,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
               onClick={handleCopy}
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5" style={{ color: '#87A96B' }} />
+                <Check className="h-3.5 w-3.5 text-hl-green" />
               ) : (
                 <Copy className="h-3.5 w-3.5" />
               )}

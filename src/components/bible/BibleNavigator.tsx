@@ -185,7 +185,7 @@ export function BibleNavigator({ onSelect, currentRef }: BibleNavigatorProps) {
                             <button
                               key={name}
                               onClick={() => handleBookSelect(book)}
-                              className="px-3 py-1.5 text-sm rounded-full bg-card/60 dark:bg-[#2E2E28] border border-border/30 dark:border-[#A5A597]/15 hover:bg-card/90 dark:hover:bg-[#35352F] hover:border-[#87A96B]/30 dark:hover:border-[#A5A597]/30 transition-colors"
+                              className="px-3 py-1.5 text-sm rounded-full bg-card/60 dark:bg-wl-olive-800 border border-border/30 dark:border-wl-olive-300/15 hover:bg-card/90 dark:hover:bg-wl-earth-700 hover:border-hl-green/30 dark:hover:border-wl-olive-300/30 transition-colors"
                             >
                               {name}
                             </button>
@@ -200,7 +200,7 @@ export function BibleNavigator({ onSelect, currentRef }: BibleNavigatorProps) {
                     <div className="relative flex py-2 px-4 bg-foreground/[0.06]">
                       {/* Sliding indicator */}
                       <motion.div
-                        className="absolute top-2 bottom-2 rounded-md bg-white dark:bg-[#2E2E28] shadow-sm dark:shadow-none"
+                        className="absolute top-2 bottom-2 rounded-md bg-white dark:bg-wl-olive-800 shadow-sm dark:shadow-none"
                         style={{ width: 'calc(50% - 20px)', left: 16 }}
                         animate={{ x: testament === 'OT' ? 0 : 'calc(100% + 8px)' }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
@@ -297,7 +297,7 @@ export function BibleNavigator({ onSelect, currentRef }: BibleNavigatorProps) {
                           onClick={() => handleChapterSelect(ch)}
                           className={`aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                             isActive
-                              ? 'bg-[#87A96B] text-white'
+                              ? 'bg-hl-green text-white'
                               : 'bg-card/40 hover:bg-card/80 text-foreground/70 hover:text-foreground'
                           }`}
                         >

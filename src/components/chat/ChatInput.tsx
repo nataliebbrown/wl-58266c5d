@@ -109,7 +109,7 @@ export function ChatInput({
                 "chat-input-field px-[18px] py-[14px] pr-12",
                 "text-base text-foreground placeholder:text-muted-foreground/60",
                 "focus:outline-none",
-                isListening && "ring-2 ring-[#87A96B]/50"
+                isListening && "ring-2 ring-hl-green/50"
               )}
               rows={1}
             />
@@ -125,7 +125,7 @@ export function ChatInput({
                 className={cn(
                   "absolute right-3 bottom-2 h-8 w-8",
                   "text-muted-foreground hover:text-foreground",
-                  isListening && "text-[#87A96B] animate-pulse"
+                  isListening && "text-hl-green animate-pulse"
                 )}
               >
                 {isListening ? (

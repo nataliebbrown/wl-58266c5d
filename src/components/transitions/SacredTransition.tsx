@@ -79,7 +79,7 @@ export function SacredTransition({ onComplete, duration = 2500 }: SacredTransiti
               className="absolute inset-[-50%] rounded-full"
               style={{
                 background: `radial-gradient(circle, ${
-                  config.textColor === '#2D3748'
+                  config.textColor === '#5A4C3A'
                     ? 'rgba(138, 115, 86, 0.2)'
                     : 'rgba(197, 180, 155, 0.3)'
                 } 0%, transparent 70%)`,

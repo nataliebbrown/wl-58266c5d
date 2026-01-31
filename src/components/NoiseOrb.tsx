@@ -6,12 +6,12 @@ import * as THREE from 'three';
 const colorPresets = {
   default: {
     color1: '#C5B49B', // Khaki Beige
-    color2: '#756653', // Olive Wood
+    color2: '#746653', // Olive Wood
     color3: '#DED1BA', // Pale Oak
   },
   sophia: {
     color1: '#C5B49B', // Khaki Beige
-    color2: '#756653', // Olive Wood
+    color2: '#746653', // Olive Wood
     color3: '#8A7356', // Faded Copper
   },
   white: {
@@ -20,7 +20,7 @@ const colorPresets = {
     color3: '#C5B49B', // Khaki Beige
   },
   dark: {
-    color1: '#756653', // Olive Wood
+    color1: '#746653', // Olive Wood
     color2: '#5A4C3A', // Stone Brown
     color3: '#8A7356', // Faded Copper
   },

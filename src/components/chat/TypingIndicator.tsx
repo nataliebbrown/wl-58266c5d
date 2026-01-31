@@ -37,23 +37,20 @@ export function TypingIndicator() {
       </div>
 
       <div className="flex flex-col items-start">
-        <span className="text-sm font-medium mb-1 ml-1" style={{ color: '#87A96B' }}>
+        <span className="text-sm font-medium mb-1 ml-1 text-hl-green">
           Sophia
         </span>
 
         <div className="chat-bubble-sophia px-5 py-4">
           <div className="flex items-center gap-2">
             <span
-              className="w-2 h-2 rounded-full chat-typing-dot"
-              style={{ backgroundColor: '#87A96B' }}
+              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
             />
             <span
-              className="w-2 h-2 rounded-full chat-typing-dot"
-              style={{ backgroundColor: '#87A96B' }}
+              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
             />
             <span
-              className="w-2 h-2 rounded-full chat-typing-dot"
-              style={{ backgroundColor: '#87A96B' }}
+              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
             />
           </div>
         </div>

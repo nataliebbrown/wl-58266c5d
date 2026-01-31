@@ -1,0 +1,29 @@
+# Wholelicity — Refinement Checklist
+
+- [ ] Home
+- [ ] Chat
+- [ ] Curriculum
+- [ ] Scripture
+- [ ] Scripture Study Tools (highlighting, verse interaction, image generation)
+- [ ] Formation Hub & Daily Rhythms
+- [ ] Journaling & Reflection
+- [ ] Pattern Explorer / Constellation (toggleable)
+- [ ] TimeWalk (toggleable)
+- [ ] Journey
+- [ ] Horizon
+- [ ] Cross-Feature Connections
+- [ ] Sophia's Role & Personality
+    - [ ] Audible Sophia intro & tour
+    - [ ] Change Sophia's voice in Settings
+- [ ] Navigation & Wayfinding
+- [ ] Search
+- [ ] Notifications & Gentle Nudges
+- [ ] Mobile & Responsive Experience
+- [ ] Settings
+- [ ] User Profile
+- [ ] Login & Authentication
+- [ ] Data Continuity Across Devices
+- [ ] Light Mode Visual Language
+- [ ] Dark Mode Visual Language
+- [ ] Teaching UI (dark mode transition at night)
+- [ ] Community (future vision)

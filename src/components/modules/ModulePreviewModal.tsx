@@ -222,7 +222,7 @@ export function ModulePreviewModal({ module, open, onClose }: ModulePreviewModal
                 )}
                 <Button
                   size="sm"
-                  className="flex-1 gap-2 bg-[#87A96B] hover:bg-[#87A96B]/90 text-white"
+                  className="flex-1 gap-2 bg-hl-green hover:bg-hl-green/90 text-white"
                   onClick={handleAskSophia}
                 >
                   <MessageCircle className="w-4 h-4" />

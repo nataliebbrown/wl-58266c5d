@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  MessageSquare, 
-  Trash2, 
-  Edit2, 
+import {
+  Plus,
+  MessageSquare,
+  Trash2,
+  Edit2,
   ChevronRight,
   Sparkles,
-  X 
+  Search,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,6 +97,32 @@ export function ChatSidebar({
     return groups;
   }, {} as Record<string, Conversation[]>);
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredConversations = searchQuery.trim()
+    ? conversations.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : conversations;
+
+  const filteredGrouped = filteredConversations.reduce((groups, conv) => {
+    const today = new Date();
+    const convDate = conv.updatedAt;
+
+    let group = 'Older';
+    if (convDate.toDateString() === today.toDateString()) {
+      group = 'Today';
+    } else if (convDate.toDateString() === new Date(today.setDate(today.getDate() - 1)).toDateString()) {
+      group = 'Yesterday';
+    } else if (convDate > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) {
+      group = 'This Week';
+    }
+
+    if (!groups[group]) groups[group] = [];
+    groups[group].push(conv);
+    return groups;
+  }, {} as Record<string, Conversation[]>);
+
+  const displayGroups = searchQuery.trim() ? filteredGrouped : groupedConversations;
+
   return (
     <>
       {/* Mobile overlay */}
@@ -111,66 +138,74 @@ export function ChatSidebar({
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ x: isOpen ? 0 : '-100%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+      {/* Sidebar — always visible on md+, slide-in on mobile */}
+      <aside
         className={cn(
-          "fixed left-0 top-0 h-full w-80 z-50",
-          "md:relative md:translate-x-0",
-          "bg-background border-r border-border",
-          "flex flex-col",
-          !isOpen && "md:flex hidden"
+          // Mobile: fixed overlay
+          "fixed left-0 top-0 h-full w-80 z-50 md:z-auto",
+          "transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+          // Desktop: static column, always visible
+          "md:relative md:translate-x-0 md:w-80 md:flex-shrink-0",
+          "bg-background/80 md:bg-transparent",
+          "backdrop-blur-xl md:backdrop-blur-none",
+          "border-r border-border/30",
+          "flex flex-col"
         )}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-semibold text-lg">Conversations</h2>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={onNewConversation}
-              size="sm"
-              className="gap-1.5"
-            >
-              <Plus className="h-4 w-4" />
-              New
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={onClose}
-            >
-              <X className="h-5 w-5" />
-            </Button>
+        {/* Search + New */}
+        <div className="p-4 pb-3 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground/80">Chats</h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onNewConversation}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-foreground/[0.06] hover:bg-foreground/[0.1] transition-colors"
+              >
+                <Plus className="h-4 w-4 text-foreground/60" />
+              </button>
+              <button
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-foreground/[0.06] hover:bg-foreground/[0.1] transition-colors md:hidden"
+                onClick={onClose}
+              >
+                <X className="h-4 w-4 text-foreground/60" />
+              </button>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-foreground/[0.04] border border-foreground/[0.06]">
+            <Search className="w-3.5 h-3.5 text-foreground/30 flex-shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search conversations..."
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/30 text-foreground/80"
+            />
           </div>
         </div>
 
         <ScrollArea className="flex-1">
-          {/* Suggested Topics */}
-          {suggestedTopics.length > 0 && (
-            <div className="p-4 border-b border-border">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-ochre" />
-                <span className="text-sm font-medium text-muted-foreground">
-                  Suggested Topics
+          {/* Suggested Topics (only when no search and few conversations) */}
+          {!searchQuery && suggestedTopics.length > 0 && conversations.length < 5 && (
+            <div className="px-4 pb-3 border-b border-foreground/[0.06]">
+              <div className="flex items-center gap-2 mb-2.5">
+                <Sparkles className="h-3.5 w-3.5 text-foreground/30" />
+                <span className="text-[11px] font-medium text-foreground/40 uppercase tracking-wider">
+                  Suggested
                 </span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {suggestedTopics.slice(0, 3).map(topic => (
                   <button
                     key={topic.id}
                     onClick={() => onSelectTopic(topic)}
-                    className={cn(
-                      "w-full text-left p-3 rounded-lg",
-                      "bg-muted/50 hover:bg-muted transition-colors",
-                      "text-sm group"
-                    )}
+                    className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-foreground/[0.04] transition-colors text-sm group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{topic.title}</span>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      <span className="font-medium text-foreground/70">{topic.title}</span>
+                      <ChevronRight className="h-3.5 w-3.5 text-foreground/20 group-hover:text-foreground/40 transition-colors" />
                     </div>
                   </button>
                 ))}
@@ -179,35 +214,37 @@ export function ChatSidebar({
           )}
 
           {/* Conversation List */}
-          <div className="p-4">
+          <div className="px-4 py-3">
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
                   <Skeleton key={i} className="h-14 w-full rounded-lg" />
                 ))}
               </div>
-            ) : conversations.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">No conversations yet</p>
-                <p className="text-xs mt-1">Start a new conversation with Sophia</p>
+            ) : filteredConversations.length === 0 ? (
+              <div className="text-center py-8 text-foreground/40">
+                <MessageSquare className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">{searchQuery ? 'No matches' : 'No conversations yet'}</p>
+                {!searchQuery && (
+                  <p className="text-xs mt-1 text-foreground/30">Start a new conversation with Sophia</p>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
-                {Object.entries(groupedConversations).map(([group, convs]) => (
+                {Object.entries(displayGroups).map(([group, convs]) => (
                   <div key={group}>
-                    <h3 className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">
+                    <h3 className="text-[11px] font-medium text-foreground/35 mb-1.5 uppercase tracking-wider px-1">
                       {group}
                     </h3>
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       {convs.map(conv => (
                         <div
                           key={conv.id}
                           className={cn(
                             "group relative rounded-lg transition-colors",
                             currentConversation?.id === conv.id
-                              ? "bg-primary/10"
-                              : "hover:bg-muted"
+                              ? "bg-foreground/[0.07]"
+                              : "hover:bg-foreground/[0.03]"
                           )}
                         >
                           {editingId === conv.id ? (
@@ -227,12 +264,12 @@ export function ChatSidebar({
                           ) : (
                             <button
                               onClick={() => onSelectConversation(conv)}
-                              className="w-full text-left p-3 pr-16"
+                              className="w-full text-left px-3 py-3 pr-16"
                             >
-                              <p className="text-sm font-medium truncate">
+                              <p className="text-sm font-medium truncate text-foreground/80">
                                 {conv.title}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
+                              <p className="text-[11px] text-foreground/35 mt-0.5">
                                 {conv.messageCount} messages
                               </p>
                             </button>
@@ -240,11 +277,11 @@ export function ChatSidebar({
 
                           {/* Action buttons */}
                           {editingId !== conv.id && (
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7"
+                                className="h-7 w-7 text-foreground/40 hover:text-foreground/70"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleStartEdit(conv);
@@ -255,7 +292,7 @@ export function ChatSidebar({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7 text-destructive hover:text-destructive"
+                                className="h-7 w-7 text-destructive/60 hover:text-destructive"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setDeleteId(conv.id);
@@ -274,7 +311,7 @@ export function ChatSidebar({
             )}
           </div>
         </ScrollArea>
-      </motion.aside>
+      </aside>
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

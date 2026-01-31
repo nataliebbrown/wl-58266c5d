@@ -22,7 +22,7 @@ export const TIME_CONFIGS: Record<TimePeriod, TimeConfig> = {
     period: 'dawn',
     hours: [5, 7],
     gradient: 'linear-gradient(135deg, #FFF8E7 0%, #FFE4B5 50%, #FFA07A 100%)',
-    textColor: '#2D3748',
+    textColor: '#5A4C3A',
     greeting: 'The morning is new with mercy...',
     orbGlow: 'soft-gold',
     scripture: {
@@ -35,7 +35,7 @@ export const TIME_CONFIGS: Record<TimePeriod, TimeConfig> = {
     period: 'morning',
     hours: [7, 12],
     gradient: 'linear-gradient(135deg, #F5F0E8 0%, #DED1BA 50%, #C5B49B 100%)',
-    textColor: '#2D3748',
+    textColor: '#5A4C3A',
     greeting: 'Good morning',
     orbGlow: 'warm-brown',
     scripture: {
@@ -48,7 +48,7 @@ export const TIME_CONFIGS: Record<TimePeriod, TimeConfig> = {
     period: 'midday',
     hours: [12, 17],
     gradient: 'linear-gradient(135deg, #EDE8E0 0%, #D4C9B8 50%, #C5B49B 100%)',
-    textColor: '#2D3748',
+    textColor: '#5A4C3A',
     greeting: 'A moment of peace in your day',
     orbGlow: 'clear-amber',
     scripture: {

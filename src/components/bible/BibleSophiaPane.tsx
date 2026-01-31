@@ -294,16 +294,16 @@ export function BibleSophiaPane({ onClose, verse, reference }: BibleSophiaPanePr
                   <button
                     key={starter.label}
                     onClick={() => sendToSophia(starter.prompt, [])}
-                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm transition-all duration-200 ${
                       index === BIBLE_STARTERS.length - 1
                         ? 'col-span-2 flex-row'
                         : 'flex-col text-center'
                     }`}
                   >
                     <starter.icon
-                      className="w-5 h-5 flex-shrink-0 text-[#756653]/60 dark:text-[#A5A597]/60"
+                      className="w-5 h-5 flex-shrink-0 text-wl-olive/60 dark:text-wl-olive-300/60"
                     />
-                    <span className="text-base leading-snug font-semibold text-foreground/85 dark:text-[#D0D0C8]">
+                    <span className="text-base leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200">
                       {starter.label}
                     </span>
                   </button>
@@ -344,7 +344,7 @@ export function BibleSophiaPane({ onClose, verse, reference }: BibleSophiaPanePr
                   <div
                     className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-[#87A96B] text-white rounded-br-sm'
+                        ? 'bg-hl-green text-white rounded-br-sm'
                         : 'bg-card border border-border/30 text-foreground rounded-bl-sm'
                     }`}
                   >
@@ -367,9 +367,9 @@ export function BibleSophiaPane({ onClose, verse, reference }: BibleSophiaPanePr
                 <div className="flex justify-start">
                   <div className="bg-card border border-border/30 px-4 py-3 rounded-2xl rounded-bl-sm">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" style={{ animationDelay: '0.15s' }} />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" style={{ animationDelay: '0.3s' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" style={{ animationDelay: '0.15s' }} />
+                      <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" style={{ animationDelay: '0.3s' }} />
                     </div>
                   </div>
                 </div>

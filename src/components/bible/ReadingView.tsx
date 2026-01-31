@@ -163,7 +163,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia }: ReadingViewP
       <div className="flex-1 overflow-y-auto px-6 py-6">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-6 h-6 border-2 border-[#87A96B]/30 border-t-[#87A96B] rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-hl-green/30 border-t-hl-green rounded-full animate-spin" />
           </div>
         ) : error ? (
           <div className="text-center py-20">

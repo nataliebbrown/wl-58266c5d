@@ -81,6 +81,8 @@ export function CurriculumCard() {
     ? 'Continue Learning'
     : CTA_TEXT[quizData.currentSeason || ''] || 'Begin Your Journey';
 
+  const openLearn = () => navigate('/learn');
+
   // ===== Active state (has progress) =====
   if (hasStarted) {
     return (
@@ -88,18 +90,18 @@ export function CurriculumCard() {
         {/* Header label */}
         <div className="flex items-center justify-between px-5 pt-5">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-[#756653]/10 dark:bg-[#E3E3DE]/10 flex items-center justify-center flex-shrink-0">
-              <Compass className="w-4 h-4 text-[#756653]/70 dark:text-[#E3E3DE]/70" />
+            <div className="w-9 h-9 rounded-lg bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center flex-shrink-0">
+              <Compass className="w-4 h-4 text-wl-olive/70 dark:text-wl-olive-300/70" />
             </div>
-            <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 dark:text-[#A5A597]">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/40 dark:text-wl-olive-300">
               Your Learning Path
             </p>
           </div>
-          <ExpandButton onClick={() => navigate('/learn')} />
+          <ExpandButton onClick={() => openLearn()} />
         </div>
 
         {/* Phase + Module headline */}
-        <h3 className="text-lg font-semibold text-foreground dark:text-[#D0D0C8] leading-tight px-5 mt-2 mb-3">
+        <h3 className="text-lg font-semibold text-foreground dark:text-wl-olive-200 leading-tight px-5 mt-2 mb-3">
           {currentModule?.title || 'Get Started'}{' '}
           <span className="text-foreground/40 font-normal text-sm">
             {currentPhase?.title}
@@ -107,7 +109,7 @@ export function CurriculumCard() {
         </h3>
 
         {/* Progress section */}
-        <div className="mx-5 rounded-xl px-4 py-3" style={{ backgroundColor: '#F5F2ED' }}>
+        <div className="mx-5 rounded-xl px-4 py-3 bg-wl-stone-50 dark:bg-wl-earth-800">
           <CurriculumProgressBar percentage={percentage} height={6} className="mb-2" />
           <div className="flex items-center justify-between">
             <span className="text-xs text-foreground/50">{percentage}% complete</span>
@@ -124,11 +126,11 @@ export function CurriculumCard() {
               Up Next
             </p>
             <button
-              onClick={() => navigate('/learn')}
+              onClick={() => openLearn()}
               className="flex items-center gap-3 w-full text-left py-3 px-2 -mx-2 rounded-xl hover:bg-foreground/[0.03] transition-colors group"
             >
-              <div className="w-9 h-9 rounded-lg bg-[#756653]/10 dark:bg-[#A5A597]/10 flex items-center justify-center flex-shrink-0">
-                <Compass className="w-4 h-4 text-[#756653]/70 dark:text-[#A5A597]/70" />
+              <div className="w-9 h-9 rounded-lg bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center flex-shrink-0">
+                <Compass className="w-4 h-4 text-wl-olive/70 dark:text-wl-olive-300/70" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground/80 truncate">
@@ -148,8 +150,8 @@ export function CurriculumCard() {
         {/* Resume CTA */}
         <div className="px-5 pt-2 pb-4 mt-auto">
           <button
-            onClick={() => navigate('/learn')}
-            className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/10 dark:hover:bg-[#A5A597]/10 hover:border-[#756653]/40 dark:hover:border-[#A5A597]/40 hover:shadow-sm transition-all duration-200"
+            onClick={() => openLearn()}
+            className="w-full py-2.5 rounded-xl text-sm font-medium text-wl-olive dark:text-wl-olive-300 border border-wl-olive/25 dark:border-wl-olive-300/25 hover:bg-wl-olive/10 dark:hover:bg-wl-olive-300/10 hover:border-wl-olive/40 dark:hover:border-wl-olive-300/40 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
           >
             {ctaLabel}
           </button>
@@ -162,18 +164,18 @@ export function CurriculumCard() {
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden relative">
       <div className="absolute top-4 right-4 z-10">
-        <ExpandButton onClick={() => navigate('/learn')} />
+        <ExpandButton onClick={() => openLearn()} />
       </div>
 
       {/* Hero header */}
       <div className="px-5 pt-8 pb-4 text-center flex flex-col items-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#756653]/10 dark:bg-[#E3E3DE]/10 flex items-center justify-center mb-6">
-          <Compass className="w-8 h-8 text-[#756653]/60 dark:text-[#E3E3DE]/60" />
+        <div className="w-16 h-16 rounded-2xl bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center mb-6">
+          <Compass className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
         </div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-[#A5A597]">
+        <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300">
           Curriculum
         </p>
-        <h3 className="text-2xl leading-snug mt-2 text-[#262721] dark:text-[#D0D0C8]">
+        <h3 className="text-2xl leading-snug mt-2 text-wl-earth dark:text-wl-olive-200">
           {headline}
         </h3>
         <p className="text-sm text-foreground/40 mt-1">
@@ -185,7 +187,7 @@ export function CurriculumCard() {
       <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3">
         {/* Lesson count + self-paced */}
         <div className="flex items-center justify-center gap-2 py-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-[#756653]/60 dark:text-[#A5A597]/60 bg-[#756653]/10 dark:bg-[#A5A597]/10 px-2.5 py-0.5 rounded-full">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-wl-olive/60 dark:text-wl-olive-300/60 bg-wl-olive/10 dark:bg-wl-olive-300/10 px-2.5 py-0.5 rounded-full">
             {totalLessons} lessons
           </span>
           <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/30">
@@ -197,12 +199,12 @@ export function CurriculumCard() {
         {previewLessons.map((lesson, i) => (
           <button
             key={lesson.id}
-            onClick={() => navigate('/learn')}
-            className="w-full rounded-xl text-left px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200"
+            onClick={() => openLearn()}
+            className="w-full rounded-xl text-left px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
           >
             <div className="flex items-center gap-2 mb-3">
               <Circle
-                className="w-4 h-4 text-[#756653]/60 dark:text-[#A5A597]/60 flex-shrink-0"
+                className="w-4 h-4 text-wl-olive/60 dark:text-wl-olive-300/60 flex-shrink-0"
                 strokeWidth={2}
                 style={{ opacity: 1 - i * 0.2 }}
               />
@@ -227,8 +229,8 @@ export function CurriculumCard() {
       {/* CTA */}
       <div className="px-5 pb-5 pt-3 border-t border-foreground/[0.05]">
         <button
-          onClick={() => navigate('/learn')}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white dark:text-[#171714] bg-[#756653] dark:bg-[#A5A597] hover:bg-[#685a49] dark:hover:bg-[#D0D0C8] transition-all duration-200 shadow-sm"
+          onClick={() => openLearn()}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-white dark:text-wl-olive-900 bg-wl-olive dark:bg-wl-olive-300 hover:bg-wl-olive-600 dark:hover:bg-wl-olive-200 transition-all duration-200 shadow-sm"
         >
           {ctaLabel}
         </button>

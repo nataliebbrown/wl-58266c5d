@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Sunrise } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
-import { useDrawerExpand } from './DrawerExpandContext';
 import { getQuizData } from '@/lib/onboardingState';
 
 // ============ Personalized Content ============
@@ -57,7 +56,6 @@ const ITEMS_PER_PAGE = 3;
 
 export function HorizonCard({ items = [] }: HorizonCardProps) {
   const navigate = useNavigate();
-  const { expand } = useDrawerExpand();
   const isEmpty = items.length === 0;
   const [page, setPage] = useState(0);
   const quizData = getQuizData();
@@ -72,34 +70,13 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
   const canPrev = page > 0;
   const canNext = page < totalPages - 1;
 
-  const handleExpand = () => expand(
-    <div className="max-w-2xl mx-auto px-8 py-12">
-      <h2 className="text-2xl font-semibold text-foreground mb-8">On Your Horizon</h2>
-      {items.length === 0 ? (
-        <p className="text-sm italic text-muted-foreground text-center py-12">
-          The horizon is forming. As you explore with Sophia, themes will emerge that point to what&apos;s next.
-        </p>
-      ) : (
-        <div className="space-y-0">
-          {items.map((item, index) => (
-            <HorizonRow
-              key={item.id}
-              item={item}
-              isLast={index === items.length - 1}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
       <div className="px-5 pt-5">
         {/* Header — icon + pagination + expand */}
         <div className="flex items-center justify-between mb-4">
-          <div className="w-9 h-9 rounded-xl bg-[#DED1BA]/20 dark:bg-[#A5A597]/15 flex items-center justify-center">
-            <Sunrise className="w-4.5 h-4.5 text-[#C5B49B] dark:text-[#A5A597]" />
+          <div className="w-9 h-9 rounded-xl bg-wl-parchment/20 dark:bg-wl-olive-300/15 flex items-center justify-center">
+            <Sunrise className="w-4.5 h-4.5 text-wl-sage dark:text-wl-olive-300" />
           </div>
           <div className="flex items-center gap-1">
             {!isEmpty && totalPages > 1 && (
@@ -107,20 +84,20 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
                 <button
                   onClick={() => setPage(p => p - 1)}
                   disabled={!canPrev}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] dark:text-[#A5A597] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-wl-olive dark:text-wl-olive-300 hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={!canNext}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#756653] dark:text-[#A5A597] hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-wl-olive dark:text-wl-olive-300 hover:bg-foreground/5 transition-colors disabled:opacity-30 disabled:cursor-default"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </>
             )}
-            <ExpandButton onClick={handleExpand} />
+            <ExpandButton onClick={() => navigate('/horizon')} />
           </div>
         </div>
 
@@ -156,7 +133,7 @@ export function HorizonCard({ items = [] }: HorizonCardProps) {
           <div className="mt-auto px-5 pb-5 pt-3">
             <button
               onClick={() => navigate('/horizon')}
-              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
+              className="w-full py-2.5 rounded-xl text-sm font-medium text-wl-olive dark:text-wl-olive-300 border border-wl-olive/25 dark:border-wl-olive-300/25 hover:bg-wl-olive/8 dark:hover:bg-wl-olive-300/8 transition-colors"
             >
               Explore Horizon
             </button>
@@ -213,11 +190,11 @@ function HorizonRow({ item, isLast }: { item: HorizonItem; isLast: boolean }) {
 function getDotClassName(state: HorizonItem['state']): string {
   switch (state) {
     case 'near':
-      return 'bg-[#756653] dark:bg-[#A5A597]';
+      return 'bg-wl-olive dark:bg-wl-olive-300';
     case 'emerging':
-      return 'bg-[#C5B49B]/50 dark:bg-[#A5A597]/50';
+      return 'bg-wl-sage/50 dark:bg-wl-olive-300/50';
     case 'distant':
-      return 'border-2 border-[#C5B49B]/30 dark:border-[#A5A597]/30';
+      return 'border-2 border-wl-sage/30 dark:border-wl-olive-300/30';
   }
 }
 

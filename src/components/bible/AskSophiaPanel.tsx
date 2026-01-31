@@ -129,7 +129,7 @@ export function AskSophiaPanel({ verse, reference, open, onClose }: AskSophiaPan
                 <div
                   className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-[#87A96B] text-white rounded-br-sm'
+                      ? 'bg-hl-green text-white rounded-br-sm'
                       : 'bg-card border border-border/30 text-foreground rounded-bl-sm'
                   }`}
                 >
@@ -142,9 +142,9 @@ export function AskSophiaPanel({ verse, reference, open, onClose }: AskSophiaPan
               <div className="flex justify-start">
                 <div className="bg-card border border-border/30 px-4 py-3 rounded-2xl rounded-bl-sm">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" style={{ animationDelay: '0.15s' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#87A96B] animate-pulse" style={{ animationDelay: '0.3s' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" style={{ animationDelay: '0.15s' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-hl-green animate-pulse" style={{ animationDelay: '0.3s' }} />
                   </div>
                 </div>
               </div>
@@ -164,13 +164,13 @@ export function AskSophiaPanel({ verse, reference, open, onClose }: AskSophiaPan
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 placeholder="Ask a follow-up question..."
-                className="flex-1 px-3 py-2.5 text-sm rounded-xl bg-card border border-border/30 focus:outline-none focus:border-[#87A96B]/50"
+                className="flex-1 px-3 py-2.5 text-sm rounded-xl bg-card border border-border/30 focus:outline-none focus:border-hl-green/50"
                 disabled={isLoading}
               />
               <Button
                 type="submit"
                 size="icon"
-                className="h-10 w-10 rounded-xl bg-[#87A96B] hover:bg-[#87A96B]/90"
+                className="h-10 w-10 rounded-xl bg-hl-green hover:bg-hl-green/90"
                 disabled={!input.trim() || isLoading}
               >
                 <Send className="w-4 h-4 text-white" />

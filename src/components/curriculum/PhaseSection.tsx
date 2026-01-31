@@ -39,7 +39,7 @@ export function PhaseSection({
         <div
           className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold ${
             isComplete
-              ? 'bg-[#87A96B]/20 text-[#87A96B]'
+              ? 'bg-hl-green/20 text-hl-green'
               : 'bg-foreground/[0.06] text-foreground/50'
           }`}
         >

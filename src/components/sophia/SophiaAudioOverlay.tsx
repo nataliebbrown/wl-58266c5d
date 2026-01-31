@@ -71,7 +71,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName }: SophiaAudioOve
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex flex-col bg-background/40 dark:bg-[#0a0a0f]/50 backdrop-blur-xl"
+          className="fixed inset-0 z-50 flex flex-col bg-background/40 dark:bg-wl-earth-900/50 backdrop-blur-xl"
         >
           {/* Close button */}
           <motion.button

@@ -4,18 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles, HelpCircle } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
-import { useDrawerExpand } from './DrawerExpandContext';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { useTimePeriod } from '@/lib/timeAwareness';
 import { getQuizData } from '@/lib/onboardingState';
 import { getReadingHistory } from '@/lib/bibleApi';
 import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
+import { getUserContext, generateDashboardMessage } from '@/lib/contextualIntelligence';
 import type { Message } from '@/types/chat';
 import type { LucideIcon } from 'lucide-react';
 
-const Chat = lazy(() => import('@/pages/Chat'));
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
 // ============ Conversation Starters ============
@@ -98,8 +98,8 @@ function MiniChatBubble({ message }: { message: Message }) {
       <div
         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
-            ? 'bg-[#756653]/20 dark:bg-[#A5A597]/20 text-foreground'
-            : 'bg-white/60 text-foreground'
+            ? 'bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground'
+            : 'bg-white/60 dark:bg-wl-olive-300/15 text-foreground'
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
@@ -144,32 +144,34 @@ function PillChatInput({
       onClick={() => inputRef.current?.focus()}
       style={{
         background: isFocused
-          ? (isDarkMode ? 'rgba(241,241,239,0.14)' : 'rgba(255,255,255,0.95)')
-          : (isDarkMode ? 'rgba(241,241,239,0.1)' : 'rgba(255,255,255,0.85)'),
+          ? (isDarkMode ? 'rgba(241,237,233,0.14)' : 'rgba(255,255,255,0.95)')
+          : (isDarkMode ? 'rgba(241,237,233,0.1)' : 'rgba(255,255,255,0.85)'),
         boxShadow: isFocused
           ? (isDarkMode
-              ? '0 0 0 2px rgba(165,165,151,0.3), inset 0 1px 0 rgba(241,241,239,0.08)'
-              : '0 0 0 2px rgba(117,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
+              ? '0 0 0 2px rgba(178,164,146,0.3), inset 0 1px 0 rgba(241,237,233,0.08)'
+              : '0 0 0 2px rgba(116,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
           : (isDarkMode
-              ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+              ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
               : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
       }}
       onMouseEnter={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? '0 0 0 1px rgba(165,165,151,0.2), inset 0 1px 0 rgba(241,241,239,0.08)'
-            : '0 0 0 1px rgba(117,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
+            ? '0 0 0 1px rgba(178,164,146,0.2), inset 0 1px 0 rgba(241,237,233,0.08)'
+            : '0 0 0 1px rgba(116,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+            ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
             : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
     >
+      <label className="sr-only" htmlFor="sophia-chat-input">Ask Sophia</label>
       <input
+        id="sophia-chat-input"
         ref={inputRef}
         type="text"
         value={value}
@@ -178,22 +180,19 @@ function PillChatInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder="Ask Anything..."
-        className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
-        style={{
-          color: isDarkMode ? '#F1F1EF' : undefined,
-        }}
+        className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground/35"
       />
       <button
-        className="flex-shrink-0 p-1 transition-opacity opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
+        aria-label="Voice input"
+        className="flex-shrink-0 p-1 transition-opacity text-foreground opacity-40 hover:opacity-70"
       >
         <Mic className="w-5 h-5" />
       </button>
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
-        className="flex-shrink-0 p-1 transition-opacity disabled:opacity-20 opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#F1F1EF' : '#5A4C3A' }}
+        aria-label="Send message"
+        className="flex-shrink-0 p-1 transition-opacity text-foreground disabled:opacity-20 opacity-40 hover:opacity-70"
       >
         <Send className="w-5 h-5" />
       </button>
@@ -201,25 +200,11 @@ function PillChatInput({
   );
 }
 
-// ============ Expanded Content ============
-
-function ExpandedChat() {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40">Loading...</div>}>
-      <Chat embedded />
-    </Suspense>
-  );
-}
-
 // ============ Main Panel ============
 
-interface DashboardSophiaPanelProps {
-  isDarkMode: boolean;
-}
-
-export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) {
+export function DashboardSophiaPanel() {
+  const isDarkMode = useDarkMode();
   const navigate = useNavigate();
-  const { expand } = useDrawerExpand();
   const { config } = useTimePeriod();
   const { getPersonaFromOnboarding } = useUserProfile();
   const personaData = getPersonaFromOnboarding();
@@ -247,7 +232,6 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
   })();
 
   const hasMessages = messages.length > 0;
-  const textColor = isDarkMode ? '#D0D0C8' : '#262721';
 
   const quizData = getQuizData();
   const starters = STARTERS[quizData.spiritualBackground ?? ''] ?? DEFAULT_STARTERS;
@@ -256,11 +240,15 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
   const curriculumProgress = getProgressPercentage(curriculum);
   const isFirstVisit = readingHistory.length === 0 && curriculumProgress === 0;
 
+  // Contextual greeting from intelligence system
+  const userContext = getUserContext();
+  const contextualMessage = generateDashboardMessage(userContext);
+
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
       {/* Expand button */}
       <div className="absolute top-4 right-4 z-10">
-        <ExpandButton onClick={() => expand(<ExpandedChat />, 'chat')} />
+        <ExpandButton onClick={() => navigate('/chat')} />
       </div>
 
       <div className="flex flex-col h-full">
@@ -283,10 +271,7 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
 
               {/* Greeting */}
               <div className="mb-4">
-                <h2
-                  className="text-2xl leading-snug"
-                  style={{ color: textColor }}
-                >
+                <h3 className="text-2xl leading-snug text-foreground">
                   {isFirstVisit ? (
                     <>
                       Welcome{userName && <> <span className="font-semibold">{userName}</span></>},
@@ -297,39 +282,37 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
                     <>
                       {salutation}
                       {userName && <> <span className="font-semibold">{userName}</span>,</>}
-                      <br />
-                      <span className="italic">What's on your mind?</span>
                     </>
                   )}
-                </h2>
+                </h3>
                 <p
-                  className="text-sm mt-1 text-foreground/40"
+                  className="text-sm mt-1 text-foreground/40 italic"
                 >
                   {isFirstVisit
                     ? "I've prepared a few things for you — explore at your own pace."
-                    : (quizData.currentSeason && SEASON_SUBLINES[quizData.currentSeason]) || ''}
+                    : contextualMessage}
                 </p>
               </div>
             </div>
 
             {/* Scrollable content — starters */}
             <div className="flex-1 overflow-y-auto px-5 py-3">
-              <div className="grid grid-cols-2 gap-3 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                 {starters.map((starter, index) => (
                   <button
                     key={starter.label}
                     onClick={() => sendMessage(starter.prompt)}
-                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-[#756653]/15 dark:border-[#A5A597]/15 hover:border-[#756653]/35 dark:hover:border-[#A5A597]/35 hover:bg-[#756653]/5 dark:hover:bg-[#A5A597]/5 hover:shadow-sm transition-all duration-200 ${
+                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200 ${
                       index === starters.length - 1
-                        ? 'col-span-2 flex-row'
+                        ? 'sm:col-span-2 flex-row'
                         : 'flex-col text-center'
                     }`}
                   >
                     <starter.icon
-                      className="w-5 h-5 flex-shrink-0 text-[#756653]/60 dark:text-[#A5A597]/60"
+                      className="w-5 h-5 flex-shrink-0 text-wl-olive/60 dark:text-wl-olive-300/60"
                     />
                     <span
-                      className="text-base leading-snug font-semibold text-foreground/85 dark:text-[#D0D0C8]"
+                      className="text-base leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200"
                     >
                       {starter.label}
                     </span>
@@ -363,7 +346,7 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-[#756653] dark:bg-[#A5A597]"
+                    className="w-1.5 h-1.5 rounded-full bg-wl-olive dark:bg-wl-olive-300"
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{
                       duration: 1,
@@ -386,8 +369,7 @@ export function DashboardSophiaPanel({ isDarkMode }: DashboardSophiaPanelProps) 
           />
           <button
             onClick={() => navigate('/chat')}
-            className="flex items-center gap-1 text-xs font-medium opacity-50 hover:opacity-80 transition-opacity mx-auto"
-            style={{ color: textColor }}
+            className="flex items-center gap-1 text-xs font-medium text-foreground/40 hover:text-foreground/60 transition-colors mx-auto"
           >
             View full chat history
             <ArrowRight className="w-3 h-3" />

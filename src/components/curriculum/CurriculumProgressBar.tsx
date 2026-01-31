@@ -23,15 +23,11 @@ export function CurriculumProgressBar({
         </div>
       )}
       <div
-        className="w-full rounded-full overflow-hidden"
-        style={{
-          height,
-          background: 'rgba(135, 169, 107, 0.15)',
-        }}
+        className="w-full rounded-full overflow-hidden bg-hl-green/15"
+        style={{ height }}
       >
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: '#87A96B' }}
+          className="h-full rounded-full bg-hl-green"
           initial={{ width: 0 }}
           animate={{ width: `${clamped}%` }}
           transition={{ duration: 0.6, ease: 'easeOut' }}

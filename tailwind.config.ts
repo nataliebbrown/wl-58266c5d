@@ -86,20 +86,113 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Wholelicity brand tokens (direct hex for dashboard components)
-        "wl-khaki": "#C5B49B",
-        "wl-olive": "#756653",
-        "wl-copper": "#8A7356",
-        "wl-oak": "#DED1BA",
-        "wl-sage": "#87A96B",
-        "wl-navy": "#1A1A2E",
-        "wl-cream": "#F8F6F0",
-        // Highlight colors (Bible reader)
-        "hl-gold": "#C5B49B",
-        "hl-green": "#87A96B",
-        "hl-blue": "#6B9FBF",
+        // ============================================
+        // Wholelicity Brand Palette — 6-column scale
+        // Each column: 50 (+90%) → 950 (-90%)
+        // ============================================
+
+        // Column 1 — Earth (#5A4C3A)
+        "wl-earth": {
+          DEFAULT: "#5A4C3A",
+          50:  "#F1EDE9",
+          100: "#E3DCD3",
+          200: "#C7B9A7",
+          300: "#AA967A",
+          400: "#867156",
+          500: "#5A4C3A",
+          600: "#483D2E",
+          700: "#362E23",
+          800: "#241E17",
+          900: "#120F0C",
+          950: "#090806",
+        },
+
+        // Column 2 — Olive (#746653)
+        "wl-olive": {
+          DEFAULT: "#746653",
+          50:  "#F2F0ED",
+          100: "#E5E1DB",
+          200: "#CBC2B6",
+          300: "#B2A492",
+          400: "#98856D",
+          500: "#746653",
+          600: "#5D5142",
+          700: "#463D32",
+          800: "#2F2921",
+          900: "#171411",
+          950: "#0C0A08",
+        },
+
+        // Column 3 — Stone (#8A7356)
+        "wl-stone": {
+          DEFAULT: "#8A7356",
+          50:  "#F4F1ED",
+          100: "#E9E3DC",
+          200: "#D3C7B9",
+          300: "#BDAB96",
+          400: "#A78F72",
+          500: "#8A7356",
+          600: "#6E5C45",
+          700: "#534534",
+          800: "#372E23",
+          900: "#1C1711",
+          950: "#0E0B09",
+        },
+
+        // Column 4 — Sage (#C5B49B)
+        "wl-sage": {
+          DEFAULT: "#C5B49B",
+          50:  "#F9F8F5",
+          100: "#F3F0EB",
+          200: "#E8E1D7",
+          300: "#DCD2C3",
+          400: "#D1C3AF",
+          500: "#C5B49B",
+          600: "#AC936E",
+          700: "#866F4D",
+          800: "#594A33",
+          900: "#2D251A",
+          950: "#16130D",
+        },
+
+        // Column 5 — Parchment (#DED1BA)
+        "wl-parchment": {
+          DEFAULT: "#DED1BA",
+          50:  "#FCFAF8",
+          100: "#F8F6F1",
+          200: "#F2EDE3",
+          300: "#EBE3D6",
+          400: "#E4DAC8",
+          500: "#DED1BA",
+          600: "#C3AC83",
+          700: "#A58650",
+          800: "#6E5935",
+          900: "#372D1B",
+          950: "#1C160D",
+        },
+
+        // Column 6 — Linen (#F4EFE6)
+        "wl-linen": {
+          DEFAULT: "#F4EFE6",
+          50:  "#FEFDFD",
+          100: "#FDFCFA",
+          200: "#FBF9F5",
+          300: "#F8F6F0",
+          400: "#F6F2EB",
+          500: "#F4EFE6",
+          600: "#D7C5A4",
+          700: "#BA9B62",
+          800: "#846A3A",
+          900: "#42351D",
+          950: "#211A0E",
+        },
+
+        // Highlight colors (Bible reader — functional, distinct hues)
+        "hl-gold":   "#C5B49B",
+        "hl-green":  "#87A96B",
+        "hl-blue":   "#6B9FBF",
         "hl-purple": "#8B7BB5",
-        "hl-red": "#C47A6B",
+        "hl-red":    "#C47A6B",
       },
       borderRadius: {
         lg: "var(--radius)",

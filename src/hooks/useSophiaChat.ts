@@ -9,13 +9,15 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-sophia`
 interface UseSophiaChatOptions {
   userPersona?: UserPersona | null;
   conversationId?: string | null;
+  systemContext?: string;
   onCrisisDetected?: (level: 'low' | 'medium' | 'high') => void;
 }
 
-export function useSophiaChat({ 
-  userPersona, 
+export function useSophiaChat({
+  userPersona,
   conversationId,
-  onCrisisDetected 
+  systemContext,
+  onCrisisDetected
 }: UseSophiaChatOptions = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -78,10 +80,13 @@ export function useSophiaChat({
 
     try {
       // Build message history for API
-      const apiMessages = [...messages, userMessage].map(m => ({
-        role: m.role,
-        content: m.content
-      }));
+      const apiMessages = [
+        ...(systemContext ? [{ role: 'system' as const, content: systemContext }] : []),
+        ...[...messages, userMessage].map(m => ({
+          role: m.role,
+          content: m.content
+        })),
+      ];
 
       const response = await fetch(CHAT_URL, {
         method: 'POST',
@@ -209,7 +214,7 @@ export function useSophiaChat({
       setIsTyping(false);
       abortControllerRef.current = null;
     }
-  }, [messages, isTyping, userPersona, conversationId, onCrisisDetected]);
+  }, [messages, isTyping, userPersona, conversationId, systemContext, onCrisisDetected]);
 
   const cancelRequest = useCallback(() => {
     if (abortControllerRef.current) {

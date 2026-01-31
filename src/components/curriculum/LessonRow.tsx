@@ -18,7 +18,7 @@ export function LessonRow({ lesson, isCurrent, onClick }: LessonRowProps) {
       onClick={onClick}
       className={`w-full text-left flex items-start gap-3 px-4 py-3 rounded-xl transition-colors ${
         isCurrent
-          ? 'bg-[#87A96B]/10 ring-1 ring-[#87A96B]/30'
+          ? 'bg-hl-green/10 ring-1 ring-hl-green/30'
           : 'hover:bg-foreground/[0.03]'
       }`}
       whileTap={{ scale: 0.99 }}
@@ -26,7 +26,7 @@ export function LessonRow({ lesson, isCurrent, onClick }: LessonRowProps) {
       {/* Completion indicator */}
       <div className="flex-shrink-0 mt-0.5">
         {completed ? (
-          <CheckCircle2 className="w-5 h-5 text-[#87A96B]" />
+          <CheckCircle2 className="w-5 h-5 text-hl-green" />
         ) : (
           <Circle className="w-5 h-5 text-foreground/20" />
         )}
@@ -43,7 +43,7 @@ export function LessonRow({ lesson, isCurrent, onClick }: LessonRowProps) {
             {lesson.title}
           </span>
           {hasScripture && (
-            <BookOpen className="w-3.5 h-3.5 text-[#87A96B]/60 flex-shrink-0" />
+            <BookOpen className="w-3.5 h-3.5 text-hl-green/60 flex-shrink-0" />
           )}
         </div>
         {lesson.description && (

@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { ChevronRight, Stars } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
-import { useDrawerExpand } from './DrawerExpandContext';
 import {
   getAllInsights,
   getInsightCount,
@@ -47,7 +46,6 @@ const CONSTELLATION_CONTENT: Record<string, { quote: string; cta: string; subtit
 
 export function ConstellationCard() {
   const navigate = useNavigate();
-  const { expand } = useDrawerExpand();
   const insights = getAllInsights();
   const count = getInsightCount();
   const patternNotice = getPatternNotice();
@@ -57,73 +55,31 @@ export function ConstellationCard() {
   // Show max 3 recent insights in the card
   const displayInsights = insights.slice(0, 3);
 
-  const handleExpand = () => expand(
-    <div className="max-w-2xl mx-auto px-8 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-semibold text-foreground">Your Constellation</h2>
-        {count > 0 && (
-          <span
-            className="text-xs px-3 py-1.5 rounded-full bg-[#DED1BA]/30 dark:bg-[#A5A597]/15 text-[#756653] dark:text-[#A5A597]"
-          >
-            {count} stars
-          </span>
-        )}
-      </div>
-      {insights.length === 0 ? (
-        <p className="text-sm italic text-muted-foreground text-center py-12">
-          No insights saved yet. Start a conversation with Sophia to discover your first star.
-        </p>
-      ) : (
-        <div className="space-y-0">
-          {insights.map((insight, index) => (
-            <InsightRow
-              key={insight.id}
-              insight={insight}
-              isLast={index === insights.length - 1}
-            />
-          ))}
-        </div>
-      )}
-      {patternNotice && (
-        <div className="flex items-start gap-2.5 mt-8 pt-6 border-t border-foreground/5">
-          <img
-            src={sophiaOrb}
-            alt=""
-            className="w-5 h-5 mt-0.5 flex-shrink-0 opacity-60"
-          />
-          <p className="text-sm italic text-muted-foreground leading-relaxed">
-            &ldquo;{patternNotice}&rdquo;
-          </p>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
       <div className="px-5 pt-5">
         {/* Header — icon + expand */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#C5B49B]/15 dark:bg-[#A5A597]/15 flex items-center justify-center">
-              <Stars className="w-4.5 h-4.5 text-[#C5B49B] dark:text-[#A5A597]" />
+            <div className="w-9 h-9 rounded-xl bg-wl-sage/15 dark:bg-wl-olive-300/15 flex items-center justify-center">
+              <Stars className="w-4.5 h-4.5 text-wl-sage dark:text-wl-olive-300" />
             </div>
             {count > 0 && (
               <span
-                className="text-xs px-2.5 py-1 rounded-full font-medium bg-[#DED1BA]/25 dark:bg-[#A5A597]/15 text-[#756653] dark:text-[#A5A597]"
+                className="text-[10px] px-2.5 py-0.5 rounded-full font-medium uppercase tracking-wider bg-wl-parchment/25 dark:bg-wl-olive-300/15 text-wl-olive dark:text-wl-olive-300"
               >
                 {count} stars
               </span>
             )}
           </div>
-          <ExpandButton onClick={handleExpand} />
+          <ExpandButton onClick={() => navigate('/insights')} />
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-semibold text-foreground leading-tight">
+        <h3 className="text-lg font-semibold text-foreground dark:text-wl-olive-200 leading-tight">
           Your Constellation
         </h3>
-        <p className="text-sm text-foreground/50 mt-1">
+        <p className="text-sm text-foreground/40 mt-1">
           {count === 0
             ? (personalized?.subtitle ?? 'Insights you save become stars')
             : `${count} insight${count !== 1 ? 's' : ''} collected`}
@@ -169,7 +125,7 @@ export function ConstellationCard() {
           <div className="mt-auto px-5 pb-5 pt-3">
             <button
               onClick={() => navigate('/insights')}
-              className="w-full py-2.5 rounded-xl text-sm font-medium text-[#756653] dark:text-[#A5A597] border border-[#756653]/25 dark:border-[#A5A597]/25 hover:bg-[#756653]/8 dark:hover:bg-[#A5A597]/8 transition-colors"
+              className="w-full py-2.5 rounded-xl text-sm font-medium text-wl-olive dark:text-wl-olive-300 border border-wl-olive/25 dark:border-wl-olive-300/25 hover:bg-wl-olive/10 dark:hover:bg-wl-olive-300/10 hover:border-wl-olive/40 dark:hover:border-wl-olive-300/40 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200"
             >
               {patternNotice ? 'Explore This Connection' : 'View All Insights'}
             </button>
@@ -185,16 +141,16 @@ export function ConstellationCard() {
 function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) {
   const isScripture = insight.source?.type === 'bible';
   const thumbnailClasses = isScripture
-    ? 'bg-[#756653]/[0.08] dark:bg-[#A5A597]/[0.08]'
-    : 'bg-[#C5B49B]/[0.12] dark:bg-[#A5A597]/[0.12]';
-  const starColor = isScripture ? '#756653' : '#C5B49B';
-  const glowColor = isScripture
-    ? 'rgba(117, 102, 83, 0.1)'
-    : 'rgba(197, 180, 155, 0.15)';
+    ? 'bg-wl-olive/[0.08] dark:bg-wl-olive-300/[0.08]'
+    : 'bg-wl-sage/[0.12] dark:bg-wl-olive-300/[0.12]';
+  const starColorClass = isScripture ? 'text-wl-olive dark:text-wl-olive-300' : 'text-wl-sage dark:text-wl-olive-300';
+  const glowClass = isScripture
+    ? 'bg-wl-olive/10 dark:bg-wl-olive-300/10'
+    : 'bg-wl-sage/15 dark:bg-wl-olive-300/15';
 
   return (
     <div
-      className={`flex items-start gap-3 py-2.5 cursor-pointer hover:bg-foreground/[0.03] rounded-lg transition-colors ${
+      className={`flex items-start gap-3 py-2.5 hover:bg-foreground/[0.05] dark:hover:bg-wl-olive-300/[0.06] rounded-lg transition-colors ${
         !isLast ? 'border-b border-foreground/[0.04]' : ''
       }`}
     >
@@ -203,29 +159,27 @@ function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) 
         className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center relative ${thumbnailClasses}`}
       >
         {isScripture ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" className="opacity-70">
+          <svg width="20" height="20" viewBox="0 0 24 24" className={`opacity-70 ${starColorClass}`}>
             <path
               d="M4 19V5a2 2 0 012-2h8a2 2 0 012 2v14l-6-3-6 3z"
               fill="none"
-              stroke={starColor}
+              stroke="currentColor"
               strokeWidth="1.5"
               strokeLinejoin="round"
             />
           </svg>
         ) : (
-          <svg width="20" height="20" viewBox="0 0 24 24" className="opacity-70">
+          <svg width="20" height="20" viewBox="0 0 24 24" className={`opacity-70 ${starColorClass}`}>
             <path
               d="M12 2l2.09 6.26L20.18 9.27l-5.09 3.9L17 19.63 12 16.27l-5 3.36 1.91-6.46-5.09-3.9 6.09-1.01z"
-              fill={starColor}
+              fill="currentColor"
             />
           </svg>
         )}
         {/* Soft glow */}
         <div
-          className="absolute inset-0 rounded-lg"
-          style={{
-            background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
-          }}
+          className={`absolute inset-0 rounded-lg ${glowClass}`}
+          style={{ mask: 'radial-gradient(circle, black 0%, transparent 70%)' }}
         />
       </div>
 
@@ -236,12 +190,12 @@ function InsightRow({ insight, isLast }: { insight: Insight; isLast: boolean }) 
             {insight.theme || insight.title}
           </p>
           {isScripture && insight.source?.reference && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-[#756653]/10 dark:bg-[#A5A597]/10 text-[#756653]/70 dark:text-[#A5A597]/70 flex-shrink-0">
+            <span className="text-[11px] px-2.5 py-0.5 rounded bg-wl-olive/10 dark:bg-wl-olive-300/10 text-wl-olive/70 dark:text-wl-olive-300/70 flex-shrink-0">
               {insight.source.reference}
             </span>
           )}
         </div>
-        <p className="text-[12px] text-foreground/40 line-clamp-2 leading-snug mt-0.5">
+        <p className="text-[11px] text-foreground/40 line-clamp-2 leading-snug mt-0.5">
           &ldquo;{insight.content}&rdquo;
         </p>
       </div>
@@ -256,17 +210,17 @@ function EmptyState({ onStartConversation, quote, ctaText }: { onStartConversati
     <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
       {/* Decorative faint stars */}
       <div className="relative w-full h-32 mb-4">
-        <svg width="100%" height="100%" viewBox="0 0 200 100" className="opacity-[0.12]">
+        <svg width="100%" height="100%" viewBox="0 0 200 100" className="opacity-[0.12] text-wl-sage dark:text-wl-olive-300">
           {/* Scattered decorative star points */}
-          <circle cx="45" cy="25" r="2" fill="#C5B49B" />
-          <circle cx="120" cy="15" r="1.5" fill="#C5B49B" />
-          <circle cx="80" cy="55" r="2.5" fill="#C5B49B" />
-          <circle cx="155" cy="40" r="1.5" fill="#C5B49B" />
-          <circle cx="30" cy="70" r="2" fill="#C5B49B" />
+          <circle cx="45" cy="25" r="2" fill="currentColor" />
+          <circle cx="120" cy="15" r="1.5" fill="currentColor" />
+          <circle cx="80" cy="55" r="2.5" fill="currentColor" />
+          <circle cx="155" cy="40" r="1.5" fill="currentColor" />
+          <circle cx="30" cy="70" r="2" fill="currentColor" />
           {/* Faint connecting lines */}
-          <line x1="45" y1="25" x2="80" y2="55" stroke="#C5B49B" strokeWidth="0.5" opacity="0.5" />
-          <line x1="80" y1="55" x2="120" y2="15" stroke="#C5B49B" strokeWidth="0.5" opacity="0.5" />
-          <line x1="120" y1="15" x2="155" y2="40" stroke="#C5B49B" strokeWidth="0.5" opacity="0.5" />
+          <line x1="45" y1="25" x2="80" y2="55" stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
+          <line x1="80" y1="55" x2="120" y2="15" stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
+          <line x1="120" y1="15" x2="155" y2="40" stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
         </svg>
       </div>
 
@@ -278,7 +232,7 @@ function EmptyState({ onStartConversation, quote, ctaText }: { onStartConversati
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onStartConversation}
-        className="mt-5 text-sm font-medium text-wl-olive hover:underline flex items-center gap-1"
+        className="mt-5 text-sm font-medium text-wl-olive dark:text-wl-olive-300 hover:underline focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 rounded-lg flex items-center gap-1"
       >
         {ctaText ?? 'Start a Conversation to Discover Your First Star'}
         <ChevronRight className="w-3.5 h-3.5" />

@@ -21,12 +21,12 @@ class DashboardErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: 40, fontFamily: 'monospace', color: '#900' }}>
-          <h2>Dashboard Error</h2>
-          <pre style={{ whiteSpace: 'pre-wrap' }}>
+        <div className="p-10 font-sans text-destructive">
+          <h2 className="text-lg font-semibold mb-2">Dashboard Error</h2>
+          <pre className="whitespace-pre-wrap text-sm text-foreground/70">
             {this.state.error.message}
           </pre>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, opacity: 0.7 }}>
+          <pre className="whitespace-pre-wrap text-xs text-foreground/40 mt-2">
             {this.state.error.stack}
           </pre>
         </div>
