@@ -1,82 +1,11 @@
 import { motion } from 'framer-motion';
 import { Bookmark, BookmarkCheck, Copy, Check } from 'lucide-react';
-import { useState, useMemo, type ReactNode } from 'react';
+import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Message } from '@/types/chat';
 import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
-
-// ============ Lightweight Markdown Renderer ============
-
-function renderMarkdown(text: string): ReactNode[] {
-  const blocks = text.split(/\n{2,}/);
-
-  return blocks.map((block, blockIndex) => {
-    const trimmed = block.trim();
-    if (!trimmed) return null;
-
-    // Bullet list
-    if (/^[-•*]\s/m.test(trimmed)) {
-      const items = trimmed.split(/\n/).filter((l) => l.trim());
-      return (
-        <ul key={blockIndex} className="list-disc list-outside pl-5 my-2 space-y-1">
-          {items.map((item, i) => (
-            <li key={i} className="text-base leading-relaxed">
-              {renderInline(item.replace(/^[-•*]\s+/, ''))}
-            </li>
-          ))}
-        </ul>
-      );
-    }
-
-    // Numbered list
-    if (/^\d+[.)]\s/m.test(trimmed)) {
-      const items = trimmed.split(/\n/).filter((l) => l.trim());
-      return (
-        <ol key={blockIndex} className="list-decimal list-outside pl-5 my-2 space-y-1">
-          {items.map((item, i) => (
-            <li key={i} className="text-base leading-relaxed">
-              {renderInline(item.replace(/^\d+[.)]\s+/, ''))}
-            </li>
-          ))}
-        </ol>
-      );
-    }
-
-    // Regular paragraph
-    return (
-      <p key={blockIndex} className="text-base leading-relaxed mb-3 last:mb-0">
-        {renderInline(trimmed)}
-      </p>
-    );
-  });
-}
-
-function renderInline(text: string): ReactNode[] {
-  // Split on bold markers: **text** or *text* (single for italic)
-  const parts: ReactNode[] = [];
-  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
-    }
-    if (match[1]) {
-      parts.push(<strong key={match.index} className="font-semibold">{match[1]}</strong>);
-    } else if (match[2]) {
-      parts.push(<em key={match.index}>{match[2]}</em>);
-    }
-    lastIndex = regex.lastIndex;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts;
-}
+import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 interface ChatMessageProps {
   message: Message;
@@ -90,7 +19,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
   const isUser = message.role === 'user';
 
   const renderedContent = useMemo(
-    () => (isUser ? null : renderMarkdown(message.content)),
+    () => (isUser ? null : renderSophiaMarkdown(message.content)),
     [isUser, message.content]
   );
 
@@ -110,7 +39,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
         delay: index * 0.05 
       }}
       className={cn(
-        "flex gap-3 mb-4",
+        "flex gap-3 mb-4 group/msg",
         isUser ? "justify-end" : "justify-start"
       )}
     >
@@ -156,12 +85,13 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
 
         {/* Message actions - only for assistant messages */}
         {!isUser && (
-          <div className="flex items-center gap-1 mt-2 opacity-0 hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-1 mt-2 opacity-100 md:opacity-0 md:group-hover/msg:opacity-100 transition-opacity duration-200">
             <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7 text-muted-foreground hover:text-foreground"
               onClick={handleCopy}
+              aria-label={copied ? "Copied" : "Copy message"}
             >
               {copied ? (
                 <Check className="h-3.5 w-3.5 text-hl-green" />
@@ -169,7 +99,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
                 <Copy className="h-3.5 w-3.5" />
               )}
             </Button>
-            
+
             {onSaveInsight && (
               <Button
                 variant="ghost"
@@ -177,6 +107,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
                 className="h-7 w-7 text-muted-foreground hover:text-primary"
                 onClick={() => onSaveInsight(message)}
                 disabled={isSaved}
+                aria-label={isSaved ? "Insight saved" : "Save as insight"}
               >
                 {isSaved ? (
                   <BookmarkCheck className="h-3.5 w-3.5 text-primary" />

@@ -1,7 +1,8 @@
 # Wholelicity — Refinement Checklist
 
-- [ ] Home
+- [x] Home
 - [ ] Chat
+- [ ] Intro & Onboarding
 - [ ] Curriculum
 - [ ] Scripture
 - [ ] Scripture Study Tools (highlighting, verse interaction, image generation)
@@ -23,7 +24,9 @@
 - [ ] User Profile
 - [ ] Login & Authentication
 - [ ] Data Continuity Across Devices
-- [ ] Light Mode Visual Language
+- [ ] Light Mode Visual Language (typography pass, color pass, etc.)
 - [ ] Dark Mode Visual Language
 - [ ] Teaching UI (dark mode transition at night)
+- [ ] Accessibility
+- [ ] Set up ElevenLabs voice API
 - [ ] Community (future vision)

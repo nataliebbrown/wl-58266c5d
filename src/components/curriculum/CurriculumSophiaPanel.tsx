@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Mic, Lightbulb, Heart, BookOpen, HelpCircle } from 'lucide-react';
+import { X, Send, Mic, MicOff, Lightbulb, Heart, BookOpen, HelpCircle } from 'lucide-react';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useConversations } from '@/hooks/useConversations';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
@@ -8,6 +8,8 @@ import { getQuizData } from '@/lib/onboardingState';
 import type { Message } from '@/types/chat';
 import type { Lesson } from '@/types/curriculum';
 import type { LucideIcon } from 'lucide-react';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
@@ -73,7 +75,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {message.content}
+        {isUser ? message.content : renderSophiaMarkdown(message.content)}
       </div>
     </motion.div>
   );

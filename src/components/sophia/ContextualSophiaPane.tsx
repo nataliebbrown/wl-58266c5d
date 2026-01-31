@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, X, BookOpen, Compass, Heart, Sparkles, HelpCircle, BookMarked, GraduationCap, Link2, MessageCircleQuestion } from 'lucide-react';
+import { Send, Mic, MicOff, X, BookOpen, Compass, Heart, Sparkles, HelpCircle, BookMarked, GraduationCap, Link2, MessageCircleQuestion } from 'lucide-react';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -10,6 +10,8 @@ import { getQuizData } from '@/lib/onboardingState';
 import type { Message } from '@/types/chat';
 import type { BibleReference } from '@/lib/bibleApi';
 import type { LucideIcon } from 'lucide-react';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
@@ -119,7 +121,7 @@ function MiniChatBubble({ message, isDarkMode }: { message: Message; isDarkMode:
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {message.content}
+        {isUser ? message.content : renderSophiaMarkdown(message.content)}
       </div>
     </motion.div>
   );
@@ -139,6 +141,10 @@ function PillChatInput({
   const [value, setValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { isListening, toggleVoice, hasVoiceSupport } = useVoiceInput(
+    (transcript) => setValue(transcript),
+  );
 
   const handleSubmit = () => {
     const trimmed = value.trim();
@@ -199,12 +205,18 @@ function PillChatInput({
           color: isDarkMode ? '#FBF9F5' : undefined,
         }}
       />
-      <button
-        className="flex-shrink-0 p-1 transition-opacity opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#FBF9F5' : '#5A4C3A' }}
-      >
-        <Mic className="w-5 h-5" />
-      </button>
+      {hasVoiceSupport && (
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+          aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+          className={`flex-shrink-0 p-1 transition-opacity ${
+            isListening ? 'opacity-100 text-green-500 animate-pulse' : 'opacity-40 hover:opacity-70'
+          }`}
+          style={!isListening ? { color: isDarkMode ? '#FBF9F5' : '#5A4C3A' } : undefined}
+        >
+          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        </button>
+      )}
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}

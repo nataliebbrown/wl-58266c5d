@@ -303,6 +303,7 @@ export default function Chat() {
             size="icon"
             className="text-foreground/70 hover:text-foreground hover:bg-foreground/5"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open chat history"
           >
             <Menu className="h-5 w-5" />
           </Button>

@@ -80,7 +80,7 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
                 <Icon className="h-5 w-5 text-hl-green" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground group-hover:text-[#B85A3E] transition-colors">
+                <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
                   {topic.title}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed">

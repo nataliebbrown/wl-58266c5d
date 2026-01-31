@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, ArrowRight, BookOpen, Compass, Heart, Sparkles } from 'lucide-react';
+import { Send, Mic, MicOff, ArrowRight, BookOpen, Compass, Heart, Sparkles } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
@@ -16,6 +16,8 @@ import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import { getUserContext, generateDashboardMessage } from '@/lib/contextualIntelligence';
 import type { Message } from '@/types/chat';
 import type { LucideIcon } from 'lucide-react';
+import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
@@ -99,7 +101,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {message.content}
+        {isUser ? message.content : renderSophiaMarkdown(message.content)}
       </div>
     </motion.div>
   );
@@ -119,6 +121,10 @@ function PillChatInput({
   const [value, setValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { isListening, toggleVoice, hasVoiceSupport } = useVoiceInput(
+    (transcript) => setValue(transcript),
+  );
 
   const handleSubmit = () => {
     const trimmed = value.trim();
@@ -178,13 +184,17 @@ function PillChatInput({
         placeholder="Ask Anything..."
         className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground/35"
       />
-      <button
-        aria-label="Voice input (coming soon)"
-        disabled
-        className="flex-shrink-0 p-1 text-foreground opacity-25 cursor-not-allowed"
-      >
-        <Mic className="w-5 h-5" />
-      </button>
+      {hasVoiceSupport && (
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+          aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+          className={`flex-shrink-0 p-1 transition-opacity text-foreground ${
+            isListening ? 'opacity-100 text-green-500 animate-pulse' : 'opacity-40 hover:opacity-70'
+          }`}
+        >
+          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        </button>
+      )}
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}

@@ -29,6 +29,8 @@ export function TypingIndicator() {
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       className="flex items-start gap-3 mb-4"
+      role="status"
+      aria-label="Sophia is typing"
     >
       <div className="flex-shrink-0">
         <div className="w-9 h-9 rounded-full chat-sophia-avatar overflow-hidden">

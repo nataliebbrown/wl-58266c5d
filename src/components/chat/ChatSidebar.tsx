@@ -161,12 +161,14 @@ export function ChatSidebar({
               <button
                 onClick={onNewConversation}
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-foreground/[0.06] hover:bg-foreground/[0.1] transition-colors"
+                aria-label="New conversation"
               >
                 <Plus className="h-4 w-4 text-foreground/60" />
               </button>
               <button
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-foreground/[0.06] hover:bg-foreground/[0.1] transition-colors md:hidden"
                 onClick={onClose}
+                aria-label="Close sidebar"
               >
                 <X className="h-4 w-4 text-foreground/60" />
               </button>
@@ -182,6 +184,7 @@ export function ChatSidebar({
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search conversations..."
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/30 text-foreground/80"
+              aria-label="Search conversations"
             />
           </div>
         </div>
@@ -286,6 +289,7 @@ export function ChatSidebar({
                                   e.stopPropagation();
                                   handleStartEdit(conv);
                                 }}
+                                aria-label="Rename conversation"
                               >
                                 <Edit2 className="h-3.5 w-3.5" />
                               </Button>
@@ -297,6 +301,7 @@ export function ChatSidebar({
                                   e.stopPropagation();
                                   setDeleteId(conv.id);
                                 }}
+                                aria-label="Delete conversation"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </Button>

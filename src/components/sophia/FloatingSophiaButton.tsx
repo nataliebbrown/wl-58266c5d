@@ -116,7 +116,7 @@ export function FloatingSophiaButton({ onClick, onSendPrompt, currentPath = '', 
                 onClick={() => handleBubbleClick(bubble)}
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-card/95 backdrop-blur-sm border border-border/50 shadow-lg hover:shadow-xl hover:bg-card transition-all duration-200 whitespace-nowrap group"
                 style={{
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1), 0 0 40px rgba(167, 139, 250, 0.1)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1), 0 0 40px rgba(197, 180, 155, 0.12)',
                 }}
               >
                 <span className="text-muted-foreground group-hover:text-hl-green transition-colors">

@@ -214,7 +214,7 @@
 
   /* Glassmorphism container - Dark Mode */
   .dark .chat-container-glass {
-    background: rgba(45, 55, 72, 0.9);
+    background: rgba(47, 41, 33, 0.9);
     border: 1px solid rgba(248, 246, 240, 0.12);
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
   }
@@ -239,14 +239,14 @@
     border: 1px solid rgba(135, 169, 107, 0.15);
     border-radius: 18px 18px 18px 4px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    color: #2D3748;
+    color: hsl(var(--foreground));
   }
 
   /* Sophia/AI message bubble - Dark Mode */
   .dark .chat-bubble-sophia {
-    background: rgba(45, 55, 72, 0.8);
+    background: rgba(47, 41, 33, 0.8);
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
-    color: #F8F6F0;
+    color: hsl(var(--foreground));
   }
 
   /* Chat input container glassmorphism */
@@ -260,7 +260,7 @@
   }
 
   .dark .chat-input-container {
-    background: rgba(45, 55, 72, 0.95);
+    background: rgba(47, 41, 33, 0.95);
     box-shadow: 0 -6px 32px rgba(0, 0, 0, 0.25);
   }
 
@@ -279,7 +279,7 @@
   }
 
   .dark .chat-input-field {
-    background: rgba(26, 31, 46, 0.5);
+    background: rgba(47, 41, 33, 0.5);
   }
 
   /* Send button styling */

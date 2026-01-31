@@ -61,7 +61,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName }: SophiaAudioOve
   };
 
   const greeting = getTimeBasedGreeting();
-  const displayName = userName || 'Natalie';
+  const displayName = userName || '';
 
   return (
     <AnimatePresence>
@@ -105,7 +105,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName }: SophiaAudioOve
               transition={{ delay: 0.2 }}
               className="text-2xl md:text-3xl font-semibold text-foreground text-center leading-relaxed"
             >
-              {greeting}, {displayName}.
+              {greeting}{displayName ? `, ${displayName}` : ''}.
               <br />
               <span className="text-muted-foreground font-normal">
                 What are you looking for today?

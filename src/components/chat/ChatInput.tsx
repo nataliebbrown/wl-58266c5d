@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -10,16 +11,18 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
-export function ChatInput({ 
-  onSend, 
-  isLoading, 
+export function ChatInput({
+  onSend,
+  isLoading,
   disabled,
-  placeholder = "Share what's on your heart..." 
+  placeholder = "Share what's on your heart..."
 }: ChatInputProps) {
   const [value, setValue] = useState('');
-  const [isListening, setIsListening] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
+
+  const { isListening, toggleVoice, hasVoiceSupport } = useVoiceInput(
+    (transcript) => setValue(transcript),
+  );
 
   // Auto-resize textarea
   useEffect(() => {
@@ -28,39 +31,6 @@ export function ChatInput({
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
     }
   }, [value]);
-
-  // Initialize speech recognition
-  useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-
-      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
-        let transcript = '';
-        for (let i = 0; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        setValue(transcript);
-      };
-
-      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
-    }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    };
-  }, []);
 
   const handleSubmit = () => {
     if (!value.trim() || isLoading || disabled) return;
@@ -77,20 +47,6 @@ export function ChatInput({
       handleSubmit();
     }
   };
-
-  const toggleVoice = () => {
-    if (!recognitionRef.current) return;
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      recognitionRef.current.start();
-      setIsListening(true);
-    }
-  };
-
-  const hasVoiceSupport = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
 
   return (
     <div className="chat-input-container mx-4 md:mx-8 mb-4 md:mb-6 p-4">
@@ -113,7 +69,7 @@ export function ChatInput({
               )}
               rows={1}
             />
-            
+
             {/* Voice input button */}
             {hasVoiceSupport && (
               <Button
@@ -127,6 +83,7 @@ export function ChatInput({
                   "text-muted-foreground hover:text-foreground",
                   isListening && "text-hl-green animate-pulse"
                 )}
+                aria-label={isListening ? "Stop voice input" : "Start voice input"}
               >
                 {isListening ? (
                   <MicOff className="h-4 w-4" />
@@ -162,30 +119,4 @@ export function ChatInput({
       </div>
     </div>
   );
-}
-
-// Type declarations for Speech Recognition API
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-}
-
-interface SpeechRecognitionType {
-  continuous: boolean;
-  interimResults: boolean;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  onend: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognitionType;
-    webkitSpeechRecognition: new () => SpeechRecognitionType;
-  }
 }
