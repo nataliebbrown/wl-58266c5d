@@ -26,7 +26,7 @@ export function AppHeader({ isDarkMode, onToggleDarkMode }: AppHeaderProps) {
   const [previewModule, setPreviewModule] = useState<ModuleType | null>(null);
   const { getPersonaFromOnboarding } = useUserProfile();
   const personaData = getPersonaFromOnboarding();
-  const userName = personaData?.name || 'Natalie';
+  const userName = personaData?.name || 'User';
 
   const iconColor = isDarkMode ? '#FBF9F5' : '#5A4C3A';
   const navIconColor = isDarkMode ? '#FBF9F5' : '#5A4C3A';

@@ -43,7 +43,7 @@ const defaultState: OnboardingState = {
 };
 
 const defaultQuizData: QuizData = {
-  name: 'Natalie',
+  name: null,
   spiritualBackground: null,
   learningStyle: null,
   communityPreference: null,

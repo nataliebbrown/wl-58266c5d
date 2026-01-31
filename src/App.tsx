@@ -15,6 +15,7 @@ import Journey from "./pages/Journey";
 import Horizon from "./pages/Horizon";
 import Insights from "./pages/Insights";
 import Search from "./pages/Search";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 // Diagnostic error boundary — shows runtime errors on screen
@@ -67,6 +68,7 @@ function AppContent() {
         <Route path="/horizon" element={<Horizon />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
 
       <Route path="/orb-test" element={<OrbTest />} />
