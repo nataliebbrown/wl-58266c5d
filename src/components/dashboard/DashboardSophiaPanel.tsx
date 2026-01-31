@@ -183,8 +183,9 @@ function PillChatInput({
         className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground/35"
       />
       <button
-        aria-label="Voice input"
-        className="flex-shrink-0 p-1 transition-opacity text-foreground opacity-40 hover:opacity-70"
+        aria-label="Voice input (coming soon)"
+        disabled
+        className="flex-shrink-0 p-1 text-foreground opacity-25 cursor-not-allowed"
       >
         <Mic className="w-5 h-5" />
       </button>

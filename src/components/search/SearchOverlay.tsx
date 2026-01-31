@@ -561,7 +561,7 @@ function PassagePreview({
 
       <button
         onClick={onNavigate}
-        className="w-full text-left rounded-xl px-4 py-4 bg-wl-stone-50 dark:bg-wl-earth-800 hover:bg-wl-stone-100 dark:hover:bg-wl-earth-700 transition-colors group"
+        className="w-full text-left rounded-xl px-4 py-4 bg-wl-stone-50 dark:bg-wl-earth-800 hover:bg-wl-stone-100 dark:hover:bg-wl-earth-700 focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-colors group"
       >
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-semibold text-foreground/85 dark:text-wl-olive-200">
@@ -727,7 +727,7 @@ function EmptyState({
               <button
                 key={term}
                 onClick={() => onRecentClick(term)}
-                className="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg hover:bg-foreground/[0.04] transition-colors"
+                className="flex items-center gap-2.5 w-full text-left px-3 py-2 rounded-lg hover:bg-foreground/[0.04] focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-colors"
               >
                 <Clock className="w-3.5 h-3.5 text-foreground/25" />
                 <span className="text-sm text-foreground/60">{term}</span>
@@ -746,7 +746,7 @@ function EmptyState({
             <button
               key={s}
               onClick={() => onRecentClick(s)}
-              className="px-3 py-1.5 rounded-full text-xs font-medium border border-foreground/10 text-foreground/50 hover:border-foreground/25 hover:text-foreground/70 transition-colors"
+              className="px-3 py-1.5 rounded-full text-xs font-medium border border-foreground/10 text-foreground/50 hover:border-foreground/25 hover:text-foreground/70 focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-colors"
             >
               {s}
             </button>
