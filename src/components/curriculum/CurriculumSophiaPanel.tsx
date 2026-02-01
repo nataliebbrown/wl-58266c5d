@@ -18,8 +18,8 @@ const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 interface StarterCard {
   icon: LucideIcon;
   label: string;
+  description: string;
   prompt: string;
-  fullWidth?: boolean;
 }
 
 function getStarters(lesson: Lesson): StarterCard[] {
@@ -27,11 +27,13 @@ function getStarters(lesson: Lesson): StarterCard[] {
     {
       icon: Lightbulb,
       label: 'Explain the key concepts',
+      description: 'Understand the main ideas and takeaways from this lesson.',
       prompt: `Explain the key concepts from the lesson "${lesson.title}".`,
     },
     {
       icon: Heart,
       label: 'How does this apply to my life?',
+      description: 'See how these teachings connect to your everyday life.',
       prompt: `How does the lesson "${lesson.title}" apply to my everyday life?`,
     },
   ];
@@ -41,6 +43,7 @@ function getStarters(lesson: Lesson): StarterCard[] {
     starters.push({
       icon: BookOpen,
       label: 'What does Scripture say about this?',
+      description: 'Explore the biblical passages referenced in this lesson.',
       prompt: `What does Scripture say about the topics in "${lesson.title}"? The lesson references ${refs}.`,
     });
   }
@@ -48,8 +51,8 @@ function getStarters(lesson: Lesson): StarterCard[] {
   starters.push({
     icon: HelpCircle,
     label: 'I have a question about this lesson',
+    description: 'Get help understanding something specific.',
     prompt: `I have a question about the lesson "${lesson.title}". Can you help me understand it better?`,
-    fullWidth: true,
   });
 
   return starters;
@@ -71,7 +74,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
             ? 'bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground'
-            : 'bg-white/60 text-foreground'
+            : 'bg-white/60 dark:bg-wl-olive-300/15 text-foreground'
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
@@ -120,32 +123,34 @@ function PillChatInput({
       onClick={() => inputRef.current?.focus()}
       style={{
         background: isFocused
-          ? (isDarkMode ? 'rgba(241,241,239,0.14)' : 'rgba(255,255,255,0.95)')
-          : (isDarkMode ? 'rgba(241,241,239,0.1)' : 'rgba(255,255,255,0.85)'),
+          ? (isDarkMode ? 'rgba(241,237,233,0.14)' : 'rgba(255,255,255,0.95)')
+          : (isDarkMode ? 'rgba(241,237,233,0.1)' : 'rgba(255,255,255,0.85)'),
         boxShadow: isFocused
           ? (isDarkMode
-              ? '0 0 0 2px rgba(165,165,151,0.3), inset 0 1px 0 rgba(241,241,239,0.08)'
-              : '0 0 0 2px rgba(117,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
+              ? '0 0 0 2px rgba(178,164,146,0.3), inset 0 1px 0 rgba(241,237,233,0.08)'
+              : '0 0 0 2px rgba(116,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
           : (isDarkMode
-              ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+              ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
               : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
       }}
       onMouseEnter={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? '0 0 0 1px rgba(165,165,151,0.2), inset 0 1px 0 rgba(241,241,239,0.08)'
-            : '0 0 0 1px rgba(117,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
+            ? '0 0 0 1px rgba(178,164,146,0.2), inset 0 1px 0 rgba(241,237,233,0.08)'
+            : '0 0 0 1px rgba(116,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+            ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
             : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
     >
+      <label className="sr-only" htmlFor="sophia-curriculum-input">Ask Sophia</label>
       <input
+        id="sophia-curriculum-input"
         ref={inputRef}
         type="text"
         value={value}
@@ -154,19 +159,15 @@ function PillChatInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder="Ask Anything..."
-        className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
-        style={{
-          color: isDarkMode ? '#FBF9F5' : undefined,
-        }}
+        className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground/35"
       />
       {hasVoiceSupport && (
         <button
           onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
           aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-          className={`flex-shrink-0 p-1 transition-opacity ${
+          className={`flex-shrink-0 p-1 transition-opacity text-foreground ${
             isListening ? 'opacity-100 text-green-500 animate-pulse' : 'opacity-40 hover:opacity-70'
           }`}
-          style={!isListening ? { color: isDarkMode ? '#FBF9F5' : '#5A4C3A' } : undefined}
         >
           {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
         </button>
@@ -174,8 +175,8 @@ function PillChatInput({
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
-        className="flex-shrink-0 p-1 transition-opacity disabled:opacity-20 opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#FBF9F5' : '#5A4C3A' }}
+        aria-label="Send message"
+        className="flex-shrink-0 p-1 transition-opacity text-foreground disabled:opacity-20 opacity-40 hover:opacity-70"
       >
         <Send className="w-5 h-5" />
       </button>
@@ -237,7 +238,6 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
   }, [initialPrompt]);
 
   const hasMessages = messages.length > 0;
-  const textColor = isDarkMode ? '#CBC2B6' : '#2F2921';
   const starters = getStarters(lesson);
 
   return (
@@ -246,6 +246,7 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
       <button
         onClick={onDismiss}
         className="absolute top-4 right-4 z-10 w-7 h-7 rounded-full flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 transition-colors"
+        aria-label="Close"
       >
         <X className="w-4 h-4 text-foreground/60" />
       </button>
@@ -271,8 +272,7 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
               {/* Greeting */}
               <div className="mb-4">
                 <h2
-                  className="text-2xl leading-snug"
-                  style={{ color: textColor }}
+                  className="text-2xl leading-snug text-foreground"
                 >
                   <span className="italic">Let's explore this together</span>
                 </h2>
@@ -284,25 +284,26 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
 
             {/* Scrollable content -- starters */}
             <div className="flex-1 overflow-y-auto px-5 py-3">
-              <div className="grid grid-cols-2 gap-3 w-full">
+              <div className="flex flex-col gap-2.5 w-full">
                 {starters.map((starter) => (
                   <button
                     key={starter.label}
                     onClick={() => handleSend(starter.prompt)}
-                    className={`flex items-center justify-center gap-3 rounded-xl px-5 py-5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm transition-all duration-200 ${
-                      starter.fullWidth
-                        ? 'col-span-2 flex-row'
-                        : 'flex-col text-center'
-                    }`}
+                    className="flex items-start gap-3.5 rounded-xl px-4 py-3.5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200 text-left"
                   >
-                    <starter.icon
-                      className="w-5 h-5 flex-shrink-0 text-wl-olive/60 dark:text-wl-olive-300/60"
-                    />
-                    <span
-                      className="text-base leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200"
-                    >
-                      {starter.label}
-                    </span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full border border-wl-olive/20 dark:border-wl-olive-300/20 flex items-center justify-center mt-0.5">
+                      <starter.icon
+                        className="w-4 h-4 text-wl-olive/50 dark:text-wl-olive-300/50"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-[15px] leading-snug font-semibold text-foreground/85 dark:text-wl-olive-200">
+                        {starter.label}
+                      </span>
+                      <span className="block text-[13px] leading-snug mt-0.5 text-foreground/45 dark:text-wl-olive-300/50">
+                        {starter.description}
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>

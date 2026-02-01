@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Message } from '@/types/chat';
-import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 interface ChatMessageProps {
@@ -33,47 +32,32 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.3, 
+      transition={{
+        duration: 0.3,
         ease: [0.4, 0, 0.2, 1],
-        delay: index * 0.05 
+        delay: index * 0.05
       }}
       className={cn(
         "flex gap-3 mb-4 group/msg",
         isUser ? "justify-end" : "justify-start"
       )}
     >
-      {/* Sophia avatar for assistant messages */}
-      {!isUser && (
-        <div className="flex-shrink-0 mt-1">
-          <div className="w-9 h-9 rounded-full chat-sophia-avatar overflow-hidden">
-            <SophiaAvatar size="sm" />
-          </div>
-        </div>
-      )}
-
       <div className={cn(
         "flex flex-col",
         isUser ? "items-end max-w-[75%] md:max-w-[75%]" : "items-start max-w-[80%] md:max-w-[80%]"
       )}>
-        {/* Sophia label */}
-        {!isUser && (
-          <span className="text-sm font-medium mb-1 ml-1 text-hl-green">
-            Sophia
-          </span>
-        )}
-
         {/* Message bubble */}
         <div
           className={cn(
-            "px-[18px] py-3",
+            "rounded-2xl px-4 py-3 text-sm leading-relaxed",
             isUser
-              ? "chat-bubble-user"
-              : "chat-bubble-sophia"
+              ? "bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground"
+              : "bg-white/60 dark:bg-wl-olive-300/15 text-foreground"
           )}
+          style={!isUser ? { backdropFilter: 'blur(4px)' } : undefined}
         >
           {isUser ? (
-            <p className="text-base leading-relaxed whitespace-pre-wrap">
+            <p className="whitespace-pre-wrap">
               {message.content}
             </p>
           ) : (
@@ -94,7 +78,7 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
               aria-label={copied ? "Copied" : "Copy message"}
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-hl-green" />
+                <Check className="h-3.5 w-3.5 text-green-500" />
               ) : (
                 <Copy className="h-3.5 w-3.5" />
               )}
@@ -121,9 +105,9 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: Chat
 
         {/* Timestamp */}
         <span className="text-[13px] text-muted-foreground/60 mt-1 ml-1">
-          {message.createdAt.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+          {message.createdAt.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
           })}
         </span>
       </div>

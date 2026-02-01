@@ -8,6 +8,7 @@ import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useVoiceOutput } from '@/hooks/useVoiceOutput';
 import { getQuizData } from '@/lib/onboardingState';
 import type { Message } from '@/types/chat';
+import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 interface SophiaAudioOverlayProps {
   isOpen: boolean;
@@ -34,14 +35,14 @@ function OverlayChatBubble({ message }: { message: Message }) {
       className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+        className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
-            ? 'bg-white/20 text-foreground'
-            : 'bg-white/10 text-foreground'
+            ? 'bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground'
+            : 'bg-white/60 dark:bg-wl-olive-300/15 text-foreground'
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {message.content}
+        {isUser ? message.content : renderSophiaMarkdown(message.content)}
       </div>
     </motion.div>
   );
@@ -227,7 +228,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName, initialPrompt }:
             {hasMessages && (
               <div
                 ref={scrollRef}
-                className="flex-1 w-full max-w-xl overflow-y-auto space-y-3 min-h-0"
+                className="flex-1 w-full max-w-xl overflow-y-auto space-y-2 min-h-0"
               >
                 <AnimatePresence mode="popLayout">
                   {messages.map((msg) => (
@@ -245,7 +246,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName, initialPrompt }:
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
-                        className="w-1.5 h-1.5 rounded-full bg-muted-foreground"
+                        className="w-1.5 h-1.5 rounded-full bg-wl-olive dark:bg-wl-olive-300"
                         animate={{ opacity: [0.3, 1, 0.3] }}
                         transition={{
                           duration: 1,

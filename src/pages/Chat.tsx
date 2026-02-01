@@ -17,7 +17,6 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Message, getSuggestedTopics, SuggestedTopic, UserPersona } from '@/types/chat';
 import { Insight } from '@/types/dashboard';
 import { toast } from 'sonner';
-import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
 import { getOnboardingState, markFullyOnboarded } from '@/lib/onboardingState';
 import { getPersonaGreeting, getPersonaTopics } from '@/lib/sophiaMessages';
 import { saveInsight as saveToConstellation } from '@/lib/insights';
@@ -46,12 +45,12 @@ function FirstVisitGreeting({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-start gap-3 mb-4"
+            className="flex justify-start mb-4"
           >
-            <div className="chat-sophia-avatar rounded-full flex-shrink-0">
-              <SophiaAvatar size="sm" />
-            </div>
-            <div className="chat-bubble-sophia px-4 py-3 rounded-2xl rounded-tl-sm">
+            <div
+              className="rounded-2xl px-4 py-3 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
+              style={{ backdropFilter: 'blur(4px)' }}
+            >
               <TypingIndicator />
             </div>
           </motion.div>
@@ -65,11 +64,11 @@ function FirstVisitGreeting({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex items-start gap-3 mb-8">
-              <div className="chat-sophia-avatar rounded-full flex-shrink-0">
-                <SophiaAvatar size="sm" />
-              </div>
-              <div className="chat-bubble-sophia px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%]">
+            <div className="flex justify-start mb-8">
+              <div
+                className="rounded-2xl px-4 py-3 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
+                style={{ backdropFilter: 'blur(4px)' }}
+              >
                 {greeting.paragraphs.map((paragraph, i) => (
                   <p key={i} className={`text-[15px] leading-relaxed ${i > 0 ? 'mt-2' : ''}`}>
                     {paragraph}
@@ -82,7 +81,7 @@ function FirstVisitGreeting({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="flex flex-wrap gap-2 ml-12 mb-4"
+              className="flex flex-wrap gap-2 mb-4"
             >
               {topics.slice(0, 4).map((topic, index) => (
                 <motion.button
@@ -96,7 +95,7 @@ function FirstVisitGreeting({
                     prompt: topic.prompt,
                     category: 'exploration',
                   })}
-                  className="px-4 py-2 rounded-full text-sm bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-card/90 hover:border-hl-green/30 transition-all duration-200 text-foreground/80 hover:text-foreground"
+                  className="px-4 py-2 rounded-full text-sm border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 transition-all duration-200 text-foreground/80 hover:text-foreground"
                 >
                   {topic.title}
                 </motion.button>

@@ -1,75 +1,28 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
-
-const COMPOSING_PHRASES = [
-  'Sophia is reflecting\u2026',
-  'Sophia is composing\u2026',
-  'Sophia is considering\u2026',
-  'Sophia is praying over this\u2026',
-  'Sophia is searching Scripture\u2026',
-];
+import { motion } from 'framer-motion';
 
 export function TypingIndicator() {
-  const [phraseIndex, setPhraseIndex] = useState(
-    () => Math.floor(Math.random() * COMPOSING_PHRASES.length)
-  );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPhraseIndex(prev => (prev + 1) % COMPOSING_PHRASES.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-      className="flex items-start gap-3 mb-4"
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="flex items-center gap-1.5 px-3 py-2 mb-4"
       role="status"
       aria-label="Sophia is typing"
     >
-      <div className="flex-shrink-0">
-        <div className="w-9 h-9 rounded-full chat-sophia-avatar overflow-hidden">
-          <SophiaAvatar size="sm" />
-        </div>
-      </div>
-
-      <div className="flex flex-col items-start">
-        <span className="text-sm font-medium mb-1 ml-1 text-hl-green">
-          Sophia
-        </span>
-
-        <div className="chat-bubble-sophia px-5 py-4">
-          <div className="flex items-center gap-2">
-            <span
-              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
-            />
-            <span
-              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
-            />
-            <span
-              className="w-2 h-2 rounded-full chat-typing-dot bg-hl-green"
-            />
-          </div>
-        </div>
-
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={phraseIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-sm text-muted-foreground/60 mt-2 ml-1 italic"
-          >
-            {COMPOSING_PHRASES[phraseIndex]}
-          </motion.span>
-        </AnimatePresence>
-      </div>
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-wl-olive dark:bg-wl-olive-300"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
+        />
+      ))}
     </motion.div>
   );
 }

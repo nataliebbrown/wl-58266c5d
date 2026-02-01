@@ -60,8 +60,8 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       if (match) {
         const level = match[1].length;
         nodes.push(level === 2
-          ? <h3 key={key++} className="text-[17px] font-semibold mt-4 mb-1.5 first:mt-0">{renderInline(match[2])}</h3>
-          : <h4 key={key++} className="text-base font-semibold mt-3 mb-1 first:mt-0">{renderInline(match[2])}</h4>
+          ? <h3 key={key++} className="text-[15px] font-semibold mt-4 mb-1.5 first:mt-0">{renderInline(match[2])}</h3>
+          : <h4 key={key++} className="text-sm font-semibold mt-3 mb-1 first:mt-0">{renderInline(match[2])}</h4>
         );
       }
       i++; continue;
@@ -70,7 +70,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
     // Standalone bold line → section heading
     if (type === 'bold-heading') {
       const headingText = line.trim().replace(/^\*\*|\*\*$/g, '');
-      nodes.push(<h4 key={key++} className="text-base font-semibold mt-3 mb-1 first:mt-0">{headingText}</h4>);
+      nodes.push(<h4 key={key++} className="text-sm font-semibold mt-3 mb-1 first:mt-0">{headingText}</h4>);
       i++; continue;
     }
 
@@ -82,7 +82,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
         i++;
       }
       nodes.push(
-        <blockquote key={key++} className="border-l-2 border-hl-green/40 pl-3.5 my-2.5 italic text-[15px] leading-relaxed text-foreground/80">
+        <blockquote key={key++} className="border-l-2 border-hl-green/40 pl-3.5 my-2.5 italic text-sm leading-relaxed text-foreground/80">
           {renderInline(quoteLines.join(' '))}
         </blockquote>
       );
@@ -98,7 +98,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       }
       nodes.push(
         <ul key={key++} className="list-disc list-outside pl-5 my-2 space-y-1.5">
-          {items.map((item, idx) => <li key={idx} className="text-[15px] leading-relaxed">{renderInline(item)}</li>)}
+          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item)}</li>)}
         </ul>
       );
       continue;
@@ -113,7 +113,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       }
       nodes.push(
         <ol key={key++} className="list-decimal list-outside pl-5 my-2 space-y-1.5">
-          {items.map((item, idx) => <li key={idx} className="text-[15px] leading-relaxed">{renderInline(item)}</li>)}
+          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item)}</li>)}
         </ol>
       );
       continue;
@@ -126,7 +126,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       i++;
     }
     nodes.push(
-      <p key={key++} className="text-[15px] leading-relaxed mb-2.5 last:mb-0">
+      <p key={key++} className="text-sm leading-relaxed mb-2.5 last:mb-0">
         {renderInline(paraLines.join(' '))}
       </p>
     );

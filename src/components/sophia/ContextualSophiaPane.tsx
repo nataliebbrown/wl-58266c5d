@@ -101,7 +101,7 @@ const LEARN_STARTERS: StarterCard[] = [
 
 // ============ Mini Chat Bubble ============
 
-function MiniChatBubble({ message, isDarkMode }: { message: Message; isDarkMode: boolean }) {
+function MiniChatBubble({ message }: { message: Message }) {
   const isUser = message.role === 'user';
 
   return (
@@ -115,9 +115,7 @@ function MiniChatBubble({ message, isDarkMode }: { message: Message; isDarkMode:
         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
             ? 'bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground'
-            : isDarkMode
-              ? 'bg-white/10 text-foreground'
-              : 'bg-white/60 text-foreground'
+            : 'bg-white/60 dark:bg-wl-olive-300/15 text-foreground'
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
@@ -166,32 +164,34 @@ function PillChatInput({
       onClick={() => inputRef.current?.focus()}
       style={{
         background: isFocused
-          ? (isDarkMode ? 'rgba(241,241,239,0.14)' : 'rgba(255,255,255,0.95)')
-          : (isDarkMode ? 'rgba(241,241,239,0.1)' : 'rgba(255,255,255,0.85)'),
+          ? (isDarkMode ? 'rgba(241,237,233,0.14)' : 'rgba(255,255,255,0.95)')
+          : (isDarkMode ? 'rgba(241,237,233,0.1)' : 'rgba(255,255,255,0.85)'),
         boxShadow: isFocused
           ? (isDarkMode
-              ? '0 0 0 2px rgba(165,165,151,0.3), inset 0 1px 0 rgba(241,241,239,0.08)'
-              : '0 0 0 2px rgba(117,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
+              ? '0 0 0 2px rgba(178,164,146,0.3), inset 0 1px 0 rgba(241,237,233,0.08)'
+              : '0 0 0 2px rgba(116,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
           : (isDarkMode
-              ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+              ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
               : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
       }}
       onMouseEnter={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? '0 0 0 1px rgba(165,165,151,0.2), inset 0 1px 0 rgba(241,241,239,0.08)'
-            : '0 0 0 1px rgba(117,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
+            ? '0 0 0 1px rgba(178,164,146,0.2), inset 0 1px 0 rgba(241,237,233,0.08)'
+            : '0 0 0 1px rgba(116,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isFocused) {
           e.currentTarget.style.boxShadow = isDarkMode
-            ? 'inset 0 1px 0 rgba(241,241,239,0.06)'
+            ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
             : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)';
         }
       }}
     >
+      <label className="sr-only" htmlFor="sophia-contextual-input">Ask Sophia</label>
       <input
+        id="sophia-contextual-input"
         ref={inputRef}
         type="text"
         value={value}
@@ -200,19 +200,15 @@ function PillChatInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder="Ask Anything..."
-        className="flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
-        style={{
-          color: isDarkMode ? '#FBF9F5' : undefined,
-        }}
+        className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-foreground/35"
       />
       {hasVoiceSupport && (
         <button
           onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
           aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-          className={`flex-shrink-0 p-1 transition-opacity ${
+          className={`flex-shrink-0 p-1 transition-opacity text-foreground ${
             isListening ? 'opacity-100 text-green-500 animate-pulse' : 'opacity-40 hover:opacity-70'
           }`}
-          style={!isListening ? { color: isDarkMode ? '#FBF9F5' : '#5A4C3A' } : undefined}
         >
           {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
         </button>
@@ -220,8 +216,8 @@ function PillChatInput({
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
-        className="flex-shrink-0 p-1 transition-opacity disabled:opacity-20 opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#FBF9F5' : '#5A4C3A' }}
+        aria-label="Send message"
+        className="flex-shrink-0 p-1 transition-opacity text-foreground disabled:opacity-20 opacity-40 hover:opacity-70"
       >
         <Send className="w-5 h-5" />
       </button>
@@ -307,7 +303,6 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   })();
 
   const hasMessages = messages.length > 0;
-  const textColor = isDarkMode ? '#CBC2B6' : '#2F2921';
 
   // Determine which starters to use based on context
   const starters = (() => {
@@ -325,10 +320,10 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
       {/* Dismiss button */}
       <button
         onClick={onDismiss}
-        className="absolute top-4 right-4 z-10 p-1.5 rounded-full transition-all duration-200 hover:bg-foreground/10"
-        style={{ color: textColor }}
+        className="absolute top-4 right-4 z-10 w-7 h-7 rounded-full flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 transition-colors"
+        aria-label="Close"
       >
-        <X className="w-5 h-5 opacity-50 hover:opacity-80" />
+        <X className="w-4 h-4 text-foreground/60" />
       </button>
 
       {/* Default state: Orb + Greeting + Starters */}
@@ -351,13 +346,15 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
             {/* Greeting */}
             <div className="mb-4">
               <h2
-                className="text-2xl leading-snug"
-                style={{ color: textColor }}
+                className="text-2xl leading-snug text-foreground italic"
               >
-                {salutation}
-                {userName && <> <span className="font-semibold">{userName}</span>,</>}
-                <br />
-                <span className="italic">What's on your mind?</span>
+                {context === 'bible' && bibleReference
+                  ? `Let's explore ${bibleReference.book} ${bibleReference.chapter}`
+                  : context === 'bible'
+                  ? "Let's explore Scripture together"
+                  : context === 'learn'
+                  ? "Let's dive into your studies"
+                  : "What's on your mind?"}
               </h2>
             </div>
           </div>
@@ -369,7 +366,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
                 <button
                   key={starter.label}
                   onClick={() => handleSend(starter.prompt)}
-                  className="flex items-start gap-3.5 rounded-xl px-4 py-3.5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm transition-all duration-200 text-left"
+                  className="flex items-start gap-3.5 rounded-xl px-4 py-3.5 border border-wl-olive/15 dark:border-wl-olive-300/15 hover:border-wl-olive/35 dark:hover:border-wl-olive-300/35 hover:bg-wl-olive/5 dark:hover:bg-wl-olive-300/5 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-wl-olive/40 dark:focus:ring-wl-olive-300/40 transition-all duration-200 text-left"
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-full border border-wl-olive/20 dark:border-wl-olive-300/20 flex items-center justify-center mt-0.5">
                     <starter.icon
@@ -400,7 +397,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
         >
           <AnimatePresence mode="popLayout">
             {messages.map((msg) => (
-              <MiniChatBubble key={msg.id} message={msg} isDarkMode={isDarkMode} />
+              <MiniChatBubble key={msg.id} message={msg} />
             ))}
           </AnimatePresence>
 
