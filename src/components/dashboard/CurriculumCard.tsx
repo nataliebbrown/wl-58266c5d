@@ -24,17 +24,6 @@ const HEADLINES: Record<string, string> = {
   exploring_faith: 'Explore at Your Own Pace',
 };
 
-// ============ Season-Aware CTA Text ============
-
-const CTA_TEXT: Record<string, string> = {
-  deeper_relationship: 'Begin the Journey',
-  questions_doubts: 'Start Exploring',
-  difficult_situation: 'Find Your Path',
-  ministry_preparation: 'Dive In',
-  understand_bible: 'Open the Word',
-  spiritual_growth: 'Take the First Step',
-};
-
 // ============ Helpers ============
 
 function getFirstLessons(curriculum: Curriculum, count: number): Lesson[] {
@@ -79,7 +68,7 @@ export function CurriculumCard() {
   const headline = HEADLINES[quizData.spiritualBackground || ''] || 'Your Learning Path';
   const ctaLabel = hasStarted
     ? 'Continue Learning'
-    : CTA_TEXT[quizData.currentSeason || ''] || 'Begin Your Journey';
+    : 'Learn More';
 
   const openLearn = () => navigate('/learn');
 
