@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import '@/types/speech';
 
 export function useVoiceInput(onTranscript: (text: string) => void) {
   const [isListening, setIsListening] = useState(false);

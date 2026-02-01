@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FloatingSophiaButton } from './FloatingSophiaButton';
 import { SophiaAudioOverlay } from './SophiaAudioOverlay';
@@ -22,13 +22,21 @@ export function GlobalSophia() {
     }
   }, [handler]);
 
+  const overlayPromptRef = useRef<string | undefined>(undefined);
+
   const handleSendPrompt = useCallback((prompt: string) => {
     if (handler) {
       handler(prompt);
     } else {
+      overlayPromptRef.current = prompt;
       setIsOverlayOpen(true);
     }
   }, [handler]);
+
+  const handleOverlayClose = useCallback(() => {
+    setIsOverlayOpen(false);
+    overlayPromptRef.current = undefined;
+  }, []);
 
   return (
     <>
@@ -42,8 +50,9 @@ export function GlobalSophia() {
       )}
       <SophiaAudioOverlay
         isOpen={isOverlayOpen}
-        onClose={() => setIsOverlayOpen(false)}
+        onClose={handleOverlayClose}
         userName={userName}
+        initialPrompt={overlayPromptRef.current}
       />
     </>
   );

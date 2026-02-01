@@ -96,6 +96,10 @@ function PillChatInput({
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const { isListening, toggleVoice, hasVoiceSupport } = useVoiceInput(
+    (transcript) => setValue(transcript),
+  );
+
   const handleSubmit = () => {
     const trimmed = value.trim();
     if (!trimmed || isLoading) return;
@@ -155,12 +159,18 @@ function PillChatInput({
           color: isDarkMode ? '#FBF9F5' : undefined,
         }}
       />
-      <button
-        className="flex-shrink-0 p-1 transition-opacity opacity-40 hover:opacity-70"
-        style={{ color: isDarkMode ? '#FBF9F5' : '#5A4C3A' }}
-      >
-        <Mic className="w-5 h-5" />
-      </button>
+      {hasVoiceSupport && (
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+          aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+          className={`flex-shrink-0 p-1 transition-opacity ${
+            isListening ? 'opacity-100 text-green-500 animate-pulse' : 'opacity-40 hover:opacity-70'
+          }`}
+          style={!isListening ? { color: isDarkMode ? '#FBF9F5' : '#5A4C3A' } : undefined}
+        >
+          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        </button>
+      )}
       <button
         onClick={handleSubmit}
         disabled={!value.trim() || isLoading}
