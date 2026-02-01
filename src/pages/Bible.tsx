@@ -29,7 +29,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
     initialReference ?? stateRef ?? null
   );
   const [showNav, setShowNav] = useState(true);
-  const [isSophiaOpen, setIsSophiaOpen] = useState(false);
+  const [isSophiaOpen, setIsSophiaOpen] = useState(true);
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
   const [resumeConversationId, setResumeConversationId] = useState<string | null>(incomingConversationId);
 
@@ -38,6 +38,8 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
 
   useEffect(() => {
     if (embedded) return;
+    // Hide orb on mount since the Sophia pane starts open
+    setHideOrb(true);
     register((prompt?: string) => {
       setIsSophiaOpen(true);
       setHideOrb(true);

@@ -53,19 +53,34 @@ export function useVoiceOutput() {
       // Cancel any ongoing speech
       speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (voiceRef.current) {
-        utterance.voice = voiceRef.current;
-      }
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+      // Ensure voices are loaded before speaking
+      const doSpeak = () => {
+        // Re-select voice if not yet loaded
+        if (!voiceRef.current) {
+          const voices = speechSynthesis.getVoices();
+          if (voices.length > 0) {
+            voiceRef.current = selectVoice(voices);
+          }
+        }
 
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (voiceRef.current) {
+          utterance.voice = voiceRef.current;
+        }
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
 
-      utteranceRef.current = utterance;
-      speechSynthesis.speak(utterance);
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        utteranceRef.current = utterance;
+        speechSynthesis.speak(utterance);
+      };
+
+      // Small delay after cancel to avoid Chrome bug where
+      // cancel() immediately before speak() silently fails
+      setTimeout(doSpeak, 50);
     },
     [hasTTSSupport],
   );

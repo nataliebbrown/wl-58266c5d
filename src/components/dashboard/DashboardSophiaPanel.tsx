@@ -292,7 +292,7 @@ export function DashboardSophiaPanel() {
         {!hasMessages && (
           <div className="flex-1 flex flex-col min-h-0">
             {/* Fixed header: Orb + Greeting */}
-            <div className="flex flex-col items-center text-center px-5 pt-6">
+            <div className="flex flex-col items-center text-center px-5 pt-8 pb-4">
               {/* Animated Orb */}
               <div className="mb-3">
                 <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
@@ -307,12 +307,13 @@ export function DashboardSophiaPanel() {
 
               {/* Greeting */}
               <div className="mb-4">
+                <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300 mb-2">
+                  Chat with Sophia
+                </p>
                 <h3 className="text-2xl leading-snug text-foreground">
                   {isFirstVisit ? (
                     <>
-                      Welcome{userName && <> <span className="font-semibold">{userName}</span></>},
-                      <br />
-                      <span className="italic">I'm Sophia.</span>
+                      What's on your <span className="italic">heart today?</span>
                     </>
                   ) : (
                     <>
@@ -322,10 +323,10 @@ export function DashboardSophiaPanel() {
                   )}
                 </h3>
                 <p
-                  className="text-sm mt-1 text-foreground/40 italic"
+                  className="text-sm mt-1 text-foreground/40 italic max-w-[260px] leading-relaxed mx-auto"
                 >
                   {isFirstVisit
-                    ? "I've prepared a few things for you — explore at your own pace."
+                    ? "Ask me anything — about Scripture, faith, or whatever you're thinking about."
                     : contextualMessage}
                 </p>
               </div>

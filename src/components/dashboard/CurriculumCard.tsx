@@ -162,13 +162,13 @@ export function CurriculumCard() {
           <Compass className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
         </div>
         <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300">
-          Curriculum
+          Take a Course
         </p>
         <h3 className="text-2xl leading-snug mt-2 text-wl-earth dark:text-wl-olive-200">
           {headline}
         </h3>
-        <p className="text-sm text-foreground/40 mt-1">
-          Start learning at your own pace
+        <p className="text-sm text-foreground/40 mt-1 max-w-[260px] leading-relaxed mx-auto">
+          Step-by-step lessons tailored to your background — with Scripture, reflections, and Sophia to guide you
         </p>
       </div>
 

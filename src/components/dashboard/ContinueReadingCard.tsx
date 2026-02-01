@@ -420,13 +420,13 @@ export function ContinueReadingCard() {
             <BookOpen className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
           </div>
           <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300">
-            Scripture
+            Read the Bible
           </p>
           <h3 className="text-2xl leading-snug mt-2 text-wl-earth dark:text-wl-olive-200">
             {emptyStateHeadline}
           </h3>
-          <p className="text-sm text-foreground/40 mt-1">
-            Passages chosen for where you are
+          <p className="text-sm text-foreground/40 mt-1 max-w-[260px] leading-relaxed">
+            Read and explore the Bible with personalized passages and Sophia's guidance along the way
           </p>
         </div>
 

@@ -19,7 +19,7 @@ const ContextualSophiaPane = lazy(() =>
 
 export function CurriculumOverview() {
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
-  const [isSophiaOpen, setIsSophiaOpen] = useState(false);
+  const [isSophiaOpen, setIsSophiaOpen] = useState(true);
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
 
   const quizData = getQuizData();
@@ -37,6 +37,8 @@ export function CurriculumOverview() {
 
   useEffect(() => {
     if (activeLessonId) return; // LessonView handles its own intercept
+    // Hide orb on mount since the Sophia pane starts open
+    setHideOrb(true);
     register((prompt?: string) => {
       setIsSophiaOpen(true);
       setHideOrb(true);

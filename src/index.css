@@ -138,7 +138,7 @@
   }
 
   .font-spiritual {
-    font-family: 'Crimson Pro', serif;
+    font-family: 'Libre Bodoni', serif;
   }
 }
 
@@ -212,31 +212,44 @@
   /* Subtle noise overlay for page background texture */
   /* Pulsating glow for recommended starting card */
   /* Light: wl-olive (#746653), Dark: wl-olive-300 (#B2A492) */
-  @keyframes card-glow-pulse {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(116, 102, 83, 0), 0 4px 24px rgba(0, 0, 0, 0.06);
-    }
-    50% {
-      box-shadow: 0 0 24px 6px rgba(116, 102, 83, 0.18), 0 4px 24px rgba(0, 0, 0, 0.06);
-    }
+  /* Dashboard tour — active card glow + dimmed cards */
+  .tour-active {
+    position: relative;
+    z-index: 46;
+    transform: scale(1.02);
+    transition: all 0.4s ease;
+    box-shadow: 0 0 30px rgba(116, 102, 83, 0.15), 0 0 60px rgba(116, 102, 83, 0.08);
+    pointer-events: none;
   }
 
-  @keyframes card-glow-pulse-dark {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(178, 164, 146, 0), 0 4px 24px rgba(12, 12, 10, 0.35);
-    }
-    50% {
-      box-shadow: 0 0 24px 6px rgba(178, 164, 146, 0.2), 0 4px 24px rgba(12, 12, 10, 0.35);
-    }
+  .dark .tour-active {
+    box-shadow: 0 0 30px rgba(178, 164, 146, 0.15), 0 0 60px rgba(178, 164, 146, 0.08);
   }
 
-  .animate-card-glow {
-    animation: card-glow-pulse 3s ease-in-out infinite;
-    border-radius: 20px;
+  /* Tour bubble card — darker in light mode, lighter in dark mode for contrast */
+  .tour-bubble-card {
+    background: rgba(90, 76, 58, 0.08);
   }
 
-  .dark .animate-card-glow {
-    animation: card-glow-pulse-dark 3s ease-in-out infinite;
+  .dark .tour-bubble-card {
+    background: rgba(241, 237, 233, 0.12);
+  }
+
+  .tour-dimmed {
+    opacity: 0.35;
+    filter: blur(4px);
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+
+  /* Typewriter cursor blink */
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .animate-cursor-blink {
+    animation: cursor-blink 0.8s ease-in-out infinite;
   }
 
   /* Scripture preview fade-out gradient (ContinueReadingCard) */
