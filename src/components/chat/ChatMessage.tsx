@@ -5,21 +5,23 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Message } from '@/types/chat';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
+import type { BibleReference } from '@/lib/bibleApi';
 
 interface ChatMessageProps {
   message: Message;
   onSaveInsight?: (message: Message) => void;
   isSaved?: boolean;
   index?: number;
+  onPassageClick?: (ref: BibleReference, rawText: string) => void;
 }
 
-export function ChatMessage({ message, onSaveInsight, isSaved, index = 0 }: ChatMessageProps) {
+export function ChatMessage({ message, onSaveInsight, isSaved, index = 0, onPassageClick }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
   const renderedContent = useMemo(
-    () => (isUser ? null : renderSophiaMarkdown(message.content)),
-    [isUser, message.content]
+    () => (isUser ? null : renderSophiaMarkdown(message.content, { onPassageClick })),
+    [isUser, message.content, onPassageClick]
   );
 
   const handleCopy = async () => {

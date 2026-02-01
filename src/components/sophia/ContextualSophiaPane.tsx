@@ -12,6 +12,7 @@ import type { BibleReference } from '@/lib/bibleApi';
 import type { LucideIcon } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
+import { parseReference } from '@/lib/bibleApi';
 
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
@@ -22,6 +23,8 @@ interface ContextualSophiaPaneProps {
   initialPrompt?: string;
   context?: 'bible' | 'learn';
   bibleReference?: BibleReference | null;
+  existingConversationId?: string | null;
+  onNavigateToPassage?: (ref: BibleReference) => void;
 }
 
 interface StarterCard {
@@ -101,7 +104,7 @@ const LEARN_STARTERS: StarterCard[] = [
 
 // ============ Mini Chat Bubble ============
 
-function MiniChatBubble({ message }: { message: Message }) {
+function MiniChatBubble({ message, onPassageClick }: { message: Message; onPassageClick?: (ref: BibleReference, rawText: string) => void }) {
   const isUser = message.role === 'user';
 
   return (
@@ -119,7 +122,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {isUser ? message.content : renderSophiaMarkdown(message.content)}
+        {isUser ? message.content : renderSophiaMarkdown(message.content, { onPassageClick })}
       </div>
     </motion.div>
   );
@@ -227,7 +230,7 @@ function PillChatInput({
 
 // ============ Main Component ============
 
-export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleReference }: ContextualSophiaPaneProps) {
+export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleReference, existingConversationId, onNavigateToPassage }: ContextualSophiaPaneProps) {
   const isDarkMode = useDarkMode();
   const { config } = useTimePeriod();
   const { getPersonaFromOnboarding } = useUserProfile();
@@ -235,7 +238,8 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   const userName = personaData?.name || null;
   const scrollRef = useRef<HTMLDivElement>(null);
   const initialPromptSentRef = useRef(false);
-  const convIdRef = useRef<string | null>(null);
+  const convIdRef = useRef<string | null>(existingConversationId ?? null);
+  const [isLoadingConversation, setIsLoadingConversation] = useState(!!existingConversationId);
 
   const quizData = getQuizData();
   const { createConversation } = useConversations();
@@ -252,7 +256,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
     return undefined;
   })();
 
-  const { messages, isTyping, sendMessage } = useSophiaChat({
+  const { messages, isTyping, sendMessage, loadMessages } = useSophiaChat({
     systemContext,
     conversationId: convIdRef.current,
   });
@@ -282,6 +286,16 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
     }
   }, [messages, isTyping]);
 
+  // Load existing conversation on mount (when resuming from another page)
+  useEffect(() => {
+    if (existingConversationId) {
+      loadMessages(existingConversationId).then(() => {
+        setIsLoadingConversation(false);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingConversationId]);
+
   // Auto-send initialPrompt on mount
   useEffect(() => {
     if (initialPrompt && !initialPromptSentRef.current) {
@@ -302,7 +316,12 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
     }
   })();
 
-  const hasMessages = messages.length > 0;
+  // Passage click handler: in-page navigation when available, otherwise no-op
+  const handlePassageClick = onNavigateToPassage
+    ? (ref: BibleReference) => { onNavigateToPassage(ref); }
+    : undefined;
+
+  const hasMessages = messages.length > 0 || isLoadingConversation;
 
   // Determine which starters to use based on context
   const starters = (() => {
@@ -388,16 +407,21 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
         </div>
       )}
 
-      {/* Chat messages (visible once conversation starts) */}
+      {/* Chat messages (visible once conversation starts or loading existing) */}
       {hasMessages && (
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pt-12"
           style={{ minHeight: 0 }}
         >
+          {isLoadingConversation && (
+            <div className="flex items-center justify-center py-8 text-foreground/40 text-sm">
+              Loading conversation...
+            </div>
+          )}
           <AnimatePresence mode="popLayout">
             {messages.map((msg) => (
-              <MiniChatBubble key={msg.id} message={msg} />
+              <MiniChatBubble key={msg.id} message={msg} onPassageClick={handlePassageClick} />
             ))}
           </AnimatePresence>
 

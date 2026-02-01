@@ -15,6 +15,7 @@ import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Message, getSuggestedTopics, SuggestedTopic, UserPersona } from '@/types/chat';
+import type { BibleReference } from '@/lib/bibleApi';
 import { Insight } from '@/types/dashboard';
 import { toast } from 'sonner';
 import { getOnboardingState, markFullyOnboarded } from '@/lib/onboardingState';
@@ -267,6 +268,13 @@ export default function Chat() {
     toast.success('Insight saved to your constellation');
   }, [addInsight, saveInsightModal.message, currentConversation]);
 
+  // Handle clicking a Bible passage reference in Sophia's response
+  const handlePassageClick = useCallback((ref: BibleReference) => {
+    navigate('/bible', {
+      state: { initialReference: ref, conversationId: currentConversation?.id },
+    });
+  }, [navigate, currentConversation]);
+
   // Get user name from persona
   const userName = personaData?.name || undefined;
 
@@ -344,6 +352,7 @@ export default function Chat() {
                         onSaveInsight={message.role === 'assistant' ? handleSaveInsight : undefined}
                         isSaved={savedMessageIds.has(message.id)}
                         index={index}
+                        onPassageClick={handlePassageClick}
                       />
                     ))}
 

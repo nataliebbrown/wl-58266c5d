@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Mic, MicOff, Lightbulb, Heart, BookOpen, HelpCircle } from 'lucide-react';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
@@ -8,6 +9,7 @@ import { getQuizData } from '@/lib/onboardingState';
 import type { Message } from '@/types/chat';
 import type { Lesson } from '@/types/curriculum';
 import type { LucideIcon } from 'lucide-react';
+import type { BibleReference } from '@/lib/bibleApi';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
@@ -60,7 +62,7 @@ function getStarters(lesson: Lesson): StarterCard[] {
 
 // ============ Mini Chat Bubble ============
 
-function MiniChatBubble({ message }: { message: Message }) {
+function MiniChatBubble({ message, onPassageClick }: { message: Message; onPassageClick?: (ref: BibleReference, rawText: string) => void }) {
   const isUser = message.role === 'user';
 
   return (
@@ -78,7 +80,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {isUser ? message.content : renderSophiaMarkdown(message.content)}
+        {isUser ? message.content : renderSophiaMarkdown(message.content, { onPassageClick })}
       </div>
     </motion.div>
   );
@@ -193,6 +195,7 @@ interface CurriculumSophiaPanelProps {
 }
 
 export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: CurriculumSophiaPanelProps) {
+  const navigate = useNavigate();
   const isDarkMode = useDarkMode();
   const scrollRef = useRef<HTMLDivElement>(null);
   const convIdRef = useRef<string | null>(null);
@@ -236,6 +239,13 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPrompt]);
+
+  // Navigate to Bible page when a passage reference is clicked
+  const handlePassageClick = (ref: BibleReference) => {
+    navigate('/bible', {
+      state: { initialReference: ref, conversationId: convIdRef.current },
+    });
+  };
 
   const hasMessages = messages.length > 0;
   const starters = getStarters(lesson);
@@ -320,7 +330,7 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
           >
             <AnimatePresence mode="popLayout">
               {messages.map((msg) => (
-                <MiniChatBubble key={msg.id} message={msg} />
+                <MiniChatBubble key={msg.id} message={msg} onPassageClick={handlePassageClick} />
               ))}
             </AnimatePresence>
 

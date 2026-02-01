@@ -1,9 +1,15 @@
 import type { ReactNode } from 'react';
+import { parseReference } from '@/lib/bibleApi';
+import type { BibleReference } from '@/lib/bibleApi';
 
 // ============ Sophia Markdown Renderer ============
 // Shared renderer used by ChatMessage, DashboardSophiaPanel,
 // CurriculumSophiaPanel, and any other component that displays
 // Sophia's responses.
+
+export interface SophiaMarkdownOptions {
+  onPassageClick?: (ref: BibleReference, rawText: string) => void;
+}
 
 // Classify what a line represents
 function lineType(line: string): 'empty' | 'heading' | 'bold-heading' | 'blockquote' | 'bullet' | 'numbered' | 'paragraph' {
@@ -17,7 +23,7 @@ function lineType(line: string): 'empty' | 'heading' | 'bold-heading' | 'blockqu
   return 'paragraph';
 }
 
-function renderInline(text: string): ReactNode[] {
+function renderInline(text: string, options?: SophiaMarkdownOptions): ReactNode[] {
   const parts: ReactNode[] = [];
   const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
   let lastIndex = 0;
@@ -28,7 +34,23 @@ function renderInline(text: string): ReactNode[] {
       parts.push(text.slice(lastIndex, match.index));
     }
     if (match[1]) {
-      parts.push(<strong key={match.index} className="font-semibold text-foreground">{match[1]}</strong>);
+      const parsedRef = options?.onPassageClick ? parseReference(match[1]) : null;
+      if (parsedRef && options?.onPassageClick) {
+        const handler = options.onPassageClick;
+        const rawText = match[1];
+        parts.push(
+          <button
+            key={match.index}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); handler(parsedRef, rawText); }}
+            className="font-semibold text-foreground underline decoration-wl-olive/40 dark:decoration-wl-olive-300/40 underline-offset-2 hover:decoration-wl-olive dark:hover:decoration-wl-olive-300 transition-colors cursor-pointer"
+          >
+            {rawText}
+          </button>
+        );
+      } else {
+        parts.push(<strong key={match.index} className="font-semibold text-foreground">{match[1]}</strong>);
+      }
     } else if (match[2]) {
       parts.push(<em key={match.index} className="text-foreground/80">{match[2]}</em>);
     }
@@ -42,7 +64,7 @@ function renderInline(text: string): ReactNode[] {
   return parts;
 }
 
-export function renderSophiaMarkdown(text: string): ReactNode[] {
+export function renderSophiaMarkdown(text: string, options?: SophiaMarkdownOptions): ReactNode[] {
   const lines = text.split('\n');
   const nodes: ReactNode[] = [];
   let key = 0;
@@ -60,8 +82,8 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       if (match) {
         const level = match[1].length;
         nodes.push(level === 2
-          ? <h3 key={key++} className="text-[15px] font-semibold mt-4 mb-1.5 first:mt-0">{renderInline(match[2])}</h3>
-          : <h4 key={key++} className="text-sm font-semibold mt-3 mb-1 first:mt-0">{renderInline(match[2])}</h4>
+          ? <h3 key={key++} className="text-[15px] font-semibold mt-4 mb-1.5 first:mt-0">{renderInline(match[2], options)}</h3>
+          : <h4 key={key++} className="text-sm font-semibold mt-3 mb-1 first:mt-0">{renderInline(match[2], options)}</h4>
         );
       }
       i++; continue;
@@ -83,7 +105,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       }
       nodes.push(
         <blockquote key={key++} className="border-l-2 border-hl-green/40 pl-3.5 my-2.5 italic text-sm leading-relaxed text-foreground/80">
-          {renderInline(quoteLines.join(' '))}
+          {renderInline(quoteLines.join(' '), options)}
         </blockquote>
       );
       continue;
@@ -98,7 +120,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       }
       nodes.push(
         <ul key={key++} className="list-disc list-outside pl-5 my-2 space-y-1.5">
-          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item)}</li>)}
+          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item, options)}</li>)}
         </ul>
       );
       continue;
@@ -113,7 +135,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
       }
       nodes.push(
         <ol key={key++} className="list-decimal list-outside pl-5 my-2 space-y-1.5">
-          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item)}</li>)}
+          {items.map((item, idx) => <li key={idx} className="text-sm leading-relaxed">{renderInline(item, options)}</li>)}
         </ol>
       );
       continue;
@@ -127,7 +149,7 @@ export function renderSophiaMarkdown(text: string): ReactNode[] {
     }
     nodes.push(
       <p key={key++} className="text-sm leading-relaxed mb-2.5 last:mb-0">
-        {renderInline(paraLines.join(' '))}
+        {renderInline(paraLines.join(' '), options)}
       </p>
     );
   }

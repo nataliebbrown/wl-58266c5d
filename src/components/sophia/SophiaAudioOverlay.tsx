@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Mic, MicOff, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SophiaAvatar } from '@/components/sophia/SophiaAvatar';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useConversations } from '@/hooks/useConversations';
@@ -8,6 +9,7 @@ import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useVoiceOutput } from '@/hooks/useVoiceOutput';
 import { getQuizData } from '@/lib/onboardingState';
 import type { Message } from '@/types/chat';
+import type { BibleReference } from '@/lib/bibleApi';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 
 interface SophiaAudioOverlayProps {
@@ -24,7 +26,7 @@ function getTimeBasedGreeting(): string {
   return 'Good evening';
 }
 
-function OverlayChatBubble({ message }: { message: Message }) {
+function OverlayChatBubble({ message, onPassageClick }: { message: Message; onPassageClick?: (ref: BibleReference, rawText: string) => void }) {
   const isUser = message.role === 'user';
 
   return (
@@ -42,13 +44,14 @@ function OverlayChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {isUser ? message.content : renderSophiaMarkdown(message.content)}
+        {isUser ? message.content : renderSophiaMarkdown(message.content, { onPassageClick })}
       </div>
     </motion.div>
   );
 }
 
 export function SophiaAudioOverlay({ isOpen, onClose, userName, initialPrompt }: SophiaAudioOverlayProps) {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -157,6 +160,14 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName, initialPrompt }:
     }
   };
 
+  // Navigate to Bible page when a passage reference is clicked
+  const handlePassageClick = (ref: BibleReference) => {
+    onClose();
+    navigate('/bible', {
+      state: { initialReference: ref, conversationId: convIdRef.current },
+    });
+  };
+
   const greeting = getTimeBasedGreeting();
   const displayName = userName || '';
   const hasMessages = messages.length > 0;
@@ -232,7 +243,7 @@ export function SophiaAudioOverlay({ isOpen, onClose, userName, initialPrompt }:
               >
                 <AnimatePresence mode="popLayout">
                   {messages.map((msg) => (
-                    <OverlayChatBubble key={msg.id} message={msg} />
+                    <OverlayChatBubble key={msg.id} message={msg} onPassageClick={handlePassageClick} />
                   ))}
                 </AnimatePresence>
 

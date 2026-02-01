@@ -11,6 +11,7 @@ import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { useTimePeriod } from '@/lib/timeAwareness';
 import { getQuizData } from '@/lib/onboardingState';
 import { getReadingHistory } from '@/lib/bibleApi';
+import type { BibleReference } from '@/lib/bibleApi';
 import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import { getUserContext, generateDashboardMessage } from '@/lib/contextualIntelligence';
@@ -83,7 +84,7 @@ const DEFAULT_STARTERS: StarterCard[] = [
 
 // ============ Mini Chat Bubble ============
 
-function MiniChatBubble({ message }: { message: Message }) {
+function MiniChatBubble({ message, onPassageClick }: { message: Message; onPassageClick?: (ref: BibleReference, rawText: string) => void }) {
   const isUser = message.role === 'user';
 
   return (
@@ -101,7 +102,7 @@ function MiniChatBubble({ message }: { message: Message }) {
         }`}
         style={{ backdropFilter: 'blur(4px)' }}
       >
-        {isUser ? message.content : renderSophiaMarkdown(message.content)}
+        {isUser ? message.content : renderSophiaMarkdown(message.content, { onPassageClick })}
       </div>
     </motion.div>
   );
@@ -260,6 +261,13 @@ export function DashboardSophiaPanel() {
     }
   })();
 
+  // Navigate to Bible page when a passage reference is clicked
+  const handlePassageClick = (ref: BibleReference) => {
+    navigate('/bible', {
+      state: { initialReference: ref, conversationId: convIdRef.current },
+    });
+  };
+
   const hasMessages = messages.length > 0;
 
   const starters = STARTERS[quizData.spiritualBackground ?? ''] ?? DEFAULT_STARTERS;
@@ -361,7 +369,7 @@ export function DashboardSophiaPanel() {
           >
             <AnimatePresence mode="popLayout">
               {messages.map((msg) => (
-                <MiniChatBubble key={msg.id} message={msg} />
+                <MiniChatBubble key={msg.id} message={msg} onPassageClick={handlePassageClick} />
               ))}
             </AnimatePresence>
 

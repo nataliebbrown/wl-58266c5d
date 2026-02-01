@@ -20,15 +20,18 @@ interface BibleProps {
 export default function Bible({ embedded, initialReference }: BibleProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateRef = !embedded
-    ? (location.state as { initialReference?: BibleReference } | null)?.initialReference
-    : undefined;
+  const locationState = !embedded
+    ? (location.state as { initialReference?: BibleReference; conversationId?: string } | null)
+    : null;
+  const stateRef = locationState?.initialReference;
+  const incomingConversationId = locationState?.conversationId ?? null;
   const [reference, setReference] = useState<BibleReference | null>(
     initialReference ?? stateRef ?? null
   );
   const [showNav, setShowNav] = useState(true);
   const [isSophiaOpen, setIsSophiaOpen] = useState(false);
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
+  const [resumeConversationId, setResumeConversationId] = useState<string | null>(incomingConversationId);
 
   // Register orb intercept (only when not embedded)
   const { register, unregister, setHideOrb, setContextLabel } = useSophiaOrbIntercept();
@@ -48,6 +51,16 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
     if (embedded) return;
     setContextLabel(reference ? `${reference.book} ${reference.chapter}` : null);
   }, [embedded, reference, setContextLabel]);
+
+  // Auto-open Sophia pane when arriving with a conversation to resume
+  useEffect(() => {
+    if (incomingConversationId) {
+      setIsSophiaOpen(true);
+      setHideOrb(true);
+      // Clear location state to prevent re-opening on back/forward
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [incomingConversationId, setHideOrb, navigate, location.pathname]);
 
   // Update reference when initialReference prop changes (for embedded usage)
   useEffect(() => {
@@ -78,8 +91,14 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   const handleDismissSophia = useCallback(() => {
     setIsSophiaOpen(false);
     setSophiaPrompt(undefined);
+    setResumeConversationId(null);
     setHideOrb(false);
   }, [setHideOrb]);
+
+  // Handle passage navigation from within the Sophia pane (in-page, no route change)
+  const handlePassageNavigate = useCallback((ref: BibleReference) => {
+    setReference(ref);
+  }, []);
 
   return (
     <div className="h-full flex flex-col relative overflow-hidden">
@@ -153,6 +172,8 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
                       initialPrompt={sophiaPrompt}
                       context="bible"
                       bibleReference={reference}
+                      existingConversationId={resumeConversationId}
+                      onNavigateToPassage={handlePassageNavigate}
                     />
                   </Suspense>
                 </div>
@@ -179,6 +200,8 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
                   initialPrompt={sophiaPrompt}
                   context="bible"
                   bibleReference={reference}
+                  existingConversationId={resumeConversationId}
+                  onNavigateToPassage={handlePassageNavigate}
                 />
               </Suspense>
             </motion.div>
