@@ -4,18 +4,18 @@ export const pastoralLeadershipCurriculum: Curriculum = {
   id: 'pastoral-leadership',
   title: 'Pastoral Ministry & Leadership',
   description:
-    'A comprehensive program for pastors, church planters, ministry directors, and vocational Christian leaders. This curriculum integrates biblical scholarship, theological depth, leadership development, and practical ministry skills for those called to lead God\'s people.',
+    'A comprehensive path for pastors, church planters, ministry directors, and Christian leaders — integrating biblical scholarship, theological depth, leadership development, and practical ministry skills.',
   personaIntro:
     'Welcome, pastor and ministry leader. This curriculum has been designed to equip you with the biblical foundation, theological depth, and practical skills you need to faithfully shepherd God\'s people and lead with confidence.',
   learningApproach:
-    'This program integrates rigorous biblical and theological study with hands-on pastoral training, leadership development, and personal spiritual formation to prepare you for every dimension of vocational ministry.',
+    'This path integrates rigorous biblical and theological study with hands-on pastoral training, leadership development, and personal spiritual formation.',
   phases: [
     // =====================================================================
-    // PHASE 1: Core Division One — Biblical Foundation
+    // Phase 1: Biblical Foundation
     // =====================================================================
     {
       id: 'past-p1',
-      title: 'Core Division One: Biblical Foundation',
+      title: 'Biblical Foundation',
       description:
         'A thorough study of the Old and New Testaments, biblical languages, and hermeneutics to establish the scriptural foundation for pastoral ministry.',
       modules: [
@@ -541,14 +541,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase provides pastors and ministry leaders with an exhaustive study of the entire biblical canon, equipping you to handle the Scriptures with precision, depth, and pastoral sensitivity. You will work through the Old and New Testaments book by book, engage with the original Hebrew and Greek languages, and master the hermeneutical principles that undergird faithful exposition. Rather than a surface-level survey, each module is designed to sharpen your ability to move from exegesis to proclamation — ensuring that every sermon, Bible study, and counseling conversation you lead is grounded in careful, text-driven interpretation. Whether you are preparing a sermon series, training lay teachers, or simply deepening your own walk with God through His Word, this phase gives you the tools to read Scripture on its own terms and teach it with confidence.',
+        expectations: [
+          'Complete a thorough book-by-book study of both the Old and New Testaments with attention to pastoral application',
+          'Develop working knowledge of biblical Hebrew and Greek sufficient for sermon preparation and exegesis',
+          'Master hermeneutical principles including historical, grammatical, literary, and theological interpretation',
+          'Learn to preach faithfully from every major biblical genre — narrative, poetry, prophecy, epistle, and apocalyptic',
+          'Build a christocentric approach to reading and teaching the whole Bible',
+          'Establish sustainable habits for maintaining and using your language skills throughout your ministry career',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need prior experience with biblical languages to begin this phase?',
+            answer:
+              'No. The Hebrew and Greek modules start from the beginning with grammar and vocabulary and progress through exegesis. However, this phase moves at an intensive pace suited for pastors and leaders, so a commitment to consistent study and practice is essential.',
+          },
+          {
+            question: 'How much time should I expect to invest in this phase?',
+            answer:
+              'This is a substantial phase covering four full modules. Most learners spend several months working through the material. We recommend dedicating at least five to seven hours per week, with additional time for language exercises and sermon preparation assignments.',
+          },
+          {
+            question: 'How will this phase improve my preaching and teaching?',
+            answer:
+              'Every module is oriented toward proclamation. You will not only study the content of each biblical book but also learn genre-specific hermeneutics for preaching, practice moving from text to sermon, and develop a biblical-theological framework that enriches every message you deliver.',
+          },
+          {
+            question: 'How does this phase connect to the rest of the Pastoral Ministry curriculum?',
+            answer:
+              'Biblical Foundation is the bedrock of the entire curriculum. The theological, practical, and leadership phases that follow all presuppose the scriptural competency built here. Completing this phase first ensures that your doctrine, counseling, leadership, and mission work are anchored in sound biblical interpretation.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 2: Core Division Two — Theological Foundation
+    // Phase 2: Theological Foundation
     // =====================================================================
     {
       id: 'past-p2',
-      title: 'Core Division Two: Theological Foundation',
+      title: 'Theological Foundation',
       description:
         'A deep exploration of systematic theology, historical theology, ethics, apologetics, and confessional studies to build the doctrinal framework for pastoral ministry.',
       modules: [
@@ -788,14 +823,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase immerses you in the doctrinal heritage of the Christian faith, moving from systematic theology through the sweep of church history and into the ethical and apologetic challenges that confront every pastor. You will study the major loci of Christian doctrine — God, Christ, the Spirit, humanity, sin, salvation, the church, and eschatology — and trace how these doctrines developed, were debated, and were codified across two millennia of church history. Alongside doctrinal study, you will engage Christian ethics at the personal, pastoral, and social levels, and learn to defend the faith in both the pulpit and the counseling room. By grounding your ministry in robust theology, you gain the clarity to preach with conviction, counsel with wisdom, and lead with discernment when difficult questions arise in your congregation.',
+        expectations: [
+          'Articulate the major doctrines of the Christian faith with precision and pastoral sensitivity',
+          'Trace the development of Christian thought from the early church fathers through the Reformation to the present day',
+          'Navigate complex ethical issues — bioethics, sexual ethics, social justice — with a biblically informed framework',
+          'Defend the faith using apologetic approaches suited to pastoral ministry and congregational contexts',
+          'Study and apply the historic creeds, confessions, and contemporary statements of faith relevant to your tradition',
+          'Develop the theological vocabulary and reasoning needed for seminary-level discourse and congregational teaching',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need formal theological training before starting this phase?',
+            answer:
+              'Completing the Biblical Foundation phase is strongly recommended, as it provides the scriptural competency that systematic and historical theology build upon. However, pastors with significant prior biblical study can engage this material productively even if they begin here.',
+          },
+          {
+            question: 'How much time should I expect to devote to this phase?',
+            answer:
+              'This phase covers four dense modules spanning systematic theology, church history, ethics, apologetics, and confessional studies. Plan on five to eight hours per week over several months. The material rewards careful reading and reflection, so allow time for journaling and discussion.',
+          },
+          {
+            question: 'How will this phase help me in practical pastoral ministry?',
+            answer:
+              'Strong theology is the backbone of every pastoral task. Whether you are counseling a grieving family, preaching on a controversial topic, or navigating church conflict, the doctrinal and ethical frameworks you develop here will give you confidence and clarity in real-world ministry situations.',
+          },
+          {
+            question: 'How does this phase connect to the other phases in the curriculum?',
+            answer:
+              'Theological Foundation follows Biblical Foundation and precedes Pastoral Ministry. The doctrines and ethical reasoning you master here directly inform your preaching, pastoral care, worship leadership, and engagement with contemporary issues addressed in later phases.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 3: Core Division Three — Pastoral Ministry
+    // Phase 3: Pastoral Ministry
     // =====================================================================
     {
       id: 'past-p3',
-      title: 'Core Division Three: Pastoral Ministry',
+      title: 'Pastoral Ministry',
       description:
         'Practical training in preaching, pastoral care and counseling, worship leadership, and the administration of ordinances and special services.',
       modules: [
@@ -1149,14 +1219,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase equips you with the core competencies of pastoral practice: preaching, pastoral care and counseling, worship leadership, and the administration of ordinances and special services. Preaching is treated not merely as a communication skill but as a theological act — you will learn to prepare, structure, and deliver sermons across every genre and occasion, from weekly exposition to funerals and evangelistic calls. In pastoral care, you will develop the ability to walk with people through crisis, grief, addiction, mental health challenges, and relational brokenness, while maintaining healthy boundaries and knowing when to refer. Worship and liturgy studies will deepen your understanding of how corporate praise forms believers and honors God. Finally, you will gain practical confidence in administering baptism, the Lord\'s Supper, weddings, funerals, and other ceremonies that mark the significant moments of congregational life.',
+        expectations: [
+          'Develop a comprehensive preaching practice spanning expository, topical, narrative, and special-occasion sermons',
+          'Build proficiency in pastoral counseling including premarital, grief, crisis, addiction, and mental health contexts',
+          'Understand the theology and history of Christian worship and learn to plan and lead corporate services',
+          'Gain hands-on competence in administering ordinances such as baptism and the Lord\'s Supper',
+          'Learn to lead weddings, funerals, dedications, ordinations, and other special services with pastoral sensitivity',
+          'Integrate the preacher\'s spiritual life with the practice of proclamation for long-term fruitfulness',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'What prior experience do I need for this phase?',
+            answer:
+              'Completion of the Biblical Foundation and Theological Foundation phases is highly recommended. Effective preaching and pastoral care require the scriptural and doctrinal grounding provided in those earlier phases. Some prior ministry experience — even informal — will help you connect theory to practice more quickly.',
+          },
+          {
+            question: 'How much time should I plan to invest?',
+            answer:
+              'This phase contains four substantial modules with over fifty lessons. Plan on six to eight hours per week across several months, including time for sermon preparation exercises, role-play counseling scenarios, and reflective journaling on worship practices.',
+          },
+          {
+            question: 'Will I get practical experience, or is this all classroom learning?',
+            answer:
+              'While the lessons provide robust content and frameworks, the preaching module includes a supervised practicum, and the counseling and worship modules emphasize real-world application. We strongly encourage you to practice these skills in your local ministry context as you study.',
+          },
+          {
+            question: 'How does this phase relate to the Leadership and Administration phase that follows?',
+            answer:
+              'Pastoral Ministry focuses on the shepherd\'s core tasks — preaching, caring, and leading worship — while Leadership and Administration addresses organizational skills like governance, finance, and strategic planning. Together they form a complete picture of effective pastoral service.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 4: Core Division Four — Leadership and Administration
+    // Phase 4: Leadership and Administration
     // =====================================================================
     {
       id: 'past-p4',
-      title: 'Core Division Four: Leadership and Administration',
+      title: 'Leadership and Administration',
       description:
         'Training in pastoral leadership, church administration, organizational development, and specialized ministry contexts.',
       modules: [
@@ -1493,14 +1598,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase addresses the organizational and strategic dimensions of pastoral ministry that are essential yet often overlooked in traditional training. You will study pastoral leadership from a biblical and theological foundation, examining the character, vision, decision-making, and relational skills that distinguish effective shepherds. Church administration modules cover governance structures, financial stewardship, human resources, legal compliance, facilities, and technology — the operational realities that enable ministry to flourish. Organizational development training helps you assess congregational health, lead strategic planning, implement change, and navigate the interpersonal dynamics that can either fuel or derail a church\'s mission. Finally, you will explore specialized ministry contexts — small and large churches, urban and rural settings, multicultural congregations, revitalization efforts, and cross-cultural leadership — so you are prepared to lead faithfully wherever God calls you.',
+        expectations: [
+          'Develop a theology of leadership rooted in servant-hearted, Christ-centered shepherding',
+          'Acquire practical skills in church governance, budgeting, legal compliance, and human resources',
+          'Learn to cast vision, lead strategic planning, and implement organizational change',
+          'Build competence in conflict resolution, team building, and developing other leaders',
+          'Understand the unique dynamics of ministry across various church sizes, settings, and cultural contexts',
+          'Integrate administrative excellence with spiritual priorities so that systems serve the mission rather than hinder it',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Is this phase only for senior pastors or lead ministers?',
+            answer:
+              'Not at all. Associate pastors, ministry directors, church planters, and even lay leaders serving on church boards will benefit greatly from this material. Effective leadership and sound administration are responsibilities shared across every level of church governance.',
+          },
+          {
+            question: 'How much time should I expect this phase to take?',
+            answer:
+              'With four modules covering leadership, administration, organizational development, and specialized contexts, plan on five to seven hours per week over several months. Some lessons include practical exercises such as drafting a church budget or conducting a health assessment that may take additional time.',
+          },
+          {
+            question: 'I already have secular leadership experience. Will this phase still be valuable?',
+            answer:
+              'Absolutely. While transferable leadership principles are acknowledged, this phase is specifically grounded in the theology and unique dynamics of the local church. Topics like elder and deacon ministry, church polity, pastoral authority, and navigating church politics address realities that are distinct from corporate or nonprofit management.',
+          },
+          {
+            question: 'How does this phase connect to the phases before and after it?',
+            answer:
+              'Leadership and Administration builds on the biblical, theological, and pastoral skills developed in Phases 1 through 3. It prepares you to lead the outward-facing mission work covered in Phase 5 (Mission and Evangelism) and to oversee the specialized ministries addressed in Phase 6.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 5: Core Division Five — Mission and Evangelism
+    // Phase 5: Mission and Evangelism
     // =====================================================================
     {
       id: 'past-p5',
-      title: 'Core Division Five: Mission and Evangelism',
+      title: 'Mission and Evangelism',
       description:
         'Training in evangelism, discipleship, global missions, and church planting to equip pastors for the Great Commission.',
       modules: [
@@ -1792,14 +1932,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase turns your attention outward to the mission that lies at the heart of the church\'s calling. You will study the theology and practice of evangelism — from personal gospel conversations and evangelistic preaching to equipping your congregation for outreach in an increasingly post-Christian context. Discipleship and spiritual formation modules help you design intentional pathways that move new believers toward maturity and multiplication. A comprehensive missions component traces God\'s global purpose from Genesis to Revelation and equips you to mobilize, send, support, and partner in cross-cultural ministry. Finally, church planting training covers the theology, models, assessment, fundraising, and multiplication strategies needed to launch and sustain new congregations. Whether your context is a local neighborhood or an unreached people group, this phase prepares you to lead your church in fulfilling the Great Commission.',
+        expectations: [
+          'Develop a robust theology of evangelism and learn practical methods for personal and congregational outreach',
+          'Design a discipleship pathway that guides believers from initial faith to mature disciple-making',
+          'Understand the history and current landscape of global missions and learn to mobilize your church effectively',
+          'Gain practical knowledge of church planting models, team formation, funding, and multiplication strategies',
+          'Learn to integrate evangelism with social action for holistic, gospel-centered community engagement',
+          'Equip your congregation to share their faith confidently in both digital and face-to-face settings',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need to be involved in church planting to benefit from this phase?',
+            answer:
+              'No. While the church planting module is valuable for those exploring that calling, every pastor benefits from understanding evangelism strategies, discipleship systems, and missions mobilization. These skills are essential for any local church leader committed to the Great Commission.',
+          },
+          {
+            question: 'How much time should I allocate to this phase?',
+            answer:
+              'This phase contains four modules with nearly forty lessons. Plan on five to seven hours per week over several months. Some modules include field assignments — such as engaging in a gospel conversation or developing a discipleship plan — that require time beyond the lesson content itself.',
+          },
+          {
+            question: 'How does this phase address evangelism in a secular or post-Christian culture?',
+            answer:
+              'Dedicated lessons cover evangelism in post-Christian contexts, digital evangelism, apologetics as a tool for outreach, and reaching the religiously unaffiliated. The material recognizes that effective witness today requires both theological clarity and cultural fluency.',
+          },
+          {
+            question: 'How does this phase connect to the rest of the curriculum?',
+            answer:
+              'Mission and Evangelism builds on the biblical, theological, pastoral, and leadership foundations of Phases 1 through 4. It equips you to channel those competencies outward. The specialized ministries in Phase 6 and the personal formation of Phase 7 complement and sustain the missional momentum developed here.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 6: Core Division Six — Specialized Ministries
+    // Phase 6: Specialized Ministries
     // =====================================================================
     {
       id: 'past-p6',
-      title: 'Core Division Six: Specialized Ministries',
+      title: 'Specialized Ministries',
       description:
         'Training in age-specific and specialized care ministries, equipping pastors to lead or oversee children\'s, youth, young adult, adult, and specialized care ministries.',
       modules: [
@@ -2147,14 +2322,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase equips you to lead or oversee the full range of age-specific and specialized care ministries that constitute a healthy church. You will study children\'s ministry — from theology and child development to safety policies and family partnership — and youth ministry, including adolescent development, programming, discipleship, and navigating sensitive cultural issues. College and young adult ministry addresses the unique challenges of emerging adulthood, campus engagement, and vocational discipleship. Adult ministry training covers small groups, gender-specific programs, marriage enrichment, senior care, and life-stage transitions. Finally, specialized care ministries prepare you for chaplaincy, addiction recovery, mental health support, disability inclusion, poverty response, refugee care, and disaster relief. Even if you do not personally lead each of these areas, pastoral oversight requires a working knowledge of every ministry under your charge.',
+        expectations: [
+          'Understand the theology, developmental dynamics, and best practices for ministry to children, youth, and young adults',
+          'Learn to design and oversee adult ministry programs including small groups, gender-specific ministries, and life-stage support',
+          'Develop competence in specialized care areas such as chaplaincy, addiction recovery, mental health, and disability inclusion',
+          'Build policies and structures that ensure child safety, volunteer training, and quality programming',
+          'Gain skills for partnering with parents and families as co-laborers in faith formation',
+          'Prepare to provide pastoral oversight across diverse ministry departments even when specialists lead the day-to-day work',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need to complete earlier phases before tackling this one?',
+            answer:
+              'While earlier phases are not strict prerequisites, the biblical, theological, and pastoral competencies from Phases 1 through 3 will significantly enhance your ability to lead these specialized areas with depth and discernment. We recommend completing at least the first three phases beforehand.',
+          },
+          {
+            question: 'How much time should I expect to spend on this phase?',
+            answer:
+              'With five modules covering children, youth, young adults, adults, and specialized care, this is one of the larger phases. Plan on five to eight hours per week over several months. Some lessons include policy-drafting exercises and ministry planning assignments that may require additional time.',
+          },
+          {
+            question: 'What if I am a solo pastor and handle all these areas myself?',
+            answer:
+              'This phase is especially valuable for you. Understanding each ministry area allows you to set appropriate standards, recruit and train volunteers, and allocate your limited time wisely. The material helps you identify which areas need the most attention and how to develop lay leaders to share the load.',
+          },
+          {
+            question: 'How does this phase connect to the broader curriculum?',
+            answer:
+              'Specialized Ministries applies the leadership and administrative skills from Phase 4 to specific congregational contexts. It also draws on the counseling and pastoral care training from Phase 3. The personal formation addressed in Phase 7 helps sustain you as you carry the weight of overseeing so many ministry areas.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 7: Core Division Seven — The Pastor's Personal Life
+    // Phase 7: The Pastor's Personal Life
     // =====================================================================
     {
       id: 'past-p7',
-      title: 'Core Division Seven: The Pastor\'s Personal Life',
+      title: 'The Pastor\'s Personal Life',
       description:
         'Focused attention on the pastor\'s spiritual formation, family life, physical and emotional health, and resilience for long-term fruitful ministry.',
       modules: [
@@ -2386,14 +2596,49 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase addresses the most neglected yet most critical dimension of pastoral effectiveness: the pastor\'s own soul, family, and well-being. Ministry can be profoundly rewarding, but it also carries unique pressures — public scrutiny, emotional weight, relational isolation, and spiritual dryness — that erode even the most gifted leaders if left unattended. You will cultivate sustainable devotional practices, a vibrant prayer life, and rhythms of solitude and sabbath that keep your relationship with God primary rather than merely professional. Family modules tackle the realities of being a spouse and parent in the fishbowl of ministry, establishing boundaries that protect your home. Health modules cover physical, emotional, mental, relational, financial, and vocational well-being with honesty and practical guidance. Finally, you will confront the hazards that sideline pastors — temptation, burnout, loneliness, moral failure — and build the resilience habits that sustain decades of faithful service.',
+        expectations: [
+          'Establish sustainable spiritual disciplines including devotional reading, prayer, solitude, sabbath, and fasting',
+          'Learn to protect and strengthen your marriage and family amid the unique pressures of pastoral ministry',
+          'Develop a holistic health plan covering physical, emotional, mental, relational, and financial well-being',
+          'Identify the most common pastoral hazards — burnout, temptation, isolation, moral failure — and build safeguards against them',
+          'Create a personal rule of life that sustains long-term fruitfulness and joy in ministry',
+          'Build accountability relationships and learn when and how to seek help from mentors, counselors, and peers',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Is this phase only for pastors who are struggling?',
+            answer:
+              'Not at all. This phase is designed for every pastor, whether you are thriving or in crisis. The healthiest leaders are proactive about their spiritual formation, family life, and personal resilience. Engaging this material when things are going well builds the foundation that sustains you when difficulties arise.',
+          },
+          {
+            question: 'How much time should I set aside for this phase?',
+            answer:
+              'This phase contains four modules with around twenty-eight lessons. Plan on four to six hours per week over several months. Importantly, some exercises — such as developing a rule of life or scheduling a retreat — involve implementation beyond study time and are best spread over weeks.',
+          },
+          {
+            question: 'Will this phase address the pressures my family faces because of my ministry role?',
+            answer:
+              'Yes, extensively. An entire module is devoted to the pastor\'s family, covering marriage, parenting, protecting privacy, pastor\'s kids, and what to do when ministry hurts the home. The material is honest about the unique strains and offers practical strategies for health and healing.',
+          },
+          {
+            question: 'How does this phase fit into the overall curriculum sequence?',
+            answer:
+              'The Pastor\'s Personal Life is positioned after the outward-facing phases on ministry, leadership, mission, and specialized care — intentionally so. By this point you understand the scope of pastoral demands, which makes the personal formation material deeply relevant. It also prepares you for the Contemporary Issues and capstone phases that follow.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 8: Core Division Eight — Contemporary Issues
+    // Phase 8: Contemporary Issues
     // =====================================================================
     {
       id: 'past-p8',
-      title: 'Core Division Eight: Contemporary Issues',
+      title: 'Contemporary Issues',
       description:
         'Engaging the pressing cultural, ethical, technological, and ecclesiological issues facing the church in the contemporary world.',
       modules: [
@@ -2621,16 +2866,51 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase engages you with the urgent cultural, ethical, technological, and ecclesiological questions facing the church today. Ministry does not take place in a vacuum, and pastors must be equipped to guide their congregations through complex and often divisive issues with biblical fidelity, pastoral wisdom, and genuine compassion. You will explore the church\'s relationship to secular culture, politics, racial reconciliation, economic justice, and environmental stewardship. Sensitive topics in sexuality and gender — including homosexuality, transgender issues, abuse, and sexual ethics — are addressed with theological rigor and pastoral care. Technology and media modules prepare you to navigate social media, online church, digital discipleship, and emerging tools like artificial intelligence. Finally, you will examine the major trends reshaping the church landscape: the rise of the religiously unaffiliated, faith deconstruction, church decline and renewal, innovative ecclesial models, and the growth of global Christianity.',
+        expectations: [
+          'Develop a biblically grounded framework for engaging contemporary cultural and political issues from the pulpit and in pastoral conversations',
+          'Address sexuality and gender topics — including homosexuality, transgender concerns, and abuse — with theological clarity and pastoral compassion',
+          'Understand how technology, social media, and digital culture shape spiritual formation and learn to use these tools wisely in ministry',
+          'Analyze current trends in church attendance, faith deconstruction, and innovative ecclesial models to position your ministry for relevance and faithfulness',
+          'Learn to lead your congregation through divisive issues without compromising biblical conviction or relational unity',
+          'Engage the global church and ecumenical landscape to broaden your perspective and strengthen collaborative ministry',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need to have a position on every controversial issue before starting this phase?',
+            answer:
+              'No. This phase is designed to help you develop informed positions rooted in Scripture, theology, and pastoral wisdom. The material presents the major perspectives within orthodox Christianity and equips you to think through these issues carefully rather than imposing a single viewpoint.',
+          },
+          {
+            question: 'How much time should I expect to invest in this phase?',
+            answer:
+              'With four modules covering culture, sexuality, technology, and church trends, plan on five to seven hours per week over several months. Some topics will benefit from additional reading and conversation with trusted colleagues, so build margin for that as well.',
+          },
+          {
+            question: 'How does this phase help me avoid alienating people in my congregation?',
+            answer:
+              'Each module emphasizes pastoral tone and relational wisdom alongside theological substance. You will learn not only what to say but how to say it — modeling grace and truth in ways that invite dialogue rather than division, even on the most sensitive subjects.',
+          },
+          {
+            question: 'Where does this phase fit in the overall curriculum?',
+            answer:
+              'Contemporary Issues follows the personal formation phase and precedes the capstone experiences. By this point, you have the biblical, theological, pastoral, and leadership foundations needed to engage complex cultural questions with maturity. The capstone phases that follow allow you to synthesize and apply everything you have learned.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 9: Capstone and Integrative Experiences
+    // Phase 9: Bringing It Together
     // =====================================================================
     {
       id: 'past-p9',
-      title: 'Capstone and Integrative Experiences',
+      title: 'Bringing It Together',
       description:
-        'Academic, practical, and spiritual capstone experiences designed to synthesize learning and prepare pastors for the fullness of vocational ministry.',
+        'Practical and spiritual experiences that bring together everything you have learned and prepare you for the fullness of ministry.',
       modules: [
         // ----- Module 1: Academic Capstones -----
         {
@@ -2776,16 +3056,51 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase is the culminating experience of your pastoral training, designed to integrate everything you have studied into a coherent and deeply personal preparation for ministry. Academic capstones challenge you to produce substantive written work — a pastoral theology integration paper, an exegetical project, a ministry philosophy statement, comprehensive examinations, and potentially a thesis or doctoral project — that demonstrates mastery across the disciplines. Practical capstones move you from the classroom into the field through supervised internships, clinical pastoral education, church residencies, church planting practicums, preaching intensives, and cross-cultural immersion experiences. Spiritual capstones ensure that your formation as a person keeps pace with your formation as a professional, through extended retreats, pilgrimage, sabbatical planning, spiritual direction, and the development of a sustainable rule of life. Together, these experiences confirm your readiness and deepen your confidence as you step into the fullness of pastoral calling.',
+        expectations: [
+          'Complete major academic projects that synthesize your biblical, theological, and practical learning',
+          'Gain supervised, hands-on ministry experience through internships, residencies, or church planting practicums',
+          'Develop your preaching further through an intensive feedback-driven practicum',
+          'Engage in extended spiritual formation experiences such as retreats, pilgrimage, and spiritual direction',
+          'Articulate a clear, personal ministry philosophy that reflects your theology, gifts, and calling',
+          'Create a sustainable rule of life and sabbatical plan that will sustain your ministry for decades to come',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need to complete all previous phases before beginning this one?',
+            answer:
+              'Yes. The capstone phase is designed to integrate and demonstrate mastery of the material from Phases 1 through 8. Attempting this phase without that foundation would undermine the depth and cohesion these culminating experiences are meant to provide.',
+          },
+          {
+            question: 'How much time should I expect to invest in the capstone phase?',
+            answer:
+              'This varies significantly depending on which capstone experiences you pursue. Academic projects may take several weeks of concentrated writing, while a church residency or clinical pastoral education placement may span an entire year. Plan this phase in close consultation with a mentor or advisor.',
+          },
+          {
+            question: 'Are the practical capstones required, or can I choose from the options listed?',
+            answer:
+              'The capstones are presented as a menu of culminating experiences. Your specific path will depend on your calling, context, and goals. At minimum, we recommend completing one academic, one practical, and one spiritual capstone to ensure a well-rounded preparation for ministry.',
+          },
+          {
+            question: 'How does this phase prepare me for what comes next?',
+            answer:
+              'Bringing It Together bridges your training and your vocation. The academic work sharpens your thinking, the practical work tests your readiness, and the spiritual work anchors your identity. Upon completion you are prepared either to enter full-time pastoral ministry or to continue growing through the Continuing Growth phase.',
+          },
+        ],
+      },
     },
 
     // =====================================================================
-    // PHASE 10: Continuing Education Tracks
+    // Phase 10: Continuing Growth
     // =====================================================================
     {
       id: 'past-p10',
-      title: 'Continuing Education Tracks',
+      title: 'Continuing Growth',
       description:
-        'Ongoing professional development tracks for established pastors, ministry specialists, and bivocational and lay leaders.',
+        'Ongoing growth paths for established pastors, ministry specialists, and lay leaders.',
       modules: [
         // ----- Module 1: For Established Pastors -----
         {
@@ -2943,6 +3258,41 @@ export const pastoralLeadershipCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase recognizes that pastoral development is a lifelong endeavor that does not end with formal training. Whether you are an established pastor looking to sharpen your skills, a ministry specialist seeking targeted development, or a bivocational or lay leader serving with limited formal education, this phase provides tailored growth paths to meet you where you are. Established pastors can pursue advanced preaching, leadership at scale, pastoral renewal, conflict navigation, coaching, writing, and doctoral-level studies. Ministry specialists — executive pastors, worship pastors, missions directors, children\'s and youth leaders, counselors, and nonprofit executives — will find focused training for their unique roles. Bivocational and lay leaders gain access to practical modules on preaching, elder and deacon service, small group leadership, and volunteer ministry management. The goal is continued faithfulness, fruitfulness, and joy in whatever sphere of service God has placed you.',
+        expectations: [
+          'Access advanced development tracks tailored to your current ministry role and career stage',
+          'Refine your preaching, leadership, and counseling skills through focused, experienced-level training',
+          'Explore doctoral and publishing pathways for pastors seeking academic or literary contributions',
+          'Gain specialized training for roles such as executive pastor, worship pastor, missions director, or counselor',
+          'Equip bivocational pastors and lay leaders with practical, accessible ministry skills',
+          'Develop a lifelong learning plan that sustains growth, prevents stagnation, and keeps your ministry fresh',
+        ],
+        skillLevel: 'Advanced',
+        faq: [
+          {
+            question: 'Do I need to complete the entire curriculum before accessing this phase?',
+            answer:
+              'Not necessarily. While the earlier phases provide the comprehensive foundation, Continuing Growth is designed to be accessible to pastors and leaders at various stages. Established pastors with years of experience may find this phase immediately relevant even if they have not worked through every preceding module.',
+          },
+          {
+            question: 'How much time does this phase require?',
+            answer:
+              'This phase is open-ended by design. You might spend a few weeks on a single module or engage with its content over years as your ministry evolves. The key is to return to it regularly as new challenges and opportunities arise in your leadership journey.',
+          },
+          {
+            question: 'Is there content here for non-pastoral leaders like elders, deacons, or small group leaders?',
+            answer:
+              'Yes. The bivocational and lay leaders module specifically addresses elder and deacon training, lay preaching, small group leadership, and volunteer ministry management. This makes the phase valuable not only for ordained ministers but for the broader leadership team of any church.',
+          },
+          {
+            question: 'How does this phase relate to the rest of the Pastoral Ministry and Leadership curriculum?',
+            answer:
+              'Continuing Growth is the capstone of a lifelong learning posture. It builds on everything from Phases 1 through 9 and provides the framework for sustained development beyond formal training. Think of it as the phase you never truly finish — a companion for every season of your ministry career.',
+          },
+        ],
+      },
     },
   ],
 };

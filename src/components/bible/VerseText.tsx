@@ -6,9 +6,10 @@ interface VerseTextProps {
   highlight?: VerseHighlight;
   isSelected: boolean;
   onSelect: (verseNumber: number) => void;
+  isDropCap?: boolean;
 }
 
-export function VerseText({ verse, highlight, isSelected, onSelect }: VerseTextProps) {
+export function VerseText({ verse, highlight, isSelected, onSelect, isDropCap }: VerseTextProps) {
   const bgStyle = highlight
     ? { backgroundColor: HIGHLIGHT_COLORS[highlight.color].bg }
     : isSelected
@@ -17,15 +18,25 @@ export function VerseText({ verse, highlight, isSelected, onSelect }: VerseTextP
 
   return (
     <span
+      data-verse={verse.number}
       className={`inline cursor-pointer rounded-sm transition-colors duration-150 ${
         isSelected ? 'ring-1 ring-hl-green/30' : ''
       }`}
       style={bgStyle}
       onClick={() => onSelect(verse.number)}
     >
-      <sup className="text-xs font-medium text-muted-foreground/50 mr-1 select-none">
-        {verse.number}
-      </sup>
+      {isDropCap ? (
+        <span
+          className="bible-drop-cap font-serif text-foreground/80 select-none"
+          aria-hidden="true"
+        >
+          {verse.number}
+        </span>
+      ) : (
+        <sup className="text-xs font-medium text-muted-foreground/50 mr-1 select-none">
+          {verse.number}
+        </sup>
+      )}
       <span className="text-foreground/90">{verse.text} </span>
     </span>
   );

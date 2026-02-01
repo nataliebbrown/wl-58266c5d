@@ -271,4 +271,29 @@
     z-index: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+
+  /* Bible Reader — ESV.org-style typography */
+  .bible-paragraph {
+    margin-bottom: 0.25em;
+    text-indent: 1.5em;
+  }
+
+  .bible-paragraph-first {
+    text-indent: 0;
+  }
+
+  .bible-drop-cap {
+    float: left;
+    font-size: 3.5em;
+    line-height: 0.8;
+    padding-right: 0.08em;
+    padding-top: 0.06em;
+    font-weight: 500;
+  }
+
+  .bible-paragraph-first::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
 }

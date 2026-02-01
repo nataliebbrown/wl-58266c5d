@@ -91,7 +91,6 @@ function MiniChatBubble({ message, onPassageClick }: { message: Message; onPassa
 function PillChatInput({
   onSend,
   isLoading,
-  isDarkMode,
 }: {
   onSend: (msg: string) => void;
   isLoading: boolean;
@@ -121,34 +120,12 @@ function PillChatInput({
 
   return (
     <div
-      className="flex items-center gap-2 rounded-full px-5 py-3 transition-all duration-200 cursor-text"
+      className={`flex items-center gap-2 rounded-full px-5 py-3 transition-all duration-200 cursor-text ${
+        isFocused
+          ? 'bg-white/95 dark:bg-wl-olive-300/14 ring-2 ring-wl-olive/15 dark:ring-wl-olive-300/30 shadow-sm'
+          : 'bg-white/85 dark:bg-wl-olive-300/10 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none hover:ring-1 hover:ring-wl-olive/10 dark:hover:ring-wl-olive-300/20'
+      }`}
       onClick={() => inputRef.current?.focus()}
-      style={{
-        background: isFocused
-          ? (isDarkMode ? 'rgba(241,237,233,0.14)' : 'rgba(255,255,255,0.95)')
-          : (isDarkMode ? 'rgba(241,237,233,0.1)' : 'rgba(255,255,255,0.85)'),
-        boxShadow: isFocused
-          ? (isDarkMode
-              ? '0 0 0 2px rgba(178,164,146,0.3), inset 0 1px 0 rgba(241,237,233,0.08)'
-              : '0 0 0 2px rgba(116,102,83,0.15), 0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)')
-          : (isDarkMode
-              ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
-              : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
-      }}
-      onMouseEnter={(e) => {
-        if (!isFocused) {
-          e.currentTarget.style.boxShadow = isDarkMode
-            ? '0 0 0 1px rgba(178,164,146,0.2), inset 0 1px 0 rgba(241,237,233,0.08)'
-            : '0 0 0 1px rgba(116,102,83,0.1), 0 2px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isFocused) {
-          e.currentTarget.style.boxShadow = isDarkMode
-            ? 'inset 0 1px 0 rgba(241,237,233,0.06)'
-            : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)';
-        }
-      }}
     >
       <label className="sr-only" htmlFor="sophia-curriculum-input">Ask Sophia</label>
       <input

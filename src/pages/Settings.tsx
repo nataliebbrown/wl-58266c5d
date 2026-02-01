@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Moon, Sun, RotateCcw, ChevronRight, BookOpen, Heart, GraduationCap, Users, Compass } from 'lucide-react';
+import { User, Moon, Sun, RotateCcw, ChevronRight, BookOpen, Heart, GraduationCap, Users, Compass, FileText } from 'lucide-react';
 import { getQuizData, resetOnboarding, clearQuizData } from '@/lib/onboardingState';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { getReadingHistory } from '@/lib/bibleApi';
@@ -241,6 +241,11 @@ export default function Settings() {
                 Scripture study guided by Sophia
               </p>
             </div>
+            <SettingsRow
+              icon={FileText}
+              label="Terms of Service"
+              onClick={() => navigate('/terms')}
+            />
           </div>
         </div>
       </div>

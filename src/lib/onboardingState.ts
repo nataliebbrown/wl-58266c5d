@@ -20,6 +20,7 @@ export interface OnboardingState {
   phase: OnboardingPhase;
   quizCompletedAt?: string;
   firstActionAt?: string;
+  chatGreetingSeen?: boolean;
   lastVisitAt: string;
   visitCount: number;
   quizProgress?: {
@@ -163,6 +164,14 @@ export function hasCompletedQuiz(): boolean {
 export function isReturningUser(): boolean {
   const state = getOnboardingState();
   return state.phase === 'fully-onboarded';
+}
+
+export function hasChatGreetingBeenSeen(): boolean {
+  return getOnboardingState().chatGreetingSeen === true;
+}
+
+export function markChatGreetingSeen(): void {
+  setOnboardingState({ chatGreetingSeen: true });
 }
 
 export function shouldShowWelcomeDashboard(): boolean {

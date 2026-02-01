@@ -4,18 +4,18 @@ export const deeperWalkCurriculum: Curriculum = {
   id: 'deeper-walk',
   title: 'The Deeper Walk',
   description:
-    'A comprehensive program for established believers seeking to deepen their relationship with Christ, expand their biblical knowledge, and grow in spiritual maturity. This curriculum bridges the gap between foundational discipleship and formal seminary training.',
+    'A rich path for established believers seeking to deepen their relationship with Christ, expand their biblical knowledge, and grow in spiritual maturity.',
   personaIntro:
     'Welcome to The Deeper Walk. You have laid the foundation of faith, and now you are ready to go further — deeper into Scripture, closer to Christ, and more fully formed in His image.',
   learningApproach:
-    'This curriculum can be pursued sequentially, simultaneously across tracks, or selectively based on your areas of greatest need. Every doctrine learned should lead to deeper worship, and every discipline practiced should produce more of the Spirit\'s fruit.',
+    'This path can be pursued sequentially or selectively based on your areas of greatest need. Every doctrine learned should lead to deeper worship, and every discipline practiced should produce more of the Spirit\'s fruit.',
   phases: [
     // =========================================================
-    // Phase 1: Track One — Intimate Knowledge of God
+    // Phase 1: Intimate Knowledge of God
     // =========================================================
     {
       id: 'deep-p1',
-      title: 'Track One: Intimate Knowledge of God',
+      title: 'Intimate Knowledge of God',
       description:
         'A deep exploration of who God is — Father, Son, and Holy Spirit — moving from theological understanding to intimate, experiential knowledge.',
       modules: [
@@ -190,14 +190,49 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase invites you into a rich, sustained encounter with the triune God — Father, Son, and Holy Spirit. Rather than merely learning about God at a surface level, you will explore His attributes, His names, and His character as revealed across the full canon of Scripture. You will study the person and work of Jesus Christ in depth, moving from doctrinal knowledge to a living experience of union with Him. You will also examine the person and ministry of the Holy Spirit, learning to walk daily in His power, discern His voice, and cultivate the fruit He produces. Each module is designed not only to inform your mind but to transform your affections, drawing you into deeper worship, greater dependence, and a more intimate awareness of God\'s presence in every aspect of your life.',
+        expectations: [
+          'Gain a thorough understanding of God\'s attributes and how they shape your worship and trust',
+          'Study the person and work of Christ from incarnation through exaltation and learn what union with Him means practically',
+          'Develop a robust theology of the Holy Spirit and learn to cooperate with His sanctifying work',
+          'Move beyond head knowledge into experiential, heart-level intimacy with the triune God',
+          'Engage with key Scripture passages that reveal the nature and character of each person of the Trinity',
+          'Build a devotional rhythm that sustains deeper communion with God over the long term',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'What prior knowledge do I need before starting this phase?',
+            answer:
+              'You should have a foundational understanding of the Christian faith — who God is, the basics of salvation, and regular Bible reading habits. This phase builds on that foundation and takes you significantly deeper.',
+          },
+          {
+            question: 'How much time should I expect to invest per week?',
+            answer:
+              'Plan for approximately three to five hours per week, including lesson study, Scripture reading, and personal reflection. Some weeks may require more time for deeper devotional exercises.',
+          },
+          {
+            question: 'How does this phase connect to other tracks in the curriculum?',
+            answer:
+              'This phase lays the theological and relational groundwork for everything that follows in The Deeper Walk. The intimate knowledge of God cultivated here enriches your study of Scripture, theology, spiritual formation, and mission in later phases.',
+          },
+          {
+            question: 'What format do the lessons follow?',
+            answer:
+              'Each lesson combines biblical exposition, theological reflection, and practical application. You will engage with Scripture passages, explore key doctrines, and be guided through exercises designed to move truth from your head to your heart.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 2: Track Two — Mastering the Scriptures
+    // Phase 2: Mastering the Scriptures
     // =========================================================
     {
       id: 'deep-p2',
-      title: 'Track Two: Mastering the Scriptures',
+      title: 'Mastering the Scriptures',
       description:
         'A comprehensive study of both Old and New Testaments, along with essential Bible study methods and tools for lifelong engagement with God\'s Word.',
       modules: [
@@ -675,14 +710,49 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase equips you to handle the Word of God with confidence, skill, and reverence. You will journey through the entire Old Testament — from the Pentateuch through the Prophets — and then work through the New Testament from the Gospels to Revelation, gaining a panoramic understanding of God\'s unfolding story of redemption. Beyond surveying individual books, you will study Old and New Testament theology, tracing the covenants, the messianic hope, and the grand narrative that binds all of Scripture together. Finally, you will develop practical Bible study methods and tools — including inductive study, word studies, literary analysis, and an introduction to biblical languages — so that you can feed yourself from Scripture for the rest of your life and teach others to do the same.',
+        expectations: [
+          'Develop a comprehensive understanding of every major section of the Old and New Testaments',
+          'Learn to trace key theological themes — covenant, kingdom, redemption — across the biblical narrative',
+          'Master practical Bible study methods including inductive study, word studies, and literary analysis',
+          'Gain familiarity with biblical languages and tools that deepen your reading of the original texts',
+          'Prepare to teach and communicate biblical content to others with accuracy and clarity',
+          'Grow in your ability to read Scripture devotionally and academically, balancing head and heart',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'Do I need any background in biblical studies before starting this phase?',
+            answer:
+              'A basic familiarity with the Bible is expected — knowing the general structure, key stories, and the gospel message. This phase will deepen and systematize what you already know while introducing new methods and perspectives.',
+          },
+          {
+            question: 'How much time should I plan to dedicate each week?',
+            answer:
+              'This is the most content-rich phase in the curriculum. Expect to spend four to six hours per week on reading, study exercises, and reflection. Some modules, especially the book surveys, may benefit from additional reading time.',
+          },
+          {
+            question: 'How does this phase relate to the other phases in The Deeper Walk?',
+            answer:
+              'Mastering the Scriptures provides the biblical foundation that informs every other phase. The theological depth of Phase 3, the spiritual formation practices of Phase 4, and the missional engagement of Phase 5 all depend on the scriptural literacy you build here.',
+          },
+          {
+            question: 'What is the lesson format for this phase?',
+            answer:
+              'Lessons include book introductions, guided reading plans, theological summaries, and hands-on study exercises. You will also find practical assignments that help you apply study methods directly to the biblical text.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 3: Track Three — Theological Depth
+    // Phase 3: Theological Depth
     // =========================================================
     {
       id: 'deep-p3',
-      title: 'Track Three: Theological Depth',
+      title: 'Theological Depth',
       description:
         'A rigorous study of systematic theology, historical theology, apologetics, and worldview, building a robust theological framework for faith and life.',
       modules: [
@@ -894,14 +964,48 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase builds a robust theological framework that will sustain your faith through every season of life. You will work through the major doctrines of systematic theology — from the doctrine of Scripture through eschatology — developing the ability to articulate what you believe and why. You will also trace how Christian doctrine has developed across two thousand years of church history, from the early church fathers and ecumenical councils through the Reformation and into the modern global church. Finally, you will engage with apologetics and worldview studies, equipping you to defend the faith with intellectual rigor and compassion, to evaluate competing truth claims, and to address the toughest questions that believers and skeptics alike bring to Christianity. This phase is designed to deepen your convictions while sharpening your ability to think theologically about every area of life.',
+        expectations: [
+          'Survey the full scope of systematic theology from bibliology through eschatology',
+          'Trace the historical development of Christian doctrine from the early church to the present day',
+          'Develop the ability to engage competing worldviews and defend the Christian faith with clarity and grace',
+          'Understand major apologetic approaches — classical, presuppositional, and evidential — and when to use each',
+          'Gain awareness of world religions, cults, and contemporary philosophical challenges to Christianity',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'What theological background is expected before I begin?',
+            answer:
+              'You should be comfortable with core Christian doctrines such as the Trinity, salvation by grace through faith, and the authority of Scripture. Prior completion of Phase 1 and Phase 2, or equivalent knowledge, is strongly recommended.',
+          },
+          {
+            question: 'How much weekly study time does this phase require?',
+            answer:
+              'Plan for approximately four to five hours per week. Systematic theology and historical theology lessons are conceptually dense and benefit from slower, more reflective engagement.',
+          },
+          {
+            question: 'How does this phase connect with other parts of The Deeper Walk?',
+            answer:
+              'Theological Depth builds directly on the scriptural foundation from Phase 2 and provides the doctrinal backbone for the spiritual formation in Phase 4, the missional living in Phase 5, and the practical wisdom in Phase 6.',
+          },
+          {
+            question: 'What does a typical lesson look like in this phase?',
+            answer:
+              'Lessons present doctrinal content supported by Scripture, historical context, and key quotations from theologians throughout church history. Each lesson includes reflection questions and practical exercises that help you internalize and apply theological truth.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 4: Track Four — Spiritual Formation and Transformation
+    // Phase 4: Spiritual Formation
     // =========================================================
     {
       id: 'deep-p4',
-      title: 'Track Four: Spiritual Formation and Transformation',
+      title: 'Spiritual Formation',
       description:
         'Focused on the interior life, advanced spiritual disciplines, character formation, and the ongoing process of sanctification and holiness.',
       modules: [
@@ -1149,14 +1253,49 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase turns your attention inward — not in a self-absorbed way, but in the manner that Scripture commends: examining your heart, cultivating holy desires, and cooperating with the Spirit in the ongoing work of sanctification. You will explore the soul\'s journey through seasons of growth, dryness, and renewal. You will deepen your practice of spiritual disciplines beyond the basics, engaging with contemplative prayer, lectio divina, extended silence and solitude, the daily examen, and the development of a personal rule of life. You will study character formation through the Beatitudes and the classical Christian virtues, and you will grapple with the theology and practice of sanctification — including the mortification of sin, the pursuit of holiness, and the role of suffering in God\'s refining process. This phase is about becoming, not just knowing.',
+        expectations: [
+          'Develop a deeper awareness of your interior life and learn practices for honest self-examination before God',
+          'Expand your repertoire of spiritual disciplines beyond the basics into contemplative and communal practices',
+          'Study Christlike character through the Beatitudes and the classical virtues, with practical exercises for growth',
+          'Understand the theology of sanctification and gain practical strategies for pursuing holiness',
+          'Learn to navigate seasons of spiritual dryness, doubt, and the dark night of the soul with faith and resilience',
+          'Create a sustainable personal rule of life that integrates prayer, Scripture, community, and rest',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'What should I already know or practice before beginning this phase?',
+            answer:
+              'You should have an established devotional life — regular prayer, Bible reading, and church involvement. Familiarity with basic spiritual disciplines such as prayer, fasting, and Scripture meditation will help you engage the advanced material more fruitfully.',
+          },
+          {
+            question: 'How much time per week should I set aside?',
+            answer:
+              'Expect three to five hours per week, but this phase is unique in that some practices — silence, solitude, retreats — may require longer blocks of dedicated time on occasion.',
+          },
+          {
+            question: 'How does this phase fit with the rest of The Deeper Walk curriculum?',
+            answer:
+              'Spiritual Formation is the heart of The Deeper Walk. The knowledge gained in Phases 1 through 3 finds its deepest personal application here, and the character formed in this phase empowers the outward mission and practical wisdom of Phases 5 through 7.',
+          },
+          {
+            question: 'What format do the lessons take?',
+            answer:
+              'Lessons blend theological teaching with guided spiritual exercises. Many lessons include reflective prompts, journaling assignments, and experiential practices that you carry out between sessions. The emphasis is on formation through practice, not just information.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 5: Track Five — Living on Mission
+    // Phase 5: Living on Mission
     // =========================================================
     {
       id: 'deep-p5',
-      title: 'Track Five: Living on Mission',
+      title: 'Living on Mission',
       description:
         'Equipping believers for personal evangelism, discipleship and multiplication, the church\'s mission, and integrating faith with vocation and kingdom work.',
       modules: [
@@ -1377,14 +1516,48 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase moves you from inward formation to outward engagement, equipping you to live as a faithful witness and servant of Christ in the world. You will study the theology and practice of personal evangelism — learning to share the gospel naturally, answer tough questions, and follow up with new believers. You will explore discipleship and multiplication, discovering how to invest deeply in others and develop future disciple-makers who carry the mission forward. You will examine the nature and mission of the local church, including its health, unity, global reach, and community engagement. Finally, you will integrate your faith with your everyday vocation, learning to see all legitimate work as worship and to steward your influence, resources, and cultural engagement for the advance of God\'s kingdom. This phase is where theology meets the street.',
+        expectations: [
+          'Develop confidence and skill in sharing the gospel through natural, relational approaches',
+          'Learn to disciple others one-on-one and in small groups, and to develop future leaders',
+          'Understand the biblical nature and mission of the local church and your unique role within it',
+          'Integrate your faith with your vocation, seeing your work as a platform for kingdom impact',
+          'Engage with global and local missions, developing awareness of the unreached and the underserved',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'Do I need to have completed earlier phases before starting this one?',
+            answer:
+              'While this phase can be engaged independently, you will benefit greatly from the theological grounding of Phases 1 through 3 and the spiritual maturity cultivated in Phase 4. These earlier phases provide the depth that makes your outward mission authentic and sustainable.',
+          },
+          {
+            question: 'What is the expected weekly time commitment?',
+            answer:
+              'Plan for three to four hours per week of lesson study and reflection. Some modules also include practical assignments — such as sharing your testimony or leading a small group discussion — that require additional time in real-world settings.',
+          },
+          {
+            question: 'How does this phase relate to the other learning tracks?',
+            answer:
+              'Living on Mission is the outward expression of everything built in earlier phases. It also connects naturally to the Wisdom for Life phase that follows, which addresses the practical and relational challenges you will encounter as you engage more actively in ministry and the world.',
+          },
+          {
+            question: 'What is the lesson format for this phase?',
+            answer:
+              'Lessons combine biblical teaching with practical frameworks and real-world application exercises. You will find gospel presentation outlines, discipleship planning tools, and guided reflection on your unique gifts and calling within the body of Christ.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 6: Track Six — Wisdom for Life
+    // Phase 6: Wisdom for Life
     // =========================================================
     {
       id: 'deep-p6',
-      title: 'Track Six: Wisdom for Life',
+      title: 'Wisdom for Life',
       description:
         'Practical biblical wisdom for relationships, family, navigating trials, and the everyday decisions that shape a life of faithfulness.',
       modules: [
@@ -1577,16 +1750,51 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This phase addresses the places where faith meets the realities of everyday life — your relationships, your trials, and the countless practical decisions that shape your walk with God over the long haul. You will explore biblical wisdom for marriage, parenting, singleness, friendship, conflict resolution, and the difficult work of forgiveness. You will learn to navigate trials with theological depth and pastoral sensitivity, addressing suffering, grief, anxiety, depression, illness, financial hardship, unanswered prayer, and seasons of doubt. You will also develop practical wisdom for stewarding your time, money, health, technology use, and the rhythms of rest and work. This phase is not abstract — it is designed to help you apply the truths you have learned throughout The Deeper Walk to the situations you actually face, equipping you to live faithfully and wisely in every season of life.',
+        expectations: [
+          'Gain biblical frameworks for navigating marriage, parenting, singleness, and other key relationships',
+          'Develop theological and practical resources for walking through suffering, grief, and seasons of doubt',
+          'Learn biblical strategies for managing anxiety, depression, and spiritual darkness',
+          'Build practical wisdom for stewarding time, money, health, and technology as acts of faithfulness',
+          'Grow in the art of conflict resolution, forgiveness, and peacemaking within your community',
+          'Cultivate sustainable rhythms of rest, sabbath, and long-term spiritual health',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'What background do I need to engage with this phase?',
+            answer:
+              'This phase is accessible to anyone with a solid faith foundation, but it is especially enriched by the theological depth and spiritual formation of earlier phases. Life experience itself is a significant teacher here — the more you have walked with God through varied seasons, the more deeply this material will resonate.',
+          },
+          {
+            question: 'How many hours per week should I plan for?',
+            answer:
+              'Expect two to four hours per week. Many of the lessons in this phase are deeply personal and benefit from unhurried reflection and, where appropriate, conversation with a trusted friend, mentor, or counselor.',
+          },
+          {
+            question: 'How does this phase connect to the other phases in The Deeper Walk?',
+            answer:
+              'Wisdom for Life is where the rubber meets the road. The knowledge of God from Phase 1, the scriptural mastery from Phase 2, the theological framework from Phase 3, the spiritual formation from Phase 4, and the missional engagement from Phase 5 all converge in the practical, everyday situations addressed here.',
+          },
+          {
+            question: 'What do the lessons look like in this phase?',
+            answer:
+              'Lessons combine biblical exposition with pastoral guidance, real-life scenarios, and reflective exercises. Many lessons include discussion prompts suitable for couples, families, or small groups, making this phase especially well suited for communal engagement.',
+          },
+        ],
+      },
     },
 
     // =========================================================
-    // Phase 7: Capstone Experiences
+    // Phase 7: Bringing It Together
     // =========================================================
     {
       id: 'deep-p7',
-      title: 'Capstone Experiences',
+      title: 'Bringing It Together',
       description:
-        'Integrative projects and practical experiences that bring together everything learned across the curriculum into tangible, transformative outcomes.',
+        'Integrative projects and practical experiences that bring together everything you have learned into tangible, transformative outcomes.',
       modules: [
         // Module 1: Integrative Projects
         {
@@ -1685,6 +1893,40 @@ export const deeperWalkCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This final phase is where everything comes together. After journeying through intimate knowledge of God, mastery of Scripture, theological depth, spiritual formation, missional living, and practical wisdom, you are now ready to synthesize your learning into tangible, transformative outcomes. You will complete integrative projects that challenge you to articulate your own systematic theology, write a spiritual autobiography tracing God\'s work in your life, master an individual book of the Bible for teaching, produce a theological research paper, and develop a personal ministry philosophy. You will also engage in practical experiences — including an extended spiritual retreat, cross-cultural missions engagement, teaching, one-on-one discipleship, evangelism, and service immersion — that take what you have learned out of the classroom and into the world. This phase is the culmination of The Deeper Walk, designed to launch you into a lifetime of continued growth and fruitful service.',
+        expectations: [
+          'Synthesize your theological learning by writing a personal statement of faith with biblical support',
+          'Complete a spiritual autobiography that traces God\'s redemptive work throughout your life story',
+          'Develop mastery of one book of the Bible, preparing to teach it with depth and confidence',
+          'Engage in hands-on ministry experiences including teaching, discipleship, evangelism, and cross-cultural missions',
+          'Create a personal ministry philosophy that articulates your unique calling and approach to serving',
+        ],
+        skillLevel: 'Intermediate',
+        faq: [
+          {
+            question: 'What preparation is needed before starting this phase?',
+            answer:
+              'This phase is designed as the capstone of The Deeper Walk and assumes you have worked through the earlier phases or have equivalent knowledge and experience. The integrative projects draw on theology, biblical studies, spiritual formation, and missional skills developed throughout the curriculum.',
+          },
+          {
+            question: 'How much time will this phase require?',
+            answer:
+              'Time commitments vary significantly in this phase. Integrative projects may require five to eight hours per week during active writing periods, while practical experiences like retreats and missions trips require dedicated blocks of time ranging from a few days to several weeks.',
+          },
+          {
+            question: 'How does this phase connect to the rest of The Deeper Walk curriculum?',
+            answer:
+              'Bringing It Together is the culmination of every preceding phase. It is intentionally placed last because each project and experience draws on the knowledge, skills, and spiritual maturity developed across all six earlier phases. It is where learning becomes doing.',
+          },
+          {
+            question: 'What format do the lessons and projects take?',
+            answer:
+              'This phase is primarily project-based and experiential rather than lecture-based. Each lesson provides guidelines, templates, and rubrics for completing integrative projects, along with practical preparation guides for ministry experiences. Mentorship or peer review is strongly encouraged.',
+          },
+        ],
+      },
     },
   ],
 };

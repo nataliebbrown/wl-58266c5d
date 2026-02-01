@@ -11,6 +11,8 @@ import {
 import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import { CurriculumProgressBar } from './CurriculumProgressBar';
 import { PhaseSection } from './PhaseSection';
+import { PhaseOverview } from './PhaseOverview';
+import { ModuleOverview } from './ModuleOverview';
 import { LessonView } from './LessonView';
 
 const ContextualSophiaPane = lazy(() =>
@@ -18,8 +20,10 @@ const ContextualSophiaPane = lazy(() =>
 );
 
 export function CurriculumOverview() {
+  const [activePhaseId, setActivePhaseId] = useState<string | null>(null);
+  const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
-  const [isSophiaOpen, setIsSophiaOpen] = useState(true);
+  const [isSophiaOpen, setIsSophiaOpen] = useState(false);
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
 
   const quizData = getQuizData();
@@ -27,36 +31,74 @@ export function CurriculumOverview() {
   const percentage = getProgressPercentage(curriculum);
   const currentLessonId = getCurrentOrFirstLessonId(curriculum);
 
-  // Determine which phase the current lesson is in (for auto-expand)
-  const currentPosition = currentLessonId
-    ? findLessonPosition(curriculum, currentLessonId)
-    : null;
-
   // Register orb intercept when on overview (not in a lesson)
   const { register, unregister, setHideOrb } = useSophiaOrbIntercept();
 
   useEffect(() => {
     if (activeLessonId) return; // LessonView handles its own intercept
-    // Hide orb on mount since the Sophia pane starts open
-    setHideOrb(true);
+    if (activePhaseId) {
+      // Phase overview — show orb but don't auto-open Sophia
+      setHideOrb(false);
+      register((prompt?: string) => {
+        setIsSophiaOpen(true);
+        setHideOrb(true);
+        if (prompt) setSophiaPrompt(prompt);
+      });
+      return () => unregister();
+    }
+    // Main overview — show orb so user can open Sophia if they want
+    setHideOrb(false);
     register((prompt?: string) => {
       setIsSophiaOpen(true);
       setHideOrb(true);
       if (prompt) setSophiaPrompt(prompt);
     });
     return () => unregister();
-  }, [activeLessonId, register, unregister, setHideOrb]);
+  }, [activeLessonId, activePhaseId, register, unregister, setHideOrb]);
+
+  const handlePhaseClick = (phaseId: string) => {
+    setActivePhaseId(phaseId);
+  };
+
+  const handleModuleClick = (moduleId: string) => {
+    setActiveModuleId(moduleId);
+  };
 
   const handleLessonClick = (lessonId: string) => {
+    // Ensure phase and module are set for proper back-navigation
+    if (!activePhaseId || !activeModuleId) {
+      const pos = findLessonPosition(curriculum, lessonId);
+      if (pos) {
+        if (!activePhaseId) setActivePhaseId(curriculum.phases[pos.phaseIndex].id);
+        if (!activeModuleId) setActiveModuleId(curriculum.phases[pos.phaseIndex].modules[pos.moduleIndex].id);
+      }
+    }
     setActiveLessonId(lessonId);
   };
 
-  const handleBackToOverview = () => {
+  const handleBackFromLesson = () => {
+    // Return to module overview (activePhaseId and activeModuleId stay set)
     setActiveLessonId(null);
+  };
+
+  const handleBackFromModule = () => {
+    // Return to phase overview (activePhaseId stays set)
+    setActiveModuleId(null);
+  };
+
+  const handleBackFromPhase = () => {
+    setActivePhaseId(null);
+    setActiveModuleId(null);
   };
 
   const handleContinue = () => {
     if (currentLessonId) {
+      // Find the phase and module for proper back-navigation
+      const pos = findLessonPosition(curriculum, currentLessonId);
+      if (pos) {
+        setActivePhaseId(curriculum.phases[pos.phaseIndex].id);
+        setActiveModuleId(curriculum.phases[pos.phaseIndex].modules[pos.moduleIndex].id);
+      }
       setActiveLessonId(currentLessonId);
     }
   };
@@ -73,10 +115,57 @@ export function CurriculumOverview() {
       <LessonView
         curriculum={curriculum}
         lessonId={activeLessonId}
-        onBack={handleBackToOverview}
+        onBack={handleBackFromLesson}
+        onBackToOverview={() => { setActiveLessonId(null); setActiveModuleId(null); setActivePhaseId(null); }}
+        onBackToPhase={() => { setActiveLessonId(null); setActiveModuleId(null); }}
         onNavigate={setActiveLessonId}
       />
     );
+  }
+
+  // Module detail mode
+  if (activeModuleId && activePhaseId) {
+    const phaseIndex = curriculum.phases.findIndex(p => p.id === activePhaseId);
+    const phase = curriculum.phases[phaseIndex];
+    if (phase) {
+      const moduleIndex = phase.modules.findIndex(m => m.id === activeModuleId);
+      const mod = phase.modules[moduleIndex];
+      if (mod) {
+        return (
+          <ModuleOverview
+            module={mod}
+            moduleIndex={moduleIndex}
+            phaseId={phase.id}
+            phaseTitle={phase.title}
+            phaseIndex={phaseIndex}
+            curriculum={curriculum}
+            currentLessonId={currentLessonId}
+            onBack={handleBackFromModule}
+            onBackToOverview={handleBackFromPhase}
+            onLessonClick={handleLessonClick}
+          />
+        );
+      }
+    }
+  }
+
+  // Phase detail mode
+  if (activePhaseId) {
+    const phaseIndex = curriculum.phases.findIndex(p => p.id === activePhaseId);
+    const phase = curriculum.phases[phaseIndex];
+    if (phase) {
+      return (
+        <PhaseOverview
+          phase={phase}
+          phaseIndex={phaseIndex}
+          curriculum={curriculum}
+          currentLessonId={currentLessonId}
+          onBack={handleBackFromPhase}
+          onModuleClick={handleModuleClick}
+          onLessonClick={handleLessonClick}
+        />
+      );
+    }
   }
 
   // Overview mode
@@ -142,26 +231,25 @@ export function CurriculumOverview() {
                 phase={phase}
                 phaseIndex={i}
                 curriculum={curriculum}
-                currentLessonId={currentLessonId}
-                defaultExpanded={currentPosition?.phaseIndex === i}
-                onLessonClick={handleLessonClick}
+                onPhaseClick={handlePhaseClick}
               />
             ))}
           </motion.div>
         </div>
       </div>
 
-      {/* Contextual Sophia chat pane */}
+      {/* Contextual Sophia chat pane — hidden on small screens, side panel on lg+ */}
       <AnimatePresence>
         {isSophiaOpen && (
-          <motion.div
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 380, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="flex-shrink-0 border-l border-border/30 overflow-hidden"
-          >
-            <div className="w-[380px] h-full">
+          <>
+            {/* Mobile/tablet: full-screen overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden fixed inset-0 z-40 bg-background"
+            >
               <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
                 <ContextualSophiaPane
                   onDismiss={handleDismissSophia}
@@ -169,8 +257,27 @@ export function CurriculumOverview() {
                   context="learn"
                 />
               </Suspense>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* Desktop: side panel */}
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 380, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="hidden lg:block flex-shrink-0 border-l border-border/30 overflow-hidden"
+            >
+              <div className="w-[380px] h-full">
+                <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
+                  <ContextualSophiaPane
+                    onDismiss={handleDismissSophia}
+                    initialPrompt={sophiaPrompt}
+                    context="learn"
+                  />
+                </Suspense>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

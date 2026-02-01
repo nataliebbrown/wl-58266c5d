@@ -7,17 +7,35 @@ import { GlobalSophia } from '@/components/sophia/GlobalSophia';
 import { SophiaOrbInterceptProvider } from '@/components/sophia/SophiaOrbInterceptContext';
 import { isFirstTimeUser } from '@/lib/onboardingState';
 import { DarkModeContext } from './DarkModeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthGateModal } from '@/components/auth/AuthGateModal';
 
 export function AppShell() {
   const location = useLocation();
   const { config } = useTimePeriod();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+
+  // Show auth gate on all routes except dashboard and terms when not authenticated
+  const publicPaths = ['/dashboard', '/terms'];
+  const needsAuth = !authLoading && !isAuthenticated && !publicPaths.includes(location.pathname);
 
   // Dark mode: defaults to time-based (evening/night = dark), with manual override
+  // Persisted in localStorage so it survives navigation & refreshes.
+  // Cleared on sign-in so the user starts fresh each session.
   const timeBasedDark = config.textColor !== '#5A4C3A';
-  const [darkOverride, setDarkOverride] = useState<boolean | null>(null);
+  const [darkOverride, setDarkOverride] = useState<boolean | null>(() => {
+    const stored = localStorage.getItem('wl-dark-mode');
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    return null;
+  });
   const isDarkMode = darkOverride !== null ? darkOverride : timeBasedDark;
   const toggleDarkMode = useCallback(() => {
-    setDarkOverride(prev => prev !== null ? !prev : !timeBasedDark);
+    setDarkOverride(prev => {
+      const next = prev !== null ? !prev : !timeBasedDark;
+      localStorage.setItem('wl-dark-mode', next ? 'dark' : 'light');
+      return next;
+    });
   }, [timeBasedDark]);
 
   const drawerBg = isDarkMode ? '#241E17' : '#F1EDE9';
@@ -63,6 +81,7 @@ export function AppShell() {
 
       {showGlobalSophia && <GlobalSophia />}
       <BottomTabBar />
+      {needsAuth && <AuthGateModal />}
     </DarkModeContext.Provider>
     </SophiaOrbInterceptProvider>
   );

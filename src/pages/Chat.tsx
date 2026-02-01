@@ -18,7 +18,7 @@ import { Message, getSuggestedTopics, SuggestedTopic, UserPersona } from '@/type
 import type { BibleReference } from '@/lib/bibleApi';
 import { Insight } from '@/types/dashboard';
 import { toast } from 'sonner';
-import { getOnboardingState, markFullyOnboarded } from '@/lib/onboardingState';
+import { hasCompletedQuiz, hasChatGreetingBeenSeen, markChatGreetingSeen, markFullyOnboarded } from '@/lib/onboardingState';
 import { getPersonaGreeting, getPersonaTopics } from '@/lib/sophiaMessages';
 import { saveInsight as saveToConstellation } from '@/lib/insights';
 
@@ -176,10 +176,11 @@ export default function Chat() {
     }
   }, [hasCompletedOnboarding, navigate]);
 
-  // Detect first visit from quiz completion
+  // Detect first visit after quiz — show persona greeting once
   useEffect(() => {
-    const state = getOnboardingState();
-    if (state.phase === 'quiz-completed') {
+    if (hasCompletedQuiz() && !hasChatGreetingBeenSeen()) {
+      markChatGreetingSeen();
+      // Also mark fully onboarded if not already (e.g. user came here before the tour)
       markFullyOnboarded();
       setIsFirstVisit(true);
       setGreetingTyping(true);

@@ -4,18 +4,18 @@ export const exploringFaithCurriculum: Curriculum = {
   id: 'exploring-faith',
   title: 'Exploring Faith',
   description:
-    'A comprehensive program for seekers, skeptics, and the spiritually curious who want to honestly investigate Christianity, its claims, its founder, and what it means to follow Jesus. This curriculum is designed to be intellectually rigorous, personally relevant, and genuinely open to questions.',
+    'An open, honest path for seekers, skeptics, and the spiritually curious who want to investigate Christianity, its claims, its founder, and what it means to follow Jesus — intellectually rigorous, personally relevant, and genuinely open to questions.',
   personaIntro:
     'Welcome to your journey of exploration. Whether you are a skeptic, a seeker, or simply curious, this curriculum is designed to help you investigate the claims of Christianity honestly and at your own pace.',
   learningApproach:
-    'This curriculum invites you to explore with intellectual honesty, genuine curiosity, and personal reflection. You are encouraged to ask hard questions, voice doubts, and engage critically as you investigate faith on your own terms.',
+    'This path invites you to explore with intellectual honesty, genuine curiosity, and personal reflection. You are encouraged to ask hard questions, voice doubts, and engage critically as you investigate faith on your own terms.',
   phases: [
     // ========================================================
     // Phase 1: Foundations for Exploration
     // ========================================================
     {
       id: 'expl-p1',
-      title: 'Phase One: Foundations for Exploration',
+      title: 'Foundations for Exploration',
       description:
         'Establish a foundation for honest exploration by examining worldviews, clearing misconceptions, and engaging the big questions of life.',
       modules: [
@@ -188,6 +188,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'This opening phase is designed for anyone beginning to investigate faith — whether you consider yourself a skeptic, an agnostic, or simply someone with genuine questions. Rather than asking you to accept any conclusions up front, Foundations for Exploration invites you to examine the assumptions everyone carries about reality, clear away common misconceptions about Christianity, and engage honestly with the biggest questions human beings have ever asked: Does God exist? Is there meaning to life? Why is there suffering? You will survey the major worldviews — atheism, pantheism, secular humanism, and more — so you can see where Christianity sits in the broader landscape of human thought. The goal is not to persuade you but to equip you with the intellectual tools and self-awareness needed to explore with integrity, wherever that exploration leads.',
+        expectations: [
+          'Reflect on your own worldview assumptions and spiritual background',
+          'Clear away caricatures and common misconceptions about Christianity',
+          'Engage the big existential questions — meaning, morality, suffering, and truth',
+          'Survey major worldviews including atheism, agnosticism, and Eastern thought',
+          'Develop skills for honest, courageous intellectual inquiry',
+          'Understand where Christianity fits among competing belief systems',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I need to believe anything before starting this phase?',
+            answer:
+              'Not at all. This phase is built for people at every point on the belief spectrum — firm skeptics, curious agnostics, and everyone in between. You are welcome exactly as you are.',
+          },
+          {
+            question: 'How much time should I expect to spend?',
+            answer:
+              'Each lesson is designed to take roughly 15 to 30 minutes. You can move through the material at whatever pace feels right — there is no deadline and no pressure to rush.',
+          },
+          {
+            question: 'What if I have doubts or disagree with something?',
+            answer:
+              'Doubts and disagreements are not only expected — they are welcomed. This curriculum is designed to be a safe space for honest questions, and you will never be asked to set aside your critical thinking.',
+          },
+          {
+            question: 'How does this phase connect to the rest of the curriculum?',
+            answer:
+              'Foundations for Exploration provides the intellectual groundwork for everything that follows. Once you have examined your own assumptions and the big questions, you will be prepared to investigate the Bible, the person of Jesus, and the evidence for and against Christianity in later phases.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -195,7 +230,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p2',
-      title: 'Phase Two: Understanding the Bible',
+      title: 'Understanding the Bible',
       description:
         'Learn what the Bible is, how it came to be, the overarching story it tells, and which texts are most relevant for seekers.',
       modules: [
@@ -385,6 +420,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'The Bible is the most influential book in Western civilization, yet many people have never read it carefully or understood how it came together. This phase gives you the tools to engage Scripture on its own terms — without demanding that you accept it as sacred before you begin. You will learn what the Bible actually is, how it was written and preserved over centuries, and how scholars ancient and modern have interpreted it. From there you will trace the overarching narrative from Genesis to Revelation, seeing how its individual books connect into a single sweeping story. Finally, you will read the key texts that are most relevant to seekers: the Gospels of Mark and John, the book of Acts, Paul\'s letter to the Romans, and the reflective wisdom of Ecclesiastes and the Psalms. The aim is informed, critical engagement — the kind that lets you draw your own conclusions.',
+        expectations: [
+          'Understand how the Bible was written, compiled, and preserved',
+          'Learn to read biblical texts in their proper literary and historical context',
+          'Trace the overarching storyline from creation through the early church',
+          'Engage directly with the key biblical books recommended for seekers',
+          'Examine common controversies and criticisms about the Bible honestly',
+          'Compare the Bible with other holy books and religious texts',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I need to believe the Bible is true to benefit from this phase?',
+            answer:
+              'No. This phase treats the Bible as a text worth understanding on its own terms, regardless of what you ultimately conclude about its claims. Many people find that simply reading it carefully — without pressure to believe — is an illuminating experience.',
+          },
+          {
+            question: 'How much time will this phase take?',
+            answer:
+              'Individual lessons run about 15 to 30 minutes. Because this phase includes direct reading of biblical passages, you may want to set aside a bit of extra time for the Key Texts module so you can read at a comfortable pace.',
+          },
+          {
+            question: 'What if parts of the Bible seem confusing or troubling?',
+            answer:
+              'That is a normal part of the process. The curriculum addresses difficult passages and common criticisms directly. You are encouraged to sit with your questions rather than ignore them — honest engagement is far more valuable than forced agreement.',
+          },
+          {
+            question: 'Do I need to complete Phase 1 before starting here?',
+            answer:
+              'It is not strictly required, but the foundational thinking skills and worldview awareness from Phase 1 will help you engage the Bible more thoughtfully. If you are eager to dive into Scripture, you can always revisit Phase 1 later.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -392,7 +462,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p3',
-      title: 'Phase Three: Investigating Jesus',
+      title: 'Investigating Jesus',
       description:
         'Examine the historical evidence for Jesus, his claims about himself, and the most common objections and hard questions about him.',
       modules: [
@@ -584,6 +654,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'Christianity stands or falls on the person of Jesus of Nazareth, so this phase puts him under the microscope. You will examine the historical evidence for Jesus\' existence — from biblical manuscripts to Roman and Jewish sources — and explore the world he lived in so you can understand his words and actions in context. You will then consider his remarkable claims: that he was the Jewish Messiah, that he had divine authority, and that his death and resurrection changed everything. Rather than glossing over difficulties, this phase devotes an entire module to the hardest objections people raise about Jesus — whether the Gospels were altered over time, whether the disciples fabricated the resurrection, and why a loving God would need to become human and die. The tone throughout is investigative, not devotional. You are being invited to weigh the evidence and reach your own verdict.',
+        expectations: [
+          'Evaluate the historical evidence for Jesus\' existence and ministry',
+          'Understand the first-century Jewish and Roman context of Jesus\' life',
+          'Examine what Jesus claimed about himself and why those claims matter',
+          'Confront the strongest objections and alternative theories about Jesus',
+          'Compare Jesus with other major religious figures',
+          'Form your own informed assessment of who Jesus was',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I need to believe Jesus was divine to engage with this phase?',
+            answer:
+              'Absolutely not. This phase is designed for investigation, not devotion. You can approach the material as a historian, a philosopher, or simply a curious person. The only requirement is a willingness to look at the evidence honestly.',
+          },
+          {
+            question: 'How long will it take to work through this phase?',
+            answer:
+              'With three modules and roughly 25 lessons, most people spend several weeks here. Each lesson takes about 15 to 30 minutes, but some of the evidence-heavy lessons — especially around the resurrection — reward slower, more reflective engagement.',
+          },
+          {
+            question: 'What if I find the objections more convincing than the claims?',
+            answer:
+              'Then this phase has done its job. The goal is not to convince you of a predetermined conclusion but to give you the strongest versions of both sides so you can think clearly. Honest investigation sometimes leads away from faith, and that is respected here.',
+          },
+          {
+            question: 'How does this phase relate to Phase 5, Examining the Evidence?',
+            answer:
+              'Phase 3 focuses specifically on Jesus — his history, his claims, and the objections surrounding him. Phase 5 broadens the lens to evaluate the cumulative case for and against Christianity as a whole, including philosophical arguments, the problem of evil, and the role of doubt.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -591,7 +696,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p4',
-      title: 'Phase Four: Understanding Christian Belief',
+      title: 'Understanding Christian Belief',
       description:
         'Explore the core doctrines of Christianity, deeper theological concepts, and the diversity of Christian traditions.',
       modules: [
@@ -786,6 +891,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'If you have been investigating the foundations, the Bible, and the person of Jesus, you may be wondering: what do Christians actually believe, and why? This phase walks you through the core doctrines of Christianity — God, the Trinity, creation, sin, salvation, the Holy Spirit, the church, and the future — without assuming you accept any of them. You will then go deeper into theological concepts like grace, faith, repentance, justification, and the difficult doctrines of heaven and hell, exploring what each term means and why it matters to those who hold it. Finally, you will survey the rich diversity within Christianity itself: Catholic, Orthodox, Protestant, Evangelical, Progressive, and the rapidly growing global church. Understanding this diversity is essential because Christianity is not a monolith. By the end of this phase you will have a clear, honest map of what Christians believe and where they disagree — equipping you to evaluate the faith on its strongest terms.',
+        expectations: [
+          'Understand the core doctrines that define Christianity across traditions',
+          'Explore deeper theological concepts like grace, justification, and sanctification',
+          'Engage honestly with difficult doctrines such as hell and divine judgment',
+          'Survey the major branches and denominations of Christianity',
+          'Recognize what unites all Christians despite their significant differences',
+          'Gain vocabulary and frameworks for evaluating Christian claims on their own terms',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I need to accept these beliefs to study them?',
+            answer:
+              'Not at all. Understanding a belief system and agreeing with it are two different things. This phase aims to give you an accurate, fair-minded account of what Christians actually believe so you can make your own assessment.',
+          },
+          {
+            question: 'How much time should I plan for this phase?',
+            answer:
+              'There are three substantial modules with about 25 lessons total. At 15 to 30 minutes per lesson, you could finish in a few weeks of regular study, though many people prefer to take longer with the more conceptually dense material.',
+          },
+          {
+            question: 'What if some of these doctrines seem unreasonable or off-putting?',
+            answer:
+              'That is a perfectly valid response, and the curriculum does not shy away from it. Many Christians themselves wrestle with doctrines like hell, the Trinity, or substitutionary atonement. Your discomfort is part of the honest exploration process.',
+          },
+          {
+            question: 'Should I complete the earlier phases before this one?',
+            answer:
+              'Phases 1 through 3 provide helpful context — especially the biblical narrative and the investigation of Jesus — but you can enter here if Christian doctrine is your primary area of curiosity. The phases are designed to build on each other, yet each one can also stand alone.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -793,7 +933,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p5',
-      title: 'Phase Five: Examining the Evidence',
+      title: 'Examining the Evidence',
       description:
         'Weigh the evidence for and against Christianity and learn how to navigate doubt honestly.',
       modules: [
@@ -993,6 +1133,40 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'At some point every honest seeker must weigh the evidence — and that means looking at both sides of the ledger with equal rigor. This phase first builds the strongest case for Christianity: the fine-tuning of the universe, the reliability of the New Testament, the historical evidence for the resurrection, the transformation of the early disciples, and the enduring impact of the faith across two millennia. Then it turns around and presents the strongest case against Christianity with the same intellectual honesty: the problem of evil, divine hiddenness, the tension between science and faith, violence in the Bible and in church history, religious pluralism, and the hypocrisy of believers. Finally, you will learn how to wrestle with doubt constructively — understanding the roles that evidence, personal experience, and community each play in shaping belief. The goal is not to tip the scales in either direction but to give you the clearest possible picture so you can make a decision that is genuinely your own.',
+        expectations: [
+          'Evaluate the philosophical, historical, and experiential case for Christianity',
+          'Confront the strongest objections and criticisms with intellectual honesty',
+          'Understand how evidence, experience, and community each shape belief',
+          'Learn to navigate doubt as a constructive part of the search for truth',
+          'Develop a personal framework for weighing competing claims',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Does this phase try to convince me that Christianity is true?',
+            answer:
+              'No. It presents the strongest arguments on both sides and gives you tools for evaluating them. You will encounter persuasive points for and against Christianity, and the phase respects your ability to draw your own conclusions.',
+          },
+          {
+            question: 'How much time should I set aside for this phase?',
+            answer:
+              'This is one of the larger phases, with about 26 lessons across three modules. At 15 to 30 minutes per lesson, plan for several weeks. The material rewards thoughtful reflection, so do not feel pressured to rush.',
+          },
+          {
+            question: 'What if I still feel uncertain after examining the evidence?',
+            answer:
+              'Uncertainty is a perfectly reasonable outcome. The module on Wrestling with Doubt is designed precisely for that situation. Faith, skepticism, and continued seeking are all treated as legitimate responses to the evidence.',
+          },
+          {
+            question: 'How does this phase connect to the phases on Jesus and Christian belief?',
+            answer:
+              'Phases 3 and 4 focus on specific content — who Jesus was and what Christians believe. Phase 5 steps back and asks the broader question: is any of this actually true? It synthesizes material from the earlier phases and adds new arguments you have not yet encountered.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -1000,7 +1174,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p6',
-      title: 'Phase Six: The Christian Life Examined',
+      title: 'The Christian Life Examined',
       description:
         'Discover what Christians actually do, how they make ethical decisions, and what Christian community looks like in practice.',
       modules: [
@@ -1193,6 +1367,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'Beliefs are one thing; practices are another. Even if you are not yet sure what you think about Christianity\'s truth claims, you may be curious about what Christians actually do and why. This phase offers an honest, ground-level tour of the Christian life. You will explore the everyday practices — worship, prayer, Bible reading, church attendance, communion, baptism, generosity, and service — and learn what each one means to the people who do it. You will then examine Christian ethics: how believers approach moral questions about love, sex, money, work, justice, war, and the environment. Finally, you will look at Christian community itself — what the church is, why it matters, what can go wrong, and how to find a healthy one if you decide to visit. The tone here is descriptive and candid rather than prescriptive. You are observing a way of life so you can decide whether it holds any appeal or credibility.',
+        expectations: [
+          'Understand the core practices that define everyday Christian life',
+          'Explore how Christians approach moral and ethical decisions',
+          'Learn what to expect if you visit a church for the first time',
+          'Examine the strengths, weaknesses, and failures of Christian community honestly',
+          'Recognize warning signs of unhealthy or manipulative religious groups',
+          'Gain a practical picture of what it would actually look like to follow Jesus',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I have to participate in any of these practices?',
+            answer:
+              'No. This phase is purely observational. You are learning about what Christians do and why, not being asked to do any of it yourself. If you later choose to experiment with any practice, Phase 8 provides guidance for that.',
+          },
+          {
+            question: 'How long does this phase take?',
+            answer:
+              'With three modules and roughly 25 lessons, most learners spend a few weeks here at a comfortable pace. The lessons on ethics and community can spark a lot of personal reflection, so allow extra time if those topics resonate with you.',
+          },
+          {
+            question: 'What if Christian ethical positions bother me?',
+            answer:
+              'Many of them bother many people — including many Christians. The curriculum presents these positions honestly and acknowledges the controversy around issues like sexuality, politics, and war. Your disagreement is a valid and important part of your exploration.',
+          },
+          {
+            question: 'How does this phase relate to the evidence-focused earlier phases?',
+            answer:
+              'The earlier phases ask "Is Christianity true?" This phase asks "What does Christianity look like in practice?" Both questions matter. Some people find that seeing the faith lived out — for better and for worse — is just as important as evaluating its intellectual claims.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -1200,7 +1409,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p7',
-      title: 'Phase Seven: Obstacles and Objections',
+      title: 'Obstacles and Objections',
       description:
         'Address the intellectual, emotional, and social obstacles that can stand in the way of honest exploration of faith.',
       modules: [
@@ -1397,6 +1606,41 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'Honest exploration often stalls — not because the evidence is lacking but because something else stands in the way. This phase names those obstacles directly. You will tackle the intellectual barriers first: the tension between science and religion, evolution and the age of the universe, biblical contradictions, and the troubling history of the Crusades, slavery, colonialism, and the treatment of women and LGBTQ+ people. Then you will move to the emotional barriers that can be even harder to address: hurt caused by Christians or churches, religious trauma, fear of what you might lose or have to believe, intellectual pride, and anger at a God who may have let you down. Finally, you will confront the social and cultural obstacles — fear of judgment, losing relationships, political associations, scandals, and the charge that exclusive truth claims are inherently arrogant. By bringing these obstacles into the open rather than ignoring them, this phase gives you the freedom to process what is genuinely blocking you and decide how to move forward.',
+        expectations: [
+          'Confront the major intellectual objections to Christianity with rigor and honesty',
+          'Process emotional barriers including past hurt, trauma, and fear',
+          'Navigate social pressures and cultural perceptions that complicate exploration',
+          'Understand how Christianity has historically engaged with science, justice, and diversity',
+          'Develop the self-awareness to distinguish between evidence-based objections and emotional resistance',
+          'Gain clarity on what is genuinely blocking your exploration and how to address it',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Is this phase going to dismiss my objections?',
+            answer:
+              'No. This phase takes every obstacle seriously — intellectual, emotional, and social. The goal is not to argue you out of your objections but to help you understand them more clearly so you can decide which ones are deal-breakers and which ones deserve further investigation.',
+          },
+          {
+            question: 'How much time should I plan for?',
+            answer:
+              'There are three modules with about 26 lessons. Some lessons, especially those dealing with emotional obstacles and religious trauma, may require more time for personal reflection. Move at whatever pace feels safe and honest.',
+          },
+          {
+            question: 'What if I have been genuinely hurt by the church or by Christians?',
+            answer:
+              'This phase devotes several lessons specifically to that experience. It does not minimize your pain or ask you to forgive prematurely. Religious trauma is real, and honest healing requires acknowledgment, not dismissal.',
+          },
+          {
+            question: 'Can I skip this phase if I do not feel like I have obstacles?',
+            answer:
+              'You can, but many people find that obstacles they were not fully aware of surface during this phase. Even if you feel intellectually satisfied, the modules on emotional and social barriers can reveal hidden factors influencing your exploration.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -1404,7 +1648,7 @@ export const exploringFaithCurriculum: Curriculum = {
     // ========================================================
     {
       id: 'expl-p8',
-      title: 'Phase Eight: Personal Exploration',
+      title: 'Personal Exploration',
       description:
         'Move from study to experience through visiting churches, spiritual experiments, and ultimately making a personal decision.',
       modules: [
@@ -1603,6 +1847,40 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'Up to this point the curriculum has been largely intellectual — reading, analyzing, and evaluating ideas. This phase invites you to move from study to experience. You will explore Christianity firsthand by visiting different church traditions, talking to thoughtful believers and former believers, reading both Christian classics and their sharpest critics, and participating in community service. Then you will try a set of spiritual experiments: prayer, devotional Bible reading, silence, fasting, worship, and journaling. These are not commitments — they are experiments you can try with full intellectual honesty and set aside if they do not resonate. Finally, the curriculum brings you to the moment of decision. What would it mean to believe? What would it mean not to? Is commitment possible without certainty? You will consider what the Bible says about becoming a Christian, what happens next if you say yes, and what it looks like to remain a seeker or to walk away entirely. Whatever you decide, this phase honors the seriousness of the choice.',
+        expectations: [
+          'Experience Christianity firsthand through church visits and conversations',
+          'Try spiritual practices like prayer, silence, and journaling as honest experiments',
+          'Engage with both Christian thinkers and thoughtful skeptics',
+          'Reflect on what belief or disbelief would concretely mean for your life',
+          'Reach a point of personal clarity — whether that means faith, continued seeking, or walking away',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Will I be pressured to make a decision?',
+            answer:
+              'No. The decision module presents believing, continuing to seek, and rejecting Christianity as equally legitimate outcomes. The phase respects that some people need more time, and that an honest "no" is better than a forced "yes."',
+          },
+          {
+            question: 'How much time should I expect to spend on this phase?',
+            answer:
+              'This phase is more experiential than the others, so timing depends on how many activities you choose to try. The spiritual experiments and church visits may unfold over several weeks or even months. Take the time you need.',
+          },
+          {
+            question: 'What if the spiritual experiments feel awkward or meaningless?',
+            answer:
+              'That is completely normal and does not mean anything has gone wrong. Many people feel self-conscious praying for the first time or attending an unfamiliar worship service. The curriculum encourages you to notice your reactions honestly without forcing any particular outcome.',
+          },
+          {
+            question: 'What happens after this phase?',
+            answer:
+              'Phase 9 offers Guided Exploration Tracks — curated pathways tailored to different types of seekers. If you decide to embrace the faith, you may also transition into other curricula focused on growing as a new believer.',
+          },
+        ],
+      },
     },
 
     // ========================================================
@@ -1920,6 +2198,39 @@ export const exploringFaithCurriculum: Curriculum = {
           ],
         },
       ],
+      overview: {
+        overviewDescription:
+          'Not every seeker follows the same path, and this final phase acknowledges that by offering five curated tracks tailored to different starting points and temperaments. The Intellectual Seeker track prioritizes evidence, arguments, and logical reasoning. The Experiential Seeker track emphasizes firsthand encounters — visiting churches, talking to believers, and trying prayer. The Wounded Seeker track creates a safe space for those processing religious hurt or trauma to re-examine the faith at their own pace. The Philosophical Seeker track dives deep into worldview analysis, ethics, and the nature of certainty. And the Cultural Seeker track engages the social and political dimensions of Christianity that matter most in contemporary culture. Each track draws from lessons across the earlier phases, organized into a coherent eight-lesson journey that can be completed independently. Choose the track that matches where you are right now — or explore more than one.',
+        expectations: [
+          'Choose a curated track that matches your personality and primary questions',
+          'Experience a focused eight-lesson journey through the curriculum\'s best material',
+          'Engage with the specific angle — intellectual, experiential, emotional, philosophical, or cultural — that resonates most with you',
+          'Arrive at a point of personal clarity and decision, whatever that decision may be',
+        ],
+        skillLevel: 'All Levels',
+        faq: [
+          {
+            question: 'Do I need to complete all earlier phases before choosing a track?',
+            answer:
+              'No. The tracks are designed to work as standalone journeys. They draw from material across the curriculum, so you may encounter lessons you have already completed or ones that are new. Either way, the curated sequence provides a coherent path.',
+          },
+          {
+            question: 'How long does a single track take?',
+            answer:
+              'Each track contains eight lessons, so at 15 to 30 minutes per lesson you could complete one in about two to four hours of total study time — or spread it out over a week or two at a relaxed pace.',
+          },
+          {
+            question: 'Can I do more than one track?',
+            answer:
+              'Absolutely. Many people find that more than one track speaks to them. You might start with the Intellectual Seeker track and then move to the Experiential Seeker track to balance head and heart. There is no wrong way to use them.',
+          },
+          {
+            question: 'What should I do after finishing a track?',
+            answer:
+              'That depends on where you land. If you want to go deeper, you can explore the full phases that your track drew from. If you have decided to pursue faith, other curricula in this platform are designed for new believers. And if you have decided Christianity is not for you, the curriculum respects that conclusion.',
+          },
+        ],
+      },
     },
   ],
 };

@@ -2,7 +2,7 @@
 
 - [x] Home
 - [ ] Chat
-- [ ] Intro & Onboarding
+- [x] Intro & Onboarding
 - [ ] Curriculum
 - [ ] Scripture
 - [ ] Scripture Study Tools (highlighting, verse interaction, image generation)

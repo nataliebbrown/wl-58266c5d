@@ -1,11 +1,40 @@
 // ============ Curriculum Data Model ============
 
+export interface KeyPoint {
+  title: string;
+  description: string;
+}
+
+export type ExerciseType = 'reflection' | 'translation' | 'analysis' | 'application' | 'discussion' | 'research';
+export type ResourceType = 'book' | 'article' | 'video' | 'website' | 'podcast';
+
+export interface Exercise {
+  title: string;
+  type: ExerciseType;
+  instructions: string;
+}
+
+export interface Resource {
+  title: string;
+  type: ResourceType;
+  author?: string;
+  description: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
   description: string;
   scriptureRefs?: ScriptureRef[];
   recommendedReading?: string[];
+  estimatedMinutes?: number;
+  objectives?: string[];
+  keyPoints?: KeyPoint[];
+  teachingContent?: string;
+  reflectionQuestions?: string[];
+  practicalApplication?: string[];
+  exercises?: Exercise[];
+  resources?: Resource[];
 }
 
 export interface ScriptureRef {
@@ -29,12 +58,25 @@ export interface Module {
   reflectivePractices?: string[];
 }
 
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
+export interface PhaseOverviewData {
+  overviewDescription: string;
+  expectations: string[];
+  skillLevel: string;
+  faq: FAQ[];
+}
+
 export interface Phase {
   id: string;
   title: string;
   description: string;
   duration?: string; // e.g. "Foundation Year"
   modules: Module[];
+  overview?: PhaseOverviewData;
 }
 
 export interface Curriculum {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CinematicIntro } from '@/components/onboarding/CinematicIntro';
-import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
+import { SplitOnboarding } from '@/components/onboarding/SplitOnboarding';
 import { SacredTransition } from '@/components/transitions/SacredTransition';
 import {
   getOnboardingState,
@@ -81,7 +81,7 @@ const Index = () => {
 
   // After intro, show onboarding quiz
   if (introCompleted) {
-    return <OnboardingFlow startAtQuiz />;
+    return <SplitOnboarding onComplete={() => navigate('/dashboard')} />;
   }
 
   return null;

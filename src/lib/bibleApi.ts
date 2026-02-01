@@ -19,11 +19,23 @@ export interface BiblePassage {
   text: string;
   verses: BibleVerse[];
   copyright: string;
+  blocks?: PassageBlock[];
+  metadata?: PassageMetadata;
 }
 
 export interface BibleVerse {
   number: number;
   text: string;
+}
+
+export type PassageBlock =
+  | { type: 'heading'; text: string }
+  | { type: 'paragraph'; verses: BibleVerse[]; startsChapter?: boolean };
+
+export interface PassageMetadata {
+  bookName: string;
+  chapter: number;
+  isChapterStart: boolean;
 }
 
 export interface BibleSearchResult {
@@ -184,7 +196,7 @@ async function fetchFromEsv(ref: BibleReference): Promise<BiblePassage> {
   const query = formatReference(ref);
 
   const response = await fetch(
-    `${ESV_API_URL}?q=${encodeURIComponent(query)}&include-passage-references=true&include-verse-numbers=true&include-footnotes=false&include-headings=false&include-short-copyright=true`,
+    `${ESV_API_URL}?q=${encodeURIComponent(query)}&include-passage-references=true&include-verse-numbers=true&include-footnotes=false&include-headings=true&include-short-copyright=true`,
     {
       headers: {
         Authorization: `Token ${ESV_API_KEY}`,
@@ -202,28 +214,63 @@ async function fetchFromEsv(ref: BibleReference): Promise<BiblePassage> {
 
 function parseEsvResponse(data: Record<string, unknown>, ref: BibleReference): BiblePassage {
   const passages = data.passages as string[] | undefined;
-  const text = passages?.[0] ?? '';
+  const rawText = passages?.[0] ?? '';
   const reference = (data.canonical as string) ?? formatReference(ref);
 
-  // Split text into verses (ESV returns [1] style markers)
   const verseRegex = /\[(\d+)\]\s*/g;
-  const verses: BibleVerse[] = [];
-  const parts = text.split(verseRegex);
+  const allVerses: BibleVerse[] = [];
+  const blocks: PassageBlock[] = [];
 
-  // parts alternates between text-before and [captured-number, text-after]
-  for (let i = 1; i < parts.length; i += 2) {
-    const verseNum = parseInt(parts[i], 10);
-    const verseText = (parts[i + 1] ?? '').trim();
-    if (verseText) {
-      verses.push({ number: verseNum, text: verseText });
+  // Split by double newlines to separate headings and verse paragraphs
+  const chunks = rawText.split(/\n\n/).map(c => c.trim()).filter(Boolean);
+
+  for (const chunk of chunks) {
+    const hasVerseMarkers = /\[\d+\]/.test(chunk);
+
+    if (!hasVerseMarkers) {
+      // Section heading (no verse markers)
+      // Skip the passage reference line (e.g. "Genesis 1") that ESV prepends
+      if (chunk === reference) continue;
+      blocks.push({ type: 'heading', text: chunk });
+    } else {
+      // Paragraph of verses
+      const paragraphVerses: BibleVerse[] = [];
+      const parts = chunk.split(verseRegex);
+
+      for (let i = 1; i < parts.length; i += 2) {
+        const verseNum = parseInt(parts[i], 10);
+        const verseText = (parts[i + 1] ?? '').replace(/\n/g, ' ').trim();
+        if (verseText) {
+          const verse: BibleVerse = { number: verseNum, text: verseText };
+          paragraphVerses.push(verse);
+          allVerses.push(verse);
+        }
+      }
+
+      if (paragraphVerses.length > 0) {
+        const isFirst = allVerses[0] === paragraphVerses[0];
+        blocks.push({
+          type: 'paragraph',
+          verses: paragraphVerses,
+          startsChapter: isFirst && paragraphVerses[0].number === 1,
+        });
+      }
     }
   }
 
+  const metadata: PassageMetadata = {
+    bookName: ref.book,
+    chapter: ref.chapter,
+    isChapterStart: !ref.verse,
+  };
+
   return {
     reference,
-    text: text.replace(verseRegex, '').trim(),
-    verses,
+    text: rawText.replace(verseRegex, '').trim(),
+    verses: allVerses,
     copyright: '(ESV)',
+    blocks,
+    metadata,
   };
 }
 
@@ -274,33 +321,73 @@ async function fetchFromHelloAO(ref: BibleReference): Promise<BiblePassage> {
 
 function parseHelloAOResponse(data: { chapter?: { content?: HelloAOVerse[] } }, ref: BibleReference): BiblePassage {
   const content = data.chapter?.content ?? [];
-  const verses: BibleVerse[] = [];
+  const allVerses: BibleVerse[] = [];
+  const blocks: PassageBlock[] = [];
+  let currentParagraphVerses: BibleVerse[] = [];
+
+  const flushParagraph = () => {
+    if (currentParagraphVerses.length > 0) {
+      const isFirst = allVerses.length === currentParagraphVerses.length
+        && currentParagraphVerses[0]?.number === 1;
+      blocks.push({
+        type: 'paragraph',
+        verses: [...currentParagraphVerses],
+        startsChapter: isFirst,
+      });
+      currentParagraphVerses = [];
+    }
+  };
 
   for (const item of content) {
-    if (item.type !== 'verse' || !item.number || !item.content) continue;
+    if (item.type === 'heading' && item.content) {
+      flushParagraph();
+      const headingText = item.content
+        .map(part => typeof part === 'string' ? part : (part as { text?: string }).text ?? '')
+        .join('')
+        .trim();
+      if (headingText) {
+        blocks.push({ type: 'heading', text: headingText });
+      }
+    } else if (item.type === 'verse' && item.number && item.content) {
+      const text = item.content
+        .map((part) => {
+          if (typeof part === 'string') return part;
+          if (typeof part === 'object' && part.text) return part.text;
+          return '';
+        })
+        .join('')
+        .trim();
 
-    // Extract text from content array (strings and text objects)
-    const text = item.content
-      .map((part) => {
-        if (typeof part === 'string') return part;
-        if (typeof part === 'object' && part.text) return part.text;
-        return '';
-      })
-      .join('')
-      .trim();
+      if (text) {
+        const verse: BibleVerse = { number: item.number, text };
+        allVerses.push(verse);
+        currentParagraphVerses.push(verse);
+      }
 
-    if (text) {
-      verses.push({ number: item.number, text });
+      // Check for lineBreak on the last content item → paragraph break
+      const lastContent = item.content[item.content.length - 1];
+      if (typeof lastContent === 'object' && lastContent && 'lineBreak' in lastContent && lastContent.lineBreak) {
+        flushParagraph();
+      }
     }
   }
 
-  const fullText = verses.map((v) => v.text).join(' ');
+  flushParagraph();
+
+  const fullText = allVerses.map((v) => v.text).join(' ');
+  const metadata: PassageMetadata = {
+    bookName: ref.book,
+    chapter: ref.chapter,
+    isChapterStart: !ref.verse,
+  };
 
   return {
     reference: formatReference(ref),
     text: fullText,
-    verses,
+    verses: allVerses,
     copyright: '(BSB)',
+    blocks,
+    metadata,
   };
 }
 

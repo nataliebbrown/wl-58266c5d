@@ -29,15 +29,15 @@ export function ResizablePanelLayout({
     else setWidths([33.33, 33.33, 33.34]);
   }, [panelCount]);
 
-  const handleMouseDown = useCallback((handleIndex: number) => {
+  const handleDragStart = useCallback((handleIndex: number) => {
     draggingRef.current = handleIndex;
   }, []);
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
+  const updateWidths = useCallback(
+    (clientX: number) => {
       if (draggingRef.current === null || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
+      const x = clientX - rect.left;
       const totalWidth = rect.width;
       const pct = (x / totalWidth) * 100;
 
@@ -78,18 +78,35 @@ export function ResizablePanelLayout({
     [panelCount]
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handleDragEnd = useCallback(() => {
     draggingRef.current = null;
   }, []);
 
+  // Mouse events
+  const handleMouseMove = useCallback((e: MouseEvent) => updateWidths(e.clientX), [updateWidths]);
+
+  // Touch events
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (draggingRef.current === null) return;
+      e.preventDefault(); // prevent scroll while dragging
+      updateWidths(e.touches[0].clientX);
+    },
+    [updateWidths]
+  );
+
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseup', handleDragEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleDragEnd);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleDragEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleDragEnd);
     };
-  }, [handleMouseMove, handleMouseUp]);
+  }, [handleMouseMove, handleTouchMove, handleDragEnd]);
 
   if (panelCount === 1) {
     return <div className="h-full">{leftPanel}</div>;
@@ -110,10 +127,12 @@ export function ResizablePanelLayout({
           <div className="flex-1 min-w-0 overflow-hidden">{panel}</div>
           {i < panels.length - 1 && (
             <div
-              className="w-1.5 flex-shrink-0 cursor-col-resize group relative"
-              onMouseDown={() => handleMouseDown(i)}
+              className="w-2 sm:w-1.5 flex-shrink-0 cursor-col-resize group relative"
+              onMouseDown={() => handleDragStart(i)}
+              onTouchStart={() => handleDragStart(i)}
               style={{ touchAction: 'none' }}
             >
+              <div className="absolute inset-y-0 -left-1 -right-1 sm:left-0 sm:right-0" />
               <div className="absolute inset-y-0 left-0 right-0 bg-border/30 group-hover:bg-hl-green/40 transition-colors" />
             </div>
           )}

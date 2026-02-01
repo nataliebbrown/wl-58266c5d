@@ -9,6 +9,7 @@ interface ModuleCardProps {
   phaseId: string;
   curriculum: Curriculum;
   currentLessonId: string | null;
+  onModuleClick: (moduleId: string) => void;
   onLessonClick: (lessonId: string) => void;
 }
 
@@ -17,6 +18,7 @@ export function ModuleCard({
   phaseId,
   curriculum,
   currentLessonId,
+  onModuleClick,
   onLessonClick,
 }: ModuleCardProps) {
   const progress = getModuleProgress(curriculum, phaseId, module.id);
@@ -26,15 +28,17 @@ export function ModuleCard({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-border/20 overflow-hidden"
-      style={{
-        background: isComplete
-          ? 'rgba(135, 169, 107, 0.04)'
-          : 'rgba(255, 255, 255, 0.4)',
-      }}
+      className={`rounded-2xl border border-border/20 overflow-hidden ${
+        isComplete
+          ? 'bg-hl-green/[0.04] dark:bg-hl-green/[0.06]'
+          : 'bg-white/40 dark:bg-wl-olive-300/8'
+      }`}
     >
       {/* Module header */}
-      <div className="px-5 py-4 border-b border-border/10">
+      <button
+        onClick={() => onModuleClick(module.id)}
+        className="w-full text-left px-5 py-4 border-b border-border/10 hover:bg-foreground/[0.02] transition-colors"
+      >
         <div className="flex items-center justify-between mb-1">
           <h4 className="text-sm font-semibold text-foreground">{module.title}</h4>
           <span className="text-xs text-foreground/40">
@@ -50,7 +54,7 @@ export function ModuleCard({
           percentage={progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}
           height={4}
         />
-      </div>
+      </button>
 
       {/* Sections and lessons */}
       <div className="py-1">
@@ -64,7 +68,7 @@ export function ModuleCard({
                 </p>
               </div>
             )}
-            <div className="space-y-0.5 px-1.5">
+            <div className="space-y-0.5 px-2 sm:px-3">
               {section.lessons.map((lesson) => (
                 <LessonRow
                   key={lesson.id}
@@ -78,22 +82,6 @@ export function ModuleCard({
         ))}
       </div>
 
-      {/* Reflective practices */}
-      {module.reflectivePractices && module.reflectivePractices.length > 0 && (
-        <div className="px-5 py-3 border-t border-border/10 bg-foreground/[0.02]">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-foreground/35 mb-2">
-            Reflective Practices
-          </p>
-          <ul className="space-y-1">
-            {module.reflectivePractices.map((practice, i) => (
-              <li key={i} className="text-xs text-foreground/50 flex items-start gap-1.5">
-                <span className="text-foreground/20 mt-0.5">&#x2022;</span>
-                {practice}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </motion.div>
   );
 }

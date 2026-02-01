@@ -379,7 +379,12 @@ export function ContinueReadingCard() {
   const history = getReadingHistory();
 
   const mostRecent = history[0];
-  const recommendationPair = getRecommendedReadingPair(history, mostRecent?.book);
+  const recommendationPair = getRecommendedReadingPair(
+    history,
+    mostRecent?.book,
+    mostRecent?.book,
+    mostRecent?.chapter,
+  );
   const quizData = getQuizData();
 
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);

@@ -300,12 +300,21 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
                             0 0 100px rgba(197, 180, 155, 0.2)
                           `,
                     }}
-                    whileHover={showButton ? { 
+                    whileHover={showButton ? {
                       scale: 1.05,
                       boxShadow: '0 0 50px rgba(255, 255, 255, 0.5), 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 0 0 3px rgba(90, 76, 58, 0.3)',
                     } : {}}
                     transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                    role={showButton ? 'button' : undefined}
+                    tabIndex={showButton ? 0 : undefined}
+                    aria-label={showButton ? 'Begin your journey' : undefined}
                     onClick={showButton ? handleCtaClick : undefined}
+                    onKeyDown={showButton ? (e: React.KeyboardEvent) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCtaClick();
+                      }
+                    } : undefined}
                   >
                     {/* Sophia Orb SVG */}
                     <motion.div
@@ -367,19 +376,20 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       <AnimatePresence>
         {showExpandedCta && (
           <motion.button
-            className="absolute left-1/2 top-1/2 h-32 md:h-40 rounded-full bg-cream/95 flex items-center cursor-pointer hover:bg-cream transition-colors overflow-hidden"
-            style={{ 
+            className="absolute left-1/2 top-1/2 h-32 md:h-40 rounded-full bg-cream/95 flex items-center cursor-pointer hover:bg-cream transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50"
+            style={{
               boxShadow: '0 0 60px rgba(255, 255, 255, 0.25), 0 12px 48px rgba(0, 0, 0, 0.25)',
               transform: 'translate(-50%, -50%)',
               zIndex: 15, // Behind Sophia (z-index 20)
             }}
             initial={{ width: 128, opacity: 0 }}
             animate={{ width: 725, opacity: 1 }}
-            transition={{ 
+            transition={{
               width: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
               opacity: { duration: 0.2 }
             }}
             onClick={handleCtaClick}
+            aria-label="Begin your journey"
           >
             {/* Text area with cursor - left side of pill */}
             <motion.div
@@ -409,7 +419,7 @@ export function CinematicIntro({ onComplete, onSkip }: CinematicIntroProps) {
       {/* Skip button */}
       {onSkip && phase !== 'complete' && (
         <motion.button
-          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors"
+          className="absolute bottom-8 right-8 text-cream/60 hover:text-cream/90 text-sm tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm px-2 py-1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0 }}

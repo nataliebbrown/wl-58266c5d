@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
@@ -16,6 +17,7 @@ import Horizon from "./pages/Horizon";
 import Insights from "./pages/Insights";
 import Search from "./pages/Search";
 import Settings from "./pages/Settings";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 // Diagnostic error boundary — shows runtime errors on screen
@@ -69,6 +71,7 @@ function AppContent() {
         <Route path="/insights" element={<Insights />} />
         <Route path="/search" element={<Search />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/terms" element={<Terms />} />
       </Route>
 
       <Route path="/orb-test" element={<OrbTest />} />
@@ -85,7 +88,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AppContent />
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

@@ -418,7 +418,7 @@ export function ChatOnboardingPanel({ onComplete }: ChatOnboardingPanelProps) {
     if (onComplete) {
       onComplete();
     } else {
-      navigate('/chat');
+      navigate('/dashboard');
     }
   };
 
@@ -548,7 +548,7 @@ export function ChatOnboardingPanel({ onComplete }: ChatOnboardingPanelProps) {
     if (onComplete) {
       onComplete();
     } else {
-      navigate('/chat');
+      navigate('/dashboard');
     }
   };
 

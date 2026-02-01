@@ -29,10 +29,10 @@ export function SplitOnboarding({ onComplete }: SplitOnboardingProps) {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 h-screen flex items-center p-8">
-        {/* Left Side - Welcome Message and Tagline at Bottom */}
+      <div className="relative z-10 h-screen flex flex-col md:flex-row items-center p-4 md:p-8">
+        {/* Left Side - Welcome Message and Tagline at Bottom (hidden on mobile) */}
         <motion.div
-          className="flex-1 flex flex-col justify-end pb-4 h-full pr-[200px]"
+          className="hidden md:flex flex-1 flex-col justify-end pb-4 h-full pr-[200px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
@@ -46,14 +46,14 @@ export function SplitOnboarding({ onComplete }: SplitOnboardingProps) {
 
         {/* Right Side - Liquid Glass Container */}
         <motion.div
-          className="w-[55%] max-h-[calc(100vh-4rem)]"
+          className="w-full md:w-[55%] max-h-screen md:max-h-[calc(100vh-4rem)] flex-1 md:flex-none"
           initial={{ x: '120%' }}
           animate={{ x: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Glass Container */}
           <div
-            className="h-[calc(100vh-4rem)] rounded-3xl overflow-hidden relative flex flex-col"
+            className="h-screen md:h-[calc(100vh-4rem)] rounded-none md:rounded-3xl overflow-hidden relative flex flex-col"
             style={{
               background: 'linear-gradient(135deg, rgba(244, 239, 230, 0.18) 0%, rgba(222, 209, 186, 0.1) 50%, rgba(197, 180, 155, 0.06) 100%)',
               backdropFilter: 'blur(24px)',

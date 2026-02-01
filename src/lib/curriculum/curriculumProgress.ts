@@ -1,4 +1,4 @@
-import type { Curriculum } from '@/types/curriculum';
+import type { Curriculum, Lesson, Phase } from '@/types/curriculum';
 
 const STORAGE_KEY = 'wholelicity-curriculum-progress';
 
@@ -226,4 +226,55 @@ export function getCurrentOrFirstLessonId(curriculum: Curriculum): string | null
 
 export function resetCurriculumProgress(): void {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+export function getPhaseLessonCount(phase: Phase): number {
+  let count = 0;
+  for (const mod of phase.modules) {
+    for (const section of mod.sections) {
+      count += section.lessons.length;
+    }
+  }
+  return count;
+}
+
+export function getPhaseTotalMinutes(phase: Phase): number {
+  let total = 0;
+  for (const mod of phase.modules) {
+    for (const section of mod.sections) {
+      for (const lesson of section.lessons) {
+        total += lesson.estimatedMinutes ?? 0;
+      }
+    }
+  }
+  return total;
+}
+
+export interface ModuleInfo {
+  moduleTitle: string;
+  sectionTitle: string;
+  lessons: Lesson[];
+  currentIndex: number;
+  moduleProgress: { completed: number; total: number };
+}
+
+export function getCurrentModuleInfo(
+  curriculum: Curriculum,
+  lessonId: string
+): ModuleInfo | null {
+  const pos = findLessonPosition(curriculum, lessonId);
+  if (!pos) return null;
+
+  const phase = curriculum.phases[pos.phaseIndex];
+  const mod = phase.modules[pos.moduleIndex];
+  const section = mod.sections[pos.sectionIndex];
+  const progress = getModuleProgress(curriculum, phase.id, mod.id);
+
+  return {
+    moduleTitle: mod.title,
+    sectionTitle: section.title,
+    lessons: section.lessons,
+    currentIndex: pos.lessonIndex,
+    moduleProgress: progress,
+  };
 }
