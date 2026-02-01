@@ -39,7 +39,7 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="mb-6"
+        className="mb-3"
       >
         <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
           <NoiseOrb
@@ -55,12 +55,15 @@ export function WelcomeScreen({ userName, suggestedTopics, onSelectTopic }: Welc
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="max-w-md"
+        className="max-w-md mb-4"
       >
-        <h1 className="text-2xl md:text-3xl leading-snug text-foreground mb-2">
+        <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300 mb-2">
+          Chat with Sophia
+        </p>
+        <h1 className="text-2xl leading-snug text-foreground">
           {salutation}{userName ? `, ${userName}` : ''}
         </h1>
-        <p className="text-sm text-foreground/40 italic mb-8 leading-relaxed">
+        <p className="text-sm text-foreground/40 italic mt-1 leading-relaxed max-w-[260px] mx-auto">
           What would you like to discover today?
         </p>
       </motion.div>

@@ -6,6 +6,52 @@ import { toast } from 'sonner';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-sophia`;
 
+// ============ Auth Helper ============
+
+async function getAuthUserId(): Promise<string | null> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ============ localStorage Message Helpers ============
+
+function loadLocalMessages(convId: string): Message[] {
+  try {
+    const raw = localStorage.getItem(`wl_messages_${convId}`);
+    if (!raw) return [];
+    return JSON.parse(raw).map((m: Record<string, unknown>) => ({
+      ...m,
+      createdAt: new Date(m.createdAt as string),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalMessages(convId: string, msgs: Message[]) {
+  localStorage.setItem(`wl_messages_${convId}`, JSON.stringify(msgs));
+}
+
+function updateLocalConversationCount(convId: string, count: number) {
+  try {
+    const raw = localStorage.getItem('wl_conversations');
+    if (!raw) return;
+    const convs = JSON.parse(raw);
+    const updated = convs.map((c: Record<string, unknown>) =>
+      c.id === convId ? { ...c, messageCount: count, updatedAt: new Date().toISOString() } : c
+    );
+    localStorage.setItem('wl_conversations', JSON.stringify(updated));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+// ============ Hook ============
+
 interface UseSophiaChatOptions {
   userPersona?: UserPersona | null;
   conversationId?: string | null;
@@ -31,6 +77,15 @@ export function useSophiaChat({
 
   const loadMessages = useCallback(async (convId: string) => {
     try {
+      const userId = await getAuthUserId();
+
+      if (!userId) {
+        // Fallback: load from localStorage
+        const local = loadLocalMessages(convId);
+        setMessages(local);
+        return;
+      }
+
       const { data, error: fetchError } = await supabase
         .from('messages')
         .select('*')
@@ -50,7 +105,13 @@ export function useSophiaChat({
       setMessages(loadedMessages);
     } catch (err) {
       console.error('Failed to load messages:', err);
-      toast.error('Failed to load conversation history');
+      // Fall back to localStorage on error
+      const local = loadLocalMessages(convId);
+      if (local.length > 0) {
+        setMessages(local);
+      } else {
+        toast.error('Failed to load conversation history');
+      }
     }
   }, []);
 
@@ -58,7 +119,7 @@ export function useSophiaChat({
     if (!content.trim() || isTyping) return false;
 
     setError(null);
-    
+
     // Check for crisis keywords (with spiritual false-positive filtering)
     const crisis = detectCrisis(content);
     if (crisis.detected && crisis.level !== 'none' && onCrisisDetected) {
@@ -99,9 +160,9 @@ export function useSophiaChat({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           messages: apiMessages,
-          userPersona 
+          userPersona
         }),
         signal: abortControllerRef.current.signal
       });
@@ -152,9 +213,9 @@ export function useSophiaChat({
             if (deltaContent) {
               assistantContent += deltaContent;
               // Update the assistant message with new content
-              setMessages(prev => 
-                prev.map((m, i) => 
-                  i === prev.length - 1 
+              setMessages(prev =>
+                prev.map((m, i) =>
+                  i === prev.length - 1
                     ? { ...m, content: assistantContent }
                     : m
                 )
@@ -172,27 +233,26 @@ export function useSophiaChat({
       // Read from ref so lazy-created conversations are picked up.
       const activeConvId = conversationIdRef.current;
       if (activeConvId) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // Save user message
+        const userId = await getAuthUserId();
+
+        if (userId) {
+          // Save to Supabase
           await supabase.from('messages').insert({
             id: userMessage.id,
             conversation_id: activeConvId,
-            user_id: user.id,
+            user_id: userId,
             role: 'user',
             content: userMessage.content
           });
 
-          // Save assistant message
           await supabase.from('messages').insert({
             id: assistantMessage.id,
             conversation_id: activeConvId,
-            user_id: user.id,
+            user_id: userId,
             role: 'assistant',
             content: assistantContent
           });
 
-          // Update conversation message count
           await supabase
             .from('conversations')
             .update({
@@ -200,6 +260,15 @@ export function useSophiaChat({
               updated_at: new Date().toISOString()
             })
             .eq('id', activeConvId);
+        } else {
+          // Fallback: save to localStorage
+          const existing = loadLocalMessages(activeConvId);
+          existing.push(
+            { id: userMessage.id, role: 'user', content: userMessage.content, createdAt: userMessage.createdAt },
+            { id: assistantMessage.id, role: 'assistant', content: assistantContent, createdAt: assistantMessage.createdAt },
+          );
+          saveLocalMessages(activeConvId, existing);
+          updateLocalConversationCount(activeConvId, existing.length);
         }
       }
 
@@ -208,12 +277,12 @@ export function useSophiaChat({
       if (err instanceof Error && err.name === 'AbortError') {
         return false;
       }
-      
+
       console.error('Send message error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
       toast.error(errorMessage);
-      
+
       // Remove the assistant placeholder on error
       setMessages(prev => prev.slice(0, -1));
       return false;

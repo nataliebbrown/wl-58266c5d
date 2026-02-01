@@ -35,9 +35,8 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0, onPass
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.3,
+        duration: 0.25,
         ease: [0.4, 0, 0.2, 1],
-        delay: index * 0.05
       }}
       className={cn(
         "flex gap-3 mb-4 group/msg",
@@ -46,12 +45,12 @@ export function ChatMessage({ message, onSaveInsight, isSaved, index = 0, onPass
     >
       <div className={cn(
         "flex flex-col",
-        isUser ? "items-end max-w-[75%] md:max-w-[75%]" : "items-start max-w-[80%] md:max-w-[80%]"
+        isUser ? "items-end max-w-[85%]" : "items-start max-w-[85%]"
       )}>
         {/* Message bubble */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-3 text-sm leading-relaxed",
+            "rounded-2xl px-3 py-2 text-sm leading-relaxed",
             isUser
               ? "bg-wl-olive/20 dark:bg-wl-olive-300/20 text-foreground"
               : "bg-white/60 dark:bg-wl-olive-300/15 text-foreground"

@@ -335,7 +335,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   })();
 
   return (
-    <div className="h-full flex flex-col bg-background relative">
+    <div className="h-full flex flex-col relative glass-card !rounded-none !border-0 !shadow-none border-l border-border/30">
       {/* Dismiss button */}
       <button
         onClick={onDismiss}
@@ -349,12 +349,12 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
       {!hasMessages && (
         <div className="flex-1 flex flex-col min-h-0">
           {/* Fixed header: Orb + Greeting */}
-          <div className="flex flex-col items-center text-center px-5 pt-6">
+          <div className="flex flex-col items-center text-center px-5 pt-8 pb-4">
             {/* Animated Orb */}
             <div className="mb-3">
-              <Suspense fallback={<div className="w-[70px] h-[70px] rounded-full bg-foreground/[0.04] animate-pulse" />}>
+              <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
                 <NoiseOrb
-                  size={70}
+                  size={100}
                   preset="white"
                   noiseIntensity={0.3}
                   speed={0.6}
@@ -364,17 +364,25 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
 
             {/* Greeting */}
             <div className="mb-4">
-              <h2
-                className="text-2xl leading-snug text-foreground italic"
-              >
+              <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300 mb-2">
+                Chat with Sophia
+              </p>
+              <h2 className="text-2xl leading-snug text-foreground">
                 {context === 'bible' && bibleReference
-                  ? `Let's explore ${bibleReference.book} ${bibleReference.chapter}`
+                  ? <>Let's explore <span className="italic">{bibleReference.book} {bibleReference.chapter}</span></>
                   : context === 'bible'
-                  ? "Let's explore Scripture together"
+                  ? <>Let's explore <span className="italic">Scripture together</span></>
                   : context === 'learn'
-                  ? "Let's dive into your studies"
-                  : "What's on your mind?"}
+                  ? <>Let's dive into <span className="italic">your studies</span></>
+                  : <>What's on your <span className="italic">mind?</span></>}
               </h2>
+              <p className="text-sm mt-1 text-foreground/40 italic max-w-[260px] leading-relaxed mx-auto">
+                {context === 'bible'
+                  ? "Ask me anything about this passage or explore Scripture together."
+                  : context === 'learn'
+                  ? "Ask me anything about your lessons or explore topics together."
+                  : "Ask me anything — about Scripture, faith, or whatever you're thinking about."}
+              </p>
             </div>
           </div>
 
@@ -411,7 +419,7 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
       {hasMessages && (
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pt-12"
+          className="flex-1 overflow-y-auto px-4 py-4 space-y-2"
           style={{ minHeight: 0 }}
         >
           {isLoadingConversation && (

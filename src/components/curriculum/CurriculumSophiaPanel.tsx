@@ -251,7 +251,7 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
   const starters = getStarters(lesson);
 
   return (
-    <div className="h-full flex flex-col bg-background relative">
+    <div className="h-full flex flex-col relative glass-card !rounded-none !border-0 !shadow-none border-l border-border/30">
       {/* Dismiss button */}
       <button
         onClick={onDismiss}
@@ -266,12 +266,12 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
         {!hasMessages && (
           <div className="flex-1 flex flex-col min-h-0">
             {/* Fixed header: Orb + Greeting */}
-            <div className="flex flex-col items-center text-center px-5 pt-6">
+            <div className="flex flex-col items-center text-center px-5 pt-8 pb-4">
               {/* Animated Orb */}
               <div className="mb-3">
-                <Suspense fallback={<div className="w-[70px] h-[70px] rounded-full bg-foreground/[0.04] animate-pulse" />}>
+                <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
                   <NoiseOrb
-                    size={70}
+                    size={100}
                     preset="white"
                     noiseIntensity={0.3}
                     speed={0.6}
@@ -281,12 +281,13 @@ export function CurriculumSophiaPanel({ lesson, onDismiss, initialPrompt }: Curr
 
               {/* Greeting */}
               <div className="mb-4">
-                <h2
-                  className="text-2xl leading-snug text-foreground"
-                >
-                  <span className="italic">Let's explore this together</span>
+                <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300 mb-2">
+                  Chat with Sophia
+                </p>
+                <h2 className="text-2xl leading-snug text-foreground">
+                  Let's explore <span className="italic">this together</span>
                 </h2>
-                <p className="text-sm mt-1 text-foreground/40">
+                <p className="text-sm mt-1 text-foreground/40 italic max-w-[260px] leading-relaxed mx-auto">
                   {lesson.title}
                 </p>
               </div>

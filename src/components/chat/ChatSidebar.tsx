@@ -189,7 +189,7 @@ export function ChatSidebar({
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-w-0 overflow-hidden">
           {/* Suggested Topics (only when no search and few conversations) */}
           {!searchQuery && suggestedTopics.length > 0 && conversations.length < 5 && (
             <div className="px-4 pb-3 border-b border-foreground/[0.06]">
@@ -217,7 +217,7 @@ export function ChatSidebar({
           )}
 
           {/* Conversation List */}
-          <div className="px-4 py-3">
+          <div className="px-3 py-2 overflow-hidden">
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
@@ -236,7 +236,7 @@ export function ChatSidebar({
               <div className="space-y-4">
                 {Object.entries(displayGroups).map(([group, convs]) => (
                   <div key={group}>
-                    <h3 className="text-[11px] font-medium text-foreground/35 mb-1.5 uppercase tracking-wider px-1">
+                    <h3 className="text-[11px] font-medium text-foreground/35 mb-1 uppercase tracking-wider px-2">
                       {group}
                     </h3>
                     <div className="space-y-0.5">
@@ -244,7 +244,7 @@ export function ChatSidebar({
                         <div
                           key={conv.id}
                           className={cn(
-                            "group relative rounded-lg transition-colors",
+                            "group relative rounded-lg transition-colors overflow-hidden",
                             currentConversation?.id === conv.id
                               ? "bg-foreground/[0.07]"
                               : "hover:bg-foreground/[0.03]"
@@ -267,9 +267,9 @@ export function ChatSidebar({
                           ) : (
                             <button
                               onClick={() => onSelectConversation(conv)}
-                              className="w-full text-left px-3 py-3 pr-16"
+                              className="block w-full text-left px-2.5 py-2.5 min-w-0 overflow-hidden"
                             >
-                              <p className="text-sm font-medium truncate text-foreground/80">
+                              <p className="text-sm font-medium text-foreground/80 overflow-hidden text-ellipsis whitespace-nowrap max-w-[calc(320px-3.5rem)] group-hover:max-w-[calc(320px-7rem)] transition-all">
                                 {conv.title}
                               </p>
                               <p className="text-[11px] text-foreground/35 mt-0.5">

@@ -49,7 +49,7 @@ function FirstVisitGreeting({
             className="flex justify-start mb-4"
           >
             <div
-              className="rounded-2xl px-4 py-3 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
+              className="rounded-2xl px-3 py-2 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
               style={{ backdropFilter: 'blur(4px)' }}
             >
               <TypingIndicator />
@@ -67,7 +67,7 @@ function FirstVisitGreeting({
           >
             <div className="flex justify-start mb-8">
               <div
-                className="rounded-2xl px-4 py-3 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
+                className="rounded-2xl px-3 py-2 text-sm leading-relaxed bg-white/60 dark:bg-wl-olive-300/15 text-foreground max-w-[85%]"
                 style={{ backdropFilter: 'blur(4px)' }}
               >
                 {greeting.paragraphs.map((paragraph, i) => (
@@ -282,7 +282,7 @@ export default function Chat() {
   const showFirstVisitGreeting = messages.length === 0 && isFirstVisit;
 
   return (
-    <div className="h-full flex transition-colors duration-300">
+    <div className="h-full flex transition-colors duration-300 bg-white/70 dark:bg-[linear-gradient(145deg,#2F2921,#241E17)]">
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}
@@ -325,8 +325,8 @@ export default function Chat() {
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Messages area */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 md:px-8 py-6">
-              <div className="max-w-[900px] mx-auto">
+            <ScrollArea ref={scrollAreaRef} className="flex-1 px-8 md:px-16 pt-10 pb-6">
+              <div>
                 {showFirstVisitGreeting ? (
                   <FirstVisitGreeting
                     greetingTyping={greetingTyping}

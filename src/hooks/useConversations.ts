@@ -3,6 +3,41 @@ import { supabase } from '@/integrations/supabase/client';
 import { Conversation } from '@/types/chat';
 import { toast } from 'sonner';
 
+// ============ Auth Helper ============
+
+async function getAuthUserId(): Promise<string | null> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ============ localStorage Helpers ============
+
+const CONV_STORAGE_KEY = 'wl_conversations';
+
+function loadLocalConversations(): Conversation[] {
+  try {
+    const raw = localStorage.getItem(CONV_STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw).map((c: Record<string, unknown>) => ({
+      ...c,
+      createdAt: new Date(c.createdAt as string),
+      updatedAt: new Date(c.updatedAt as string),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalConversations(convs: Conversation[]) {
+  localStorage.setItem(CONV_STORAGE_KEY, JSON.stringify(convs));
+}
+
+// ============ Hook ============
+
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
@@ -10,8 +45,12 @@ export function useConversations() {
 
   const fetchConversations = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userId = await getAuthUserId();
+
+      if (!userId) {
+        // Fallback: load from localStorage
+        const local = loadLocalConversations();
+        setConversations(local);
         setIsLoading(false);
         return;
       }
@@ -19,7 +58,7 @@ export function useConversations() {
       const { data, error } = await supabase
         .from('conversations')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -37,7 +76,9 @@ export function useConversations() {
       setConversations(mapped);
     } catch (err) {
       console.error('Failed to fetch conversations:', err);
-      toast.error('Failed to load conversations');
+      // Fall back to localStorage on error
+      const local = loadLocalConversations();
+      setConversations(local);
     } finally {
       setIsLoading(false);
     }
@@ -49,16 +90,32 @@ export function useConversations() {
     personaCode?: string
   ): Promise<Conversation | null> => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('Please sign in to start a conversation');
-        return null;
+      const userId = await getAuthUserId();
+
+      if (!userId) {
+        // Fallback: create locally
+        const newConversation: Conversation = {
+          id: crypto.randomUUID(),
+          title,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          topic,
+          personaCode,
+          messageCount: 0,
+        };
+        setConversations(prev => {
+          const updated = [newConversation, ...prev];
+          saveLocalConversations(updated);
+          return updated;
+        });
+        setCurrentConversation(newConversation);
+        return newConversation;
       }
 
       const { data, error } = await supabase
         .from('conversations')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           title,
           topic,
           persona_code: personaCode
@@ -80,7 +137,7 @@ export function useConversations() {
 
       setConversations(prev => [newConversation, ...prev]);
       setCurrentConversation(newConversation);
-      
+
       return newConversation;
     } catch (err) {
       console.error('Failed to create conversation:', err);
@@ -91,18 +148,23 @@ export function useConversations() {
 
   const updateConversationTitle = useCallback(async (id: string, title: string) => {
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ title })
-        .eq('id', id);
+      const userId = await getAuthUserId();
 
-      if (error) throw error;
+      if (userId) {
+        const { error } = await supabase
+          .from('conversations')
+          .update({ title })
+          .eq('id', id);
+        if (error) throw error;
+      }
 
-      setConversations(prev => 
-        prev.map(conv => 
+      setConversations(prev => {
+        const updated = prev.map(conv =>
           conv.id === id ? { ...conv, title } : conv
-        )
-      );
+        );
+        if (!userId) saveLocalConversations(updated);
+        return updated;
+      });
 
       if (currentConversation?.id === id) {
         setCurrentConversation(prev => prev ? { ...prev, title } : null);
@@ -115,15 +177,26 @@ export function useConversations() {
 
   const deleteConversation = useCallback(async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .delete()
-        .eq('id', id);
+      const userId = await getAuthUserId();
 
-      if (error) throw error;
+      if (userId) {
+        const { error } = await supabase
+          .from('conversations')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+      }
 
-      setConversations(prev => prev.filter(conv => conv.id !== id));
-      
+      setConversations(prev => {
+        const updated = prev.filter(conv => conv.id !== id);
+        if (!userId) {
+          saveLocalConversations(updated);
+          // Also remove messages for this conversation
+          localStorage.removeItem(`wl_messages_${id}`);
+        }
+        return updated;
+      });
+
       if (currentConversation?.id === id) {
         setCurrentConversation(null);
       }
