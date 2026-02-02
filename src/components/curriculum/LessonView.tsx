@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, ChevronDown, X } from 'lucide-react';
+import { ArrowLeft, Clock, ChevronDown, CheckCircle2, X } from 'lucide-react';
 import type { Curriculum } from '@/types/curriculum';
 import type { BibleReference, BibleVerse } from '@/lib/bibleApi';
 import {
@@ -14,6 +14,7 @@ import {
 } from '@/lib/curriculum/curriculumProgress';
 import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import { LessonHero } from './LessonHero';
+import { LessonAudioPlayer } from './LessonAudioPlayer';
 import { LessonContentTabs } from './LessonContentTabs';
 import { LessonSidebar } from './LessonSidebar';
 import { LessonNavigation } from './LessonNavigation';
@@ -49,18 +50,20 @@ function ExpandableDescription({
   description,
   teachingContent,
   estimatedMinutes,
+  objectives,
 }: {
   description: string;
   teachingContent?: string;
   estimatedMinutes?: number;
+  objectives?: string[];
 }) {
   const [expanded, setExpanded] = useState(false);
   const [clamped, setClamped] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const displayText = getDescriptionText(description, teachingContent);
 
   const checkClamped = useCallback(() => {
-    const el = textRef.current;
+    const el = contentRef.current;
     if (!el) return;
     setClamped(el.scrollHeight > el.clientHeight + 1);
   }, []);
@@ -79,12 +82,24 @@ function ExpandableDescription({
           {estimatedMinutes} min
         </span>
       )}
-      <p
-        ref={textRef}
-        className={`text-sm text-foreground/60 leading-relaxed ${!expanded ? LINE_CLAMP_CLASS : ''}`}
+      <div
+        ref={contentRef}
+        className={`${!expanded ? LINE_CLAMP_CLASS : ''}`}
       >
-        {displayText}
-      </p>
+        <p className="text-sm text-foreground/60 leading-relaxed">
+          {displayText}
+        </p>
+        {objectives && objectives.length > 0 && (
+          <div className="mt-3 space-y-1.5">
+            {objectives.map((obj, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-hl-green flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground/60 leading-relaxed">{obj}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {(clamped || expanded) && (
         <button
           onClick={() => setExpanded(prev => !prev)}
@@ -206,8 +221,8 @@ export function LessonView({ curriculum, lessonId, onBack, onBackToOverview, onB
     );
   }
 
-  const handleScriptureClick = (ref: { label: string; book: string; chapter: number }) => {
-    setBibleReference({ book: ref.book, chapter: ref.chapter });
+  const handleScriptureClick = (ref: { label: string; book: string; chapter: number; verse?: number; endVerse?: number }) => {
+    setBibleReference({ book: ref.book, chapter: ref.chapter, verse: ref.verse, endVerse: ref.endVerse });
     setIsBibleOpen(true);
   };
 
@@ -315,11 +330,20 @@ export function LessonView({ curriculum, lessonId, onBack, onBackToOverview, onB
               {/* Hero banner */}
               <LessonHero lesson={lesson} />
 
+              {/* Audio player */}
+              {lesson.teachingContent && (
+                <LessonAudioPlayer
+                  title={lesson.title}
+                  content={lesson.teachingContent}
+                />
+              )}
+
               {/* Description */}
               <ExpandableDescription
                 description={lesson.description}
                 teachingContent={lesson.teachingContent}
                 estimatedMinutes={lesson.estimatedMinutes}
+                objectives={lesson.objectives}
               />
 
               {/* Tabbed content */}

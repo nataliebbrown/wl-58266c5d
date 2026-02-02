@@ -296,4 +296,57 @@
     display: table;
     clear: both;
   }
+
+  /* ============================================ */
+  /* Lesson Prose — spacious layout for teaching  */
+  /* content (overrides compact chat spacing)     */
+  /* ============================================ */
+
+  .lesson-prose h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  .lesson-prose h3:first-child {
+    margin-top: 0;
+  }
+
+  .lesson-prose h4 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .lesson-prose h4:first-child {
+    margin-top: 0;
+  }
+
+  .lesson-prose p {
+    margin-bottom: 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .lesson-prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .lesson-prose ul,
+  .lesson-prose ol {
+    margin-top: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .lesson-prose li {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    margin-bottom: 0.375rem;
+  }
+
+  .lesson-prose blockquote {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
 }

@@ -5,22 +5,25 @@ interface VerseTextProps {
   verse: BibleVerse;
   highlight?: VerseHighlight;
   isSelected: boolean;
+  isHighlighted?: boolean;
   onSelect: (verseNumber: number) => void;
   isDropCap?: boolean;
 }
 
-export function VerseText({ verse, highlight, isSelected, onSelect, isDropCap }: VerseTextProps) {
+export function VerseText({ verse, highlight, isSelected, isHighlighted, onSelect, isDropCap }: VerseTextProps) {
   const bgStyle = highlight
     ? { backgroundColor: HIGHLIGHT_COLORS[highlight.color].bg }
-    : isSelected
-      ? { backgroundColor: 'rgba(135, 169, 107, 0.12)' }
-      : {};
+    : isHighlighted
+      ? { backgroundColor: 'rgba(135, 169, 107, 0.18)' }
+      : isSelected
+        ? { backgroundColor: 'rgba(135, 169, 107, 0.12)' }
+        : {};
 
   return (
     <span
       data-verse={verse.number}
       className={`inline cursor-pointer rounded-sm transition-colors duration-150 ${
-        isSelected ? 'ring-1 ring-hl-green/30' : ''
+        isHighlighted ? 'ring-1 ring-hl-green/40' : isSelected ? 'ring-1 ring-hl-green/30' : ''
       }`}
       style={bgStyle}
       onClick={() => onSelect(verse.number)}

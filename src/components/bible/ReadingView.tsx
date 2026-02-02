@@ -55,11 +55,13 @@ function ChapterBlock({
   chapter,
   isFirst,
   selectedVerse,
+  highlightedRange,
   onVerseSelect,
 }: {
   chapter: LoadedChapter;
   isFirst: boolean;
   selectedVerse: SelectedVerse | null;
+  highlightedRange: { chapter: number; startVerse: number; endVerse: number } | null;
   onVerseSelect: (chapter: number, verseNumber: number) => void;
 }) {
   const { passage } = chapter;
@@ -71,6 +73,12 @@ function ChapterBlock({
     selectedVerse !== null &&
     selectedVerse.chapter === chapter.chapter &&
     selectedVerse.verseNumber === verseNumber;
+
+  const isInHighlightedRange = (verseNumber: number) =>
+    highlightedRange !== null &&
+    highlightedRange.chapter === chapter.chapter &&
+    verseNumber >= highlightedRange.startVerse &&
+    verseNumber <= highlightedRange.endVerse;
 
   const hasBlocks = passage.blocks && passage.blocks.length > 0;
 
@@ -113,6 +121,7 @@ function ChapterBlock({
                     verse={verse}
                     highlight={getHighlight(verse.number)}
                     isSelected={isSelected(verse.number)}
+                    isHighlighted={isInHighlightedRange(verse.number)}
                     onSelect={() => onVerseSelect(chapter.chapter, verse.number)}
                     isDropCap={isDropCap}
                   />
@@ -128,6 +137,7 @@ function ChapterBlock({
             verse={verse}
             highlight={getHighlight(verse.number)}
             isSelected={isSelected(verse.number)}
+            isHighlighted={isInHighlightedRange(verse.number)}
             onSelect={() => onVerseSelect(chapter.chapter, verse.number)}
           />
         ))
@@ -263,6 +273,11 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVerse, setSelectedVerse] = useState<SelectedVerse | null>(null);
+  const [highlightedRange, setHighlightedRange] = useState<{
+    chapter: number;
+    startVerse: number;
+    endVerse: number;
+  } | null>(null);
   const [showNavigator, setShowNavigator] = useState(false);
   const [barTop, setBarTop] = useState<number | null>(null);
 
@@ -300,11 +315,24 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
     if (isSameBook) {
       const existing = chapters.find(c => c.chapter === reference.chapter);
       if (existing) {
-        // Scroll to that chapter
         requestAnimationFrame(() => {
-          const el = scrollRef.current?.querySelector(`[data-chapter="${reference.chapter}"]`);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (reference.verse) {
+            const verseEl = scrollRef.current?.querySelector(
+              `[data-chapter="${reference.chapter}"] [data-verse="${reference.verse}"]`
+            );
+            if (verseEl) verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            const el = scrollRef.current?.querySelector(`[data-chapter="${reference.chapter}"]`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         });
+        if (reference.verse) {
+          setHighlightedRange({
+            chapter: reference.chapter,
+            startVerse: reference.verse,
+            endVerse: reference.endVerse || reference.verse,
+          });
+        }
         lastReferenceRef.current = reference;
         return;
       }
@@ -333,7 +361,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
 
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reference.book, reference.chapter, loadChapter]);
+  }, [reference.book, reference.chapter, reference.verse, reference.endVerse, loadChapter]);
 
   // ---- Pre-fetch next chapter after initial load ----
 
@@ -349,6 +377,32 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
       });
     }
   }, [chapters.length, initialLoading, totalChapters, loadChapter, chapters]);
+
+  // ---- Auto-scroll to verse after initial load ----
+
+  useEffect(() => {
+    if (initialLoading || !reference.verse || !scrollRef.current || chapters.length === 0) return;
+    const timer = setTimeout(() => {
+      const verseEl = scrollRef.current?.querySelector(
+        `[data-chapter="${reference.chapter}"] [data-verse="${reference.verse}"]`
+      );
+      if (verseEl) verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedRange({
+        chapter: reference.chapter,
+        startVerse: reference.verse!,
+        endVerse: reference.endVerse || reference.verse!,
+      });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [initialLoading, reference.chapter, reference.verse, reference.endVerse, chapters.length]);
+
+  // ---- Auto-clear highlighted range ----
+
+  useEffect(() => {
+    if (!highlightedRange) return;
+    const timer = setTimeout(() => setHighlightedRange(null), 4000);
+    return () => clearTimeout(timer);
+  }, [highlightedRange]);
 
   // ---- Load next chapter (scroll down) ----
 
@@ -522,6 +576,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
   // ---- Verse selection ----
 
   const handleVerseSelect = useCallback((chapter: number, verseNumber: number) => {
+    setHighlightedRange(null);
     setSelectedVerse(prev => {
       if (prev && prev.chapter === chapter && prev.verseNumber === verseNumber) {
         return null;
@@ -696,6 +751,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
                   chapter={ch}
                   isFirst={idx === 0}
                   selectedVerse={selectedVerse}
+                  highlightedRange={highlightedRange}
                   onVerseSelect={handleVerseSelect}
                 />
               ))}

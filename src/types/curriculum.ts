@@ -21,6 +21,21 @@ export interface Resource {
   description: string;
 }
 
+export interface FlashCard {
+  id: string;
+  front: string;
+  back: string;
+  pronunciation?: string;
+  audioLang?: string;
+}
+
+export interface FlashCardDeck {
+  id: string;
+  title: string;
+  description: string;
+  cards: FlashCard[];
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -35,12 +50,15 @@ export interface Lesson {
   practicalApplication?: string[];
   exercises?: Exercise[];
   resources?: Resource[];
+  flashCardDecks?: FlashCardDeck[];
 }
 
 export interface ScriptureRef {
-  label: string;   // e.g. "John 15:1-17"
-  book: string;    // e.g. "John"
-  chapter: number; // e.g. 15
+  label: string;      // e.g. "John 15:1-17"
+  book: string;       // e.g. "John"
+  chapter: number;    // e.g. 15
+  verse?: number;     // e.g. 1
+  endVerse?: number;  // e.g. 17
 }
 
 export interface Section {

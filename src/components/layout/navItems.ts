@@ -5,6 +5,7 @@ import {
   Calendar,
   Compass,
   Lightbulb,
+  NotebookPen,
   GitBranch,
   Clock,
   type LucideIcon,
@@ -27,6 +28,7 @@ export const navItems: NavItem[] = [
   { icon: Compass, label: 'Learn', id: 'learn', path: '/learn', available: true },
   { icon: Calendar, label: 'Today', id: 'today', path: '/today', available: false, moduleType: 'formation' },
   { icon: Lightbulb, label: 'Insights', id: 'insights', path: '/insights', available: true },
+  { icon: NotebookPen, label: 'Journal', id: 'journal', path: '/journal', available: true },
   { icon: GitBranch, label: 'Patterns', id: 'patterns', path: '/patterns', available: false, moduleType: 'patterns' },
   { icon: Clock, label: 'TimeWalk', id: 'timewalk', path: '/timewalk', available: false, moduleType: 'timewalk' },
 ];

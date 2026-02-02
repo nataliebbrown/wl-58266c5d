@@ -41,27 +41,49 @@ export const theologicalStudiesCurriculum: Curriculum = {
               lessons: [
                 {
                   id: 'theo-p1-m1-s1-l1',
-                  title: 'Hebrew I & II',
-                  description: 'Introduction to biblical Hebrew grammar, vocabulary, and syntax.',
-                  estimatedMinutes: 45,
+                  title: 'Introduction to Biblical Hebrew',
+                  description: 'A beginner-friendly orientation to the Hebrew language of the Old Testament. You will learn the 22-letter consonantal alphabet, encounter the Masoretic vowel pointing system, explore how Hebrew verbs are built from three-consonant roots, and begin building core vocabulary through interactive flashcard practice — all completable with this lesson, your Bible, and Sophia.',
+                  estimatedMinutes: 60,
                   objectives: [
-                    'Learn the Hebrew alphabet (consonants, vowels, and dagesh) and develop fluency in reading pointed Hebrew text',
-                    'Master foundational Hebrew vocabulary of approximately 200 high-frequency biblical words',
-                    'Understand the Hebrew verbal system including the Qal stem and its primary conjugations (perfect, imperfect, imperative, participle, infinitive)',
-                    'Parse basic Hebrew nouns, adjectives, and pronouns with attention to gender, number, and state (construct and absolute)',
-                    'Read and translate simple biblical Hebrew sentences from the narrative portions of Genesis',
+                    'Recognize all 22 Hebrew consonants by sight and name, and understand how the vowel pointing (nikkud) system works',
+                    'Understand the basic concept of the three-consonant root system that underlies Hebrew vocabulary',
+                    'Be introduced to the construct chain and how Hebrew expresses possession and relationship between nouns',
+                    'Grasp the basics of how Hebrew verbs are organized into stems, beginning with the Qal stem',
+                    'Begin building a core vocabulary of high-frequency biblical Hebrew words using the interactive flashcard decks',
                   ],
                   keyPoints: [
                     { title: 'The Hebrew Alphabet and Phonology', description: 'Biblical Hebrew uses a consonantal alphabet of 22 letters written right-to-left. The vowel pointing system (nikkud), added by the Masoretes in the early medieval period, preserves the traditional pronunciation and is essential for beginning students to read the text accurately.' },
                     { title: 'The Hebrew Verbal System', description: 'Hebrew verbs are built on a three-consonant root system and are organized into seven major stems (binyanim). The Qal stem, the most basic and frequent, serves as the foundation for understanding all other stems and their semantic modifications.' },
                     { title: 'Noun Morphology and the Construct Chain', description: 'Hebrew nouns inflect for gender (masculine/feminine) and number (singular/plural/dual). The construct chain is a distinctive Hebrew construction in which two or more nouns are bound together to express possession or relationship, such as "the word of the LORD" (devar-YHWH).' },
-                    { title: 'The Importance of Learning Hebrew', description: 'Engaging the Old Testament in its original language opens layers of meaning that no translation can fully capture. Wordplays, allusions, and structural features of the Hebrew text become visible only when one reads the original.' },
+                    { title: 'The Dagesh and Begadkephat Letters', description: 'Six Hebrew consonants — Bet, Gimel, Dalet, Kaf, Pe, and Tav (remembered by the mnemonic BeGaD KePhaT) — change their pronunciation depending on whether they contain a dagesh dot. For example, Bet with a dagesh is a hard "b," but without it becomes "v." Recognizing this pattern early prevents confusion as you encounter these letters in biblical texts.' },
                   ],
-                  teachingContent: `## Why Learn Biblical Hebrew?
+                  teachingContent: `## Welcome to Biblical Hebrew
+
+This lesson is your first step into the language of the Old Testament. The goal is **orientation, not fluency** — by the end, you will be able to recognize the Hebrew alphabet, understand how Hebrew words are built, and have a foundation of core vocabulary to build on. You do not need any prior knowledge of Hebrew or any external tools beyond what is provided here.
+
+Sophia is available throughout this lesson. If you encounter a concept that feels unclear, use the "Discuss with Sophia" links on the Reflection tab or simply ask her a question in the chat. She can walk you through examples, quiz you on letters, or explain grammar points at your own pace.
+
+## What You'll Need
+
+This lesson is designed to be **self-contained**. Here is everything you need:
+
+- **This lesson** — read through the Lesson tab for the teaching content
+- **The flashcard decks** — two interactive flashcard decks (Hebrew Consonants and Essential Vocabulary) with audio pronunciation
+- **Your Bible** — scripture links throughout the lesson open key passages in the Bible column
+- **A notebook** — for practicing writing Hebrew letters and taking notes
+- **Sophia** — available on the Reflection tab and in the chat for questions, practice, and deeper discussion
+
+No textbooks, apps, or external websites are required to complete this lesson, though the Resources tab lists excellent options for continued study.
+
+## Why Learn Biblical Hebrew?
 
 The Old Testament was written almost entirely in Hebrew, with small portions in Aramaic. When we read an English Bible, we are reading a translation -- a skilled interpreter's best effort to render the meaning of the original text into our language. While modern translations are remarkably good, every act of translation involves interpretation. By learning Hebrew, you gain the ability to **read the text on its own terms**, to see connections, wordplays, and structural patterns that translations inevitably flatten.
 
 Consider a simple example: the Hebrew word *adam* means both "humanity" and serves as the proper name "Adam." In Genesis 2-3, the author exploits this double meaning to make a theological point about the representative nature of the first human. In English, this wordplay is invisible unless a footnote alerts you.
+
+**Reading Exercise:** Open the passage below and read through it in English. Psalm 119 is an acrostic poem — each section of eight verses begins with a successive letter of the Hebrew alphabet. Verses 9-16 belong to the **Bet** (ב) section, meaning every verse in the original Hebrew starts with a word beginning with the letter *bet*. As you read, notice how the psalmist describes treasuring God's Word through memorization, meditation, and delight. This is the same posture you are adopting as you begin studying Hebrew — hiding God's Word in your heart by learning to read it in its original language.
+
+{{scripture:1}}
 
 ## The Alphabet and Sound System
 
@@ -69,9 +91,21 @@ Biblical Hebrew uses **22 consonants** written from right to left. The vowel sys
 
 Some letters have alternate pronunciations depending on whether they carry a dagesh (a dot inside the letter). For example, the letter bet (b) with a dagesh is pronounced as a hard "b," while without a dagesh it is pronounced "v." Mastering these distinctions early will save considerable confusion later.
 
+{{keyPoint:0}}
+
+{{keyPoint:3}}
+
+Use the flashcard deck below to work through each letter. Each card shows a Hebrew letter on the front, and its name, transliteration, and pronunciation guide on the back. Use the audio button to hear each letter spoken aloud.
+
+{{flashcardDeck:0}}
+
 ## Building Vocabulary
 
 Hebrew vocabulary acquisition is one of the most rewarding investments you will make. The Hebrew Old Testament contains roughly 8,000 distinct words, but a remarkably small number of them account for the vast majority of occurrences. Learning the **200 most frequent words** will enable you to recognize approximately 80 percent of the words you encounter in the Hebrew Bible. Flashcards, spaced repetition software, and daily review are essential tools for building and retaining this vocabulary.
+
+The flashcard deck below contains 18 of the most important biblical Hebrew words. Each card shows the pointed Hebrew word, and the back provides the English meaning and transliteration. Use the audio button to hear the Hebrew pronunciation.
+
+{{flashcardDeck:1}}
 
 ## The Verbal System: An Overview
 
@@ -79,31 +113,43 @@ The Hebrew verb is the engine of the sentence. Verbs are built on a **three-cons
 
 The seven major stems (Qal, Niphal, Piel, Pual, Hiphil, Hophal, Hithpael) modify the basic meaning of the root in predictable ways -- making it passive, intensive, or causative. In this introductory course, you will focus primarily on the **Qal stem**, which is the simple active stem and by far the most common.
 
+{{keyPoint:1}}
+
 ## Nouns, Pronouns, and the Construct Chain
 
 Hebrew nouns carry **gender** (masculine or feminine) and **number** (singular, plural, or dual). Unlike English, Hebrew has no indefinite article; the definite article is a prefix (ha-) attached directly to the noun.
 
 One of the most distinctive features of Hebrew grammar is the **construct chain**, in which two nouns are linked to express a possessive or descriptive relationship. In the phrase *devar-YHWH* ("the word of the LORD"), the first noun (*davar*, "word") appears in its construct form, binding it tightly to the following noun. Understanding construct chains is essential for reading Hebrew fluently.
 
+{{keyPoint:2}}
+
+**Reading Exercise:** Open the Shema below — the most foundational confession in all of Judaism. The phrase *Shema Yisrael YHWH Eloheinu YHWH echad* ("Hear, O Israel: the LORD our God, the LORD is one") is packed with construct chains and vocabulary you will encounter constantly. As you read, look for repeated words like "heart" (*levav*), "soul" (*nephesh*), and "words" (*devarim*). Notice how nearly every clause uses a construct relationship — "the words of the LORD," "the doorposts of your house" — linking nouns together in the way described above. This passage is an ideal first text for practicing construct chain recognition.
+
+{{scripture:2}}
+
 ## Moving Toward Reading Scripture
 
-By the end of this course, you should be able to open a Hebrew Bible and begin reading narrative texts -- slowly at first, with frequent reference to a lexicon, but with genuine comprehension. The goal is not instant fluency but **functional literacy**: the ability to work with the Hebrew text, identify grammatical forms, and make informed judgments about meaning that go beyond what any single English translation provides.`,
+By the end of this course, you should be able to open a Hebrew Bible and begin reading narrative texts -- slowly at first, with frequent reference to a lexicon, but with genuine comprehension. The goal is not instant fluency but **functional literacy**: the ability to work with the Hebrew text, identify grammatical forms, and make informed judgments about meaning that go beyond what any single English translation provides.
+
+**Reading Exercise:** Open the passage below — the opening verses of the entire Bible. Genesis 1:1-5 is one of the first texts Hebrew students read because it uses simple vocabulary, short clauses, and repetitive structure. As you read the English, try to identify concepts you have already encountered: *bereshit* ("in the beginning"), *bara* ("he created"), *Elohim* ("God"), *shamayim* ("heavens"), *eretz* ("earth"). Notice the pattern of *wayyiqtol* verbs ("and God said... and there was... and God saw") that drives the narrative forward. You will return to this passage many times as your Hebrew improves, and each time you will see more.
+
+{{scripture:0}}`,
                   reflectionQuestions: [
                     'Why is it valuable to study the Old Testament in its original Hebrew rather than relying exclusively on English translations? What might you gain that a translation cannot provide?',
-                    'The Masoretes devoted their lives to preserving the exact pronunciation and text of Scripture. What does their dedication tell you about the value the Jewish community placed on the Word of God?',
+                    'The three-consonant root system means that Hebrew words cluster into families of related meaning. For example, the root sh-l-m ("completeness") appears in shalom ("peace"), shalem ("whole"), and even Yerushalayim ("Jerusalem"). What does this pattern suggest about how Hebrew speakers understood the relationship between these concepts?',
                     'How does knowing that Hebrew verbs are built on three-consonant roots change the way you think about the interconnectedness of biblical vocabulary?',
-                    'What strategies will you put in place to ensure consistent daily practice with Hebrew vocabulary and grammar?',
+                    'The Masoretes developed an elaborate system of vowel points, cantillation marks, and marginal notes to preserve every detail of the biblical text across centuries. From a scholarly perspective, what does this system reveal about the challenges of transmitting a consonantal text, and why might some of these markings reflect interpretive decisions rather than purely neutral preservation?',
                   ],
                   practicalApplication: [
                     'Set aside 20-30 minutes daily for Hebrew alphabet and vowel drills until you can read pointed text at sight without hesitation.',
                     'Begin a vocabulary notebook or flashcard system (physical or digital, such as Anki) and commit to learning 10 new Hebrew words per week, reviewing previously learned words daily.',
-                    'Practice writing out Genesis 1:1 in Hebrew by hand, identifying each word and its grammatical function, as a first exercise in reading the biblical text.',
+                    'Create a weekly study schedule that includes at least 20 minutes of Hebrew practice daily — consistency matters more than marathon sessions for language retention.',
                     'Find a study partner or language group for weekly Hebrew reading practice; hearing and speaking the language reinforces written study.',
                   ],
                   exercises: [
-                    { title: 'Alphabet Mastery Drill', type: 'translation' as const, instructions: 'Write out the complete Hebrew alphabet from memory, including the name of each letter, its transliteration, its numerical value, and any final forms. Then practice reading the following pointed Hebrew words aloud: בְּרֵאשִׁית (bereshit), אֱלֹהִים (elohim), הַשָּׁמַיִם (hashamayim), הָאָרֶץ (ha\'arets). Verify your pronunciation against an audio resource.' },
+                    { title: 'Alphabet Mastery Drill', type: 'translation' as const, instructions: 'Write out the complete Hebrew alphabet from memory, including the name of each letter, its transliteration, its numerical value, and any final forms. Then practice reading the following pointed Hebrew words aloud: בְּרֵאשִׁית (bereshit), אֱלֹהִים (elohim), הַשָּׁמַיִם (hashamayim), הָאָרֶץ (ha\'arets). Verify your pronunciation against the flashcard audio.' },
                     { title: 'Genesis 1:1 Parsing Exercise', type: 'analysis' as const, instructions: 'Take Genesis 1:1 in Hebrew and parse every word: identify whether it is a noun, verb, preposition, or other part of speech. For nouns, identify gender, number, and definiteness. For the verb (bara), identify the stem, conjugation, person, gender, and number. Write a short paragraph explaining how the grammar of this single verse contributes to its theological meaning.' },
-                    { title: 'Vocabulary in Context Reflection', type: 'reflection' as const, instructions: 'Choose five Hebrew words from your first vocabulary list that also appear in well-known English translations of the Old Testament. For each word, look up its entry in a Hebrew lexicon (such as BDB or HALOT), note its range of meanings, and then examine how two different English translations render that word in one specific verse. Write a brief reflection on how understanding the Hebrew word enriches your comprehension of the passage.' },
+                    { title: 'Vocabulary in Context Reflection', type: 'reflection' as const, instructions: 'Choose five Hebrew words from the Essential Vocabulary flashcard deck that also appear in well-known English translations of the Old Testament. For each word, look up how two different English translations render that word in one specific verse. Write a brief reflection on how understanding the Hebrew word enriches your comprehension of the passage. You can ask Sophia for help identifying which verses contain your chosen words.' },
                   ],
                   resources: [
                     { title: 'Basics of Biblical Hebrew Grammar', type: 'book' as const, author: 'Gary D. Pratico and Miles V. Van Pelt', description: 'The most widely used introductory Hebrew grammar in evangelical seminaries. It provides a clear, step-by-step approach to learning biblical Hebrew with abundant exercises and an accompanying workbook.' },
@@ -111,11 +157,68 @@ By the end of this course, you should be able to open a Hebrew Bible and begin r
                     { title: 'The Brown-Driver-Briggs Hebrew and English Lexicon (BDB)', type: 'book' as const, author: 'Francis Brown, S. R. Driver, and Charles A. Briggs', description: 'The standard Hebrew lexicon for biblical studies. Organized by root, it provides definitions, glosses, and biblical references for every word in the Hebrew Old Testament.' },
                     { title: 'Daily Dose of Hebrew (website)', type: 'website' as const, description: 'A free online resource offering short daily video lessons that walk through a Hebrew verse, reinforcing grammar and vocabulary through consistent exposure to the biblical text.' },
                     { title: 'Hebrew Vocabulary Audio (Memrise / Anki)', type: 'website' as const, description: 'Spaced repetition flashcard platforms with community-created biblical Hebrew vocabulary decks. These tools are highly effective for long-term retention of Hebrew words and paradigms.' },
+                    { title: 'The Daily Dose of Hebrew Podcast', type: 'podcast' as const, description: 'Short daily audio episodes that walk through a Hebrew verse from the Old Testament, reinforcing vocabulary and grammar through regular exposure. An excellent complement to your flashcard practice.' },
                   ],
                   scriptureRefs: [
-                    { label: 'Genesis 1:1-5', book: 'Genesis', chapter: 1 },
-                    { label: 'Psalm 119:9-16', book: 'Psalms', chapter: 119 },
-                    { label: 'Deuteronomy 6:4-9', book: 'Deuteronomy', chapter: 6 },
+                    { label: 'Genesis 1:1-5', book: 'Genesis', chapter: 1, verse: 1, endVerse: 5 },
+                    { label: 'Psalm 119:9-16', book: 'Psalms', chapter: 119, verse: 9, endVerse: 16 },
+                    { label: 'Deuteronomy 6:4-9', book: 'Deuteronomy', chapter: 6, verse: 4, endVerse: 9 },
+                  ],
+                  flashCardDecks: [
+                    {
+                      id: 'hebrew-consonants',
+                      title: 'Hebrew Consonants',
+                      description: 'Learn all 22 letters of the Hebrew alphabet. Tap each card to reveal the letter name, transliteration, and pronunciation guide. Use the audio button to hear each letter.',
+                      cards: [
+                        { id: 'hc-01', front: 'א', back: 'Aleph\nSilent letter (glottal stop)\nLike the pause before "uh-oh"', pronunciation: 'Aleph. Silent letter, like the pause before uh-oh.' },
+                        { id: 'hc-02', front: 'ב', back: 'Bet / Vet\nb (with dagesh) · v (without)\nLike b in boy, or v in vine', pronunciation: 'Bet. B as in boy. Or Vet, V as in vine.' },
+                        { id: 'hc-03', front: 'ג', back: 'Gimel\ng\nLike g in go', pronunciation: 'Gimel. G as in go.' },
+                        { id: 'hc-04', front: 'ד', back: 'Dalet\nd\nLike d in door', pronunciation: 'Dalet. D as in door.' },
+                        { id: 'hc-05', front: 'ה', back: 'He\nh\nLike h in house', pronunciation: 'Hay. H as in house.' },
+                        { id: 'hc-06', front: 'ו', back: 'Vav\nv (also used as a vowel letter)\nLike v in vine', pronunciation: 'Vahv. V as in vine.' },
+                        { id: 'hc-07', front: 'ז', back: 'Zayin\nz\nLike z in zoo', pronunciation: 'Zah-yin. Z as in zoo.' },
+                        { id: 'hc-08', front: 'ח', back: 'Chet\nch (guttural)\nLike ch in Bach (German)', pronunciation: 'Khet. A guttural sound, like ch in the German word Bach.' },
+                        { id: 'hc-09', front: 'ט', back: 'Tet\nt (emphatic)\nLike t in top', pronunciation: 'Tet. T as in top.' },
+                        { id: 'hc-10', front: 'י', back: 'Yod\ny (also used as a vowel letter)\nLike y in yes', pronunciation: 'Yohd. Y as in yes.' },
+                        { id: 'hc-11', front: 'כ', back: 'Kaf / Khaf\nk (with dagesh) · kh (without)\nLike k in king, or ch in Bach\nFinal form: ך', pronunciation: 'Kahf. K as in king. Or Khahf, like ch in Bach. Has a final form.' },
+                        { id: 'hc-12', front: 'ל', back: 'Lamed\nl\nLike l in love', pronunciation: 'Lah-med. L as in love.' },
+                        { id: 'hc-13', front: 'מ', back: 'Mem\nm\nLike m in mother\nFinal form: ם', pronunciation: 'Mem. M as in mother. Has a final form.' },
+                        { id: 'hc-14', front: 'נ', back: 'Nun\nn\nLike n in now\nFinal form: ן', pronunciation: 'Noon. N as in now. Has a final form.' },
+                        { id: 'hc-15', front: 'ס', back: 'Samekh\ns\nLike s in sun', pronunciation: 'Sah-mekh. S as in sun.' },
+                        { id: 'hc-16', front: 'ע', back: 'Ayin\nSilent (guttural stop)\nNo English equivalent', pronunciation: 'Ah-yin. A guttural stop with no English equivalent.' },
+                        { id: 'hc-17', front: 'פ', back: 'Pe / Fe\np (with dagesh) · f (without)\nLike p in pet, or f in fun\nFinal form: ף', pronunciation: 'Pay. P as in pet. Or Fay, F as in fun. Has a final form.' },
+                        { id: 'hc-18', front: 'צ', back: 'Tsade\nts\nLike ts in cats\nFinal form: ץ', pronunciation: 'Tsah-dee. Ts as in cats. Has a final form.' },
+                        { id: 'hc-19', front: 'ק', back: 'Qof\nq (deep k, from back of throat)\nLike k but further back', pronunciation: 'Kohf. A deep K sound from the back of the throat.' },
+                        { id: 'hc-20', front: 'ר', back: 'Resh\nr\nLike r in run (often trilled)', pronunciation: 'Raysh. R as in run, often trilled.' },
+                        { id: 'hc-21', front: 'ש', back: 'Shin / Sin\nsh (dot on right) · s (dot on left)\nLike sh in she, or s in sun', pronunciation: 'Shin, sh as in she. Or Sin, s as in sun. Depends on which side the dot is on.' },
+                        { id: 'hc-22', front: 'ת', back: 'Tav\nt\nLike t in time', pronunciation: 'Tahv. T as in time.' },
+                      ],
+                    },
+                    {
+                      id: 'hebrew-vocab',
+                      title: 'Essential Vocabulary',
+                      description: 'Learn 18 of the most frequent and important words in the Hebrew Bible. Tap each card to reveal the meaning and transliteration. Use the audio button to hear the pronunciation.',
+                      cards: [
+                        { id: 'hv-01', front: 'אֱלֹהִים', back: 'God, gods\nelohim', pronunciation: 'Elohim', audioLang: 'he-IL' },
+                        { id: 'hv-02', front: 'יהוה', back: 'The LORD (the divine name)\nYHWH / Adonai', pronunciation: 'Adonai', audioLang: 'he-IL' },
+                        { id: 'hv-03', front: 'שָׁלוֹם', back: 'Peace, wholeness, well-being\nshalom', pronunciation: 'Shalom', audioLang: 'he-IL' },
+                        { id: 'hv-04', front: 'בְּרֵאשִׁית', back: 'In the beginning\nbereshit', pronunciation: 'Bereshit', audioLang: 'he-IL' },
+                        { id: 'hv-05', front: 'אָדָם', back: 'Man, humanity, humankind\nadam', pronunciation: 'Adam', audioLang: 'he-IL' },
+                        { id: 'hv-06', front: 'אֶרֶץ', back: 'Land, earth, ground\nerets', pronunciation: 'Erets', audioLang: 'he-IL' },
+                        { id: 'hv-07', front: 'שָׁמַיִם', back: 'Heavens, sky\nshamayim', pronunciation: 'Shamayim', audioLang: 'he-IL' },
+                        { id: 'hv-08', front: 'תּוֹרָה', back: 'Law, instruction, teaching\ntorah', pronunciation: 'Torah', audioLang: 'he-IL' },
+                        { id: 'hv-09', front: 'דָּבָר', back: 'Word, thing, matter\ndavar', pronunciation: 'Davar', audioLang: 'he-IL' },
+                        { id: 'hv-10', front: 'רוּחַ', back: 'Spirit, wind, breath\nruach', pronunciation: 'Ruach', audioLang: 'he-IL' },
+                        { id: 'hv-11', front: 'נֶפֶשׁ', back: 'Soul, life, living being\nnephesh', pronunciation: 'Nephesh', audioLang: 'he-IL' },
+                        { id: 'hv-12', front: 'חֶסֶד', back: 'Steadfast love, lovingkindness, mercy\nchesed', pronunciation: 'Chesed', audioLang: 'he-IL' },
+                        { id: 'hv-13', front: 'אֱמֶת', back: 'Truth, faithfulness, reliability\nemet', pronunciation: 'Emet', audioLang: 'he-IL' },
+                        { id: 'hv-14', front: 'קָדוֹשׁ', back: 'Holy, set apart, sacred\nqadosh', pronunciation: 'Kadosh', audioLang: 'he-IL' },
+                        { id: 'hv-15', front: 'בָּרָא', back: 'He created (Qal perfect)\nbara', pronunciation: 'Bara', audioLang: 'he-IL' },
+                        { id: 'hv-16', front: 'כָּתַב', back: 'He wrote (Qal perfect)\nkatav', pronunciation: 'Katav', audioLang: 'he-IL' },
+                        { id: 'hv-17', front: 'שָׁמַע', back: 'He heard, he listened (Qal perfect)\nshama', pronunciation: 'Shama', audioLang: 'he-IL' },
+                        { id: 'hv-18', front: 'הָלַךְ', back: 'He walked, he went (Qal perfect)\nhalakh', pronunciation: 'Halakh', audioLang: 'he-IL' },
+                      ],
+                    },
                   ],
                 },
                 {

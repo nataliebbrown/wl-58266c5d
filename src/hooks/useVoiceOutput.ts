@@ -7,7 +7,7 @@ const PREFERRED_VOICES = [
   'Google US English',
 ];
 
-function selectVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+export function selectVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
   // Try preferred voices first
   for (const name of PREFERRED_VOICES) {
     const match = voices.find((v) => v.name.includes(name));
