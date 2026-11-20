@@ -31,7 +31,7 @@ export function BottomTabBar() {
         }}
       >
         <div className="flex items-center justify-around h-14">
-          {navItems.map(item => {
+          {navItems.filter(item => item.available).map(item => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path ||
               (item.path === '/dashboard' && location.pathname === '/');

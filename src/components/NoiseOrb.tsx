@@ -242,6 +242,9 @@ export default function NoiseOrb({
     <div className={className} style={containerStyle}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50 }}
+        // Measure layout size (not the transformed box) so a CSS scale on a
+        // parent — e.g. the breathing animation — doesn't shrink/offset the render
+        resize={{ offsetSize: true }}
         gl={{ 
           antialias: true, 
           alpha: true,

@@ -193,7 +193,10 @@ export async function fetchPassage(ref: BibleReference): Promise<BiblePassage> {
 // ============ ESV API (primary — requires VITE_ESV_API_KEY) ============
 
 async function fetchFromEsv(ref: BibleReference): Promise<BiblePassage> {
-  const query = formatReference(ref);
+  // For single-chapter books (Obadiah, Philemon, 2 John, 3 John, Jude) the ESV
+  // API reads "Jude 1" as verse 1, so request the whole book by name instead.
+  const isWholeSingleChapterBook = !ref.verse && getBook(ref.book)?.chapters === 1;
+  const query = isWholeSingleChapterBook ? ref.book : formatReference(ref);
 
   const response = await fetch(
     `${ESV_API_URL}?q=${encodeURIComponent(query)}&include-passage-references=true&include-verse-numbers=true&include-footnotes=false&include-headings=true&include-short-copyright=true`,

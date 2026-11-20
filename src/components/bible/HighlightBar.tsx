@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Highlighter, MessageCircle, Copy, X } from 'lucide-react';
+import { Highlighter, MessageCircle, Copy, X, Wind } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   type HighlightColor,
@@ -17,6 +17,8 @@ interface HighlightBarProps {
   selectedVerse: BibleVerse;
   onClose: () => void;
   onAskSophia: (verse: BibleVerse) => void;
+  /** When provided, shows a Meditate button that opens this verse in the Meditate tab */
+  onMeditate?: (verse: BibleVerse) => void;
   onHighlightChange: () => void;
 }
 
@@ -26,6 +28,7 @@ export function HighlightBar({
   selectedVerse,
   onClose,
   onAskSophia,
+  onMeditate,
   onHighlightChange,
 }: HighlightBarProps) {
   const existing = getHighlightForVerse(book, chapter, selectedVerse.number);
@@ -98,6 +101,22 @@ export function HighlightBar({
           <MessageCircle className="w-4 h-4 mr-1" />
           <span className="text-xs">Ask Sophia</span>
         </Button>
+
+        {/* Meditate */}
+        {onMeditate && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              onMeditate(selectedVerse);
+              onClose();
+            }}
+          >
+            <Wind className="w-4 h-4 mr-1" />
+            <span className="text-xs">Meditate</span>
+          </Button>
+        )}
 
         {/* Copy */}
         <Button

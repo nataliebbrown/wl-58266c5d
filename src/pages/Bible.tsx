@@ -7,6 +7,7 @@ import { BibleNavigator } from '@/components/bible/BibleNavigator';
 import { ReadingView } from '@/components/bible/ReadingView';
 import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import type { BibleReference, BibleVerse } from '@/lib/bibleApi';
+import { buildChapterRevealsGodPrompt } from '@/lib/sophiaHermeneutics';
 
 const ContextualSophiaPane = lazy(() =>
   import('@/components/sophia/ContextualSophiaPane').then(m => ({ default: m.ContextualSophiaPane }))
@@ -90,6 +91,16 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
     [embedded, setHideOrb]
   );
 
+  const handleReflectOnChapter = useCallback(
+    (book: string, chapter: number) => {
+      if (embedded) return;
+      setIsSophiaOpen(true);
+      setHideOrb(true);
+      setSophiaPrompt(buildChapterRevealsGodPrompt(book, chapter));
+    },
+    [embedded, setHideOrb]
+  );
+
   const handleDismissSophia = useCallback(() => {
     setIsSophiaOpen(false);
     setSophiaPrompt(undefined);
@@ -142,6 +153,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               reference={reference}
               onNavigate={setReference}
               onAskSophia={handleAskSophia}
+              onReflectOnChapter={embedded ? undefined : handleReflectOnChapter}
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">

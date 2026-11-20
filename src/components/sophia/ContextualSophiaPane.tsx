@@ -13,6 +13,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { renderSophiaMarkdown } from '@/lib/sophiaMarkdown';
 import { parseReference } from '@/lib/bibleApi';
+import { GOD_CENTERED_LENS } from '@/lib/sophiaHermeneutics';
 
 const NoiseOrb = lazy(() => import('@/components/NoiseOrb'));
 
@@ -90,8 +91,8 @@ function getPassageStarters(ref: BibleReference): StarterCard[] {
   return [
     { icon: BookOpen, label: `What is ${passage} about?`, description: 'Understand the key themes and message of this chapter.', prompt: `What is ${passage} about? Help me understand the key themes and message of this chapter.` },
     { icon: BookMarked, label: 'Historical context', description: `Who wrote it, when, and what was happening at the time.`, prompt: `What is the historical and cultural context behind ${passage}? Who wrote it, when, and what was happening at the time?` },
-    { icon: Link2, label: 'Cross-references', description: 'See how this chapter connects to the rest of Scripture.', prompt: `How does ${passage} connect to other parts of Scripture? Show me key cross-references and how this chapter fits into the larger biblical narrative.` },
-    { icon: Heart, label: 'Apply to my life', description: `How ${passage} speaks to your life today.`, prompt: `What practical application can I take from ${passage}? How does this chapter speak to my life today?` },
+    { icon: Sparkles, label: 'What it reveals about God', description: 'See His character and what He is doing here.', prompt: `What does ${passage} reveal about God? Help me see His character and what He is doing in this chapter.` },
+    { icon: Heart, label: 'How should I respond?', description: `How ${passage} calls us to respond to God.`, prompt: `In light of what ${passage} shows about God, how should I respond to Him — in trust, worship, or obedience?` },
   ];
 }
 
@@ -248,10 +249,10 @@ export function ContextualSophiaPane({ onDismiss, initialPrompt, context, bibleR
   const systemContext = (() => {
     if (context === 'bible' && bibleReference) {
       const passage = `${bibleReference.book} ${bibleReference.chapter}`;
-      return `The user is currently reading ${passage} in the Bible reader. When they ask about "this passage", "this chapter", or reference what they're reading, they are referring to ${passage}. Always reference ${passage} specifically in your responses. You can see they have this chapter open right now.`;
+      return `The user is currently reading ${passage} in the Bible reader. When they ask about "this passage", "this chapter", or reference what they're reading, they are referring to ${passage}. Always reference ${passage} specifically in your responses. You can see they have this chapter open right now.\n\n${GOD_CENTERED_LENS}`;
     }
     if (context === 'bible') {
-      return 'The user is on the Bible page but has not opened a specific passage yet. Help them choose something to read or explore Scripture generally.';
+      return `The user is on the Bible page but has not opened a specific passage yet. Help them choose something to read or explore Scripture generally.\n\n${GOD_CENTERED_LENS}`;
     }
     return undefined;
   })();

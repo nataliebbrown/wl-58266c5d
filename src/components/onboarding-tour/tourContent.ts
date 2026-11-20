@@ -9,11 +9,11 @@ interface GreetingContent {
 
 export const TOUR_GREETINGS: Record<string, GreetingContent> = {
   new_to_faith: {
-    intro: "I'm your spiritual assistant — here to help you explore the Bible, understand faith, and grow at your own pace. I can answer your questions, walk you through Scripture, and offer encouragement whenever you need it. There's no wrong place to start.",
+    intro: "I'm your spiritual assistant — here to help you get to know God through the Bible, understand faith, and grow at your own pace. I can answer your questions, walk you through Scripture, and offer encouragement whenever you need it. There's no wrong place to start.",
     tourPrompt: "I can give you a quick tour of everything, or you can jump in and explore on your own. What would you prefer?",
   },
   believer_going_deeper: {
-    intro: "I'm your spiritual assistant — here to help you study Scripture more deeply, trace themes across the Bible, and grow in ways that matter. I can walk through passages with you, connect ideas across books, and help you apply what you're learning to your life.",
+    intro: "I'm your spiritual assistant — here to help you study Scripture more deeply, trace themes across the Bible, and grow in ways that matter. I can walk through passages with you, connect ideas across books, and help you see who God is in every passage — and how to respond to Him.",
     tourPrompt: "I can show you around so you know where everything is, or you can start exploring right away. What sounds good?",
   },
   pastor_leader: {
@@ -49,7 +49,7 @@ export const TOUR_STEPS: Record<string, StepMessages> = {
     scripture:
       "This is your Bible reader. I've selected some beginner-friendly passages to start with, but you can explore any book or chapter. As you read, I'm right there with you — tap any passage and I'll help explain it, give context, or connect it to what you're learning. This is where your understanding of Scripture grows, one passage at a time.",
     curriculum:
-      "This is your personal learning path — a step-by-step course I've built around your goals. Each lesson introduces a new idea, walks you through it, and helps you apply it to your life. It's designed to build on itself, so the further you go, the more everything starts to connect.",
+      "This is your personal learning path — a step-by-step course I've built around your goals. Each lesson introduces a new idea, walks you through it, and helps you see God more clearly and respond to Him. It's designed to build on itself, so the further you go, the more everything starts to connect.",
   },
   believer_going_deeper: {
     sophia:
@@ -89,7 +89,7 @@ export const TOUR_STEPS: Record<string, StepMessages> = {
     scripture:
       "This is your Bible reader. Explore any book, chapter, or verse — and I'll be right alongside you with context, cross-references, and insights. I've prepared some starting points, but you can always browse on your own. The more you read, the more connections you'll discover across Scripture.",
     curriculum:
-      "This is your personal learning path — a step-by-step course tailored to your journey. Each lesson is designed to build on the last, helping you grow in understanding and apply what you're learning to your life. Go at your own pace — I'll guide you through every step.",
+      "This is your personal learning path — a step-by-step course tailored to your journey. Each lesson is designed to build on the last, helping you grow in your understanding of God and respond to what you're learning. Go at your own pace — I'll guide you through every step.",
   },
 };
 

@@ -8,6 +8,7 @@ import {
   NotebookPen,
   GitBranch,
   Clock,
+  Wind,
   type LucideIcon,
 } from 'lucide-react';
 import type { ModuleType } from '@/types/wholelicity';
@@ -25,6 +26,7 @@ export const navItems: NavItem[] = [
   { icon: Home, label: 'Home', id: 'home', path: '/dashboard', available: true },
   { icon: MessageCircle, label: 'Chat', id: 'chat', path: '/chat', available: true, moduleType: 'wisdom' },
   { icon: BookOpen, label: 'Bible', id: 'bible', path: '/bible', available: true },
+  { icon: Wind, label: 'Meditate', id: 'meditate', path: '/meditate', available: true },
   { icon: Compass, label: 'Learn', id: 'learn', path: '/learn', available: true },
   { icon: Calendar, label: 'Today', id: 'today', path: '/today', available: false, moduleType: 'formation' },
   { icon: Lightbulb, label: 'Insights', id: 'insights', path: '/insights', available: true },

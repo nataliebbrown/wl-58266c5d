@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, Type } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Type, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VerseText } from './VerseText';
 import { SectionHeading } from './SectionHeading';
@@ -16,6 +16,8 @@ import {
   NT_BOOKS,
 } from '@/lib/bibleApi';
 import { getHighlightsForChapter, type VerseHighlight } from '@/lib/highlights';
+import { useNavigate } from 'react-router-dom';
+import type { MeditateLocationState } from '@/lib/meditation/storage';
 
 // ============ Types ============
 
@@ -23,6 +25,8 @@ interface ReadingViewProps {
   reference: BibleReference;
   onNavigate: (ref: BibleReference) => void;
   onAskSophia: (verse: BibleVerse, reference: BibleReference) => void;
+  /** When provided, each chapter ends with a "What does this reveal about God?" reflection card. */
+  onReflectOnChapter?: (book: string, chapter: number) => void;
   compact?: boolean;
 }
 
@@ -57,12 +61,14 @@ function ChapterBlock({
   selectedVerse,
   highlightedRange,
   onVerseSelect,
+  onReflectOnChapter,
 }: {
   chapter: LoadedChapter;
   isFirst: boolean;
   selectedVerse: SelectedVerse | null;
   highlightedRange: { chapter: number; startVerse: number; endVerse: number } | null;
   onVerseSelect: (chapter: number, verseNumber: number) => void;
+  onReflectOnChapter?: (book: string, chapter: number) => void;
 }) {
   const { passage } = chapter;
 
@@ -142,6 +148,48 @@ function ChapterBlock({
           />
         ))
       )}
+
+      {onReflectOnChapter && (
+        <RevealsGodCard
+          book={chapter.book}
+          chapter={chapter.chapter}
+          onReflect={() => onReflectOnChapter(chapter.book, chapter.chapter)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ============ "What does this reveal about God?" ============
+
+function RevealsGodCard({
+  book,
+  chapter,
+  onReflect,
+}: {
+  book: string;
+  chapter: number;
+  onReflect: () => void;
+}) {
+  return (
+    <div className="mt-10 mb-2 rounded-2xl border border-border/30 bg-foreground/[0.025] px-5 py-5 font-sans">
+      <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/40 mb-2">
+        Before you move on
+      </p>
+      <p className="font-serif text-lg text-foreground/85 leading-snug mb-1.5">
+        What does {book} {chapter} reveal about God?
+      </p>
+      <p className="text-sm text-foreground/55 leading-relaxed mb-4">
+        Look back over the chapter. What did you see of His character, His promises, or what He is doing?
+      </p>
+      <button
+        type="button"
+        onClick={onReflect}
+        className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3.5 py-1.5 text-sm text-foreground/70 hover:text-foreground hover:bg-foreground/[0.04] transition-colors"
+      >
+        <Sparkles className="w-3.5 h-3.5" />
+        Reflect with Sophia
+      </button>
     </div>
   );
 }
@@ -267,7 +315,7 @@ function CompactNavigator({
 
 // ============ Main Component ============
 
-export function ReadingView({ reference, onNavigate, onAskSophia, compact }: ReadingViewProps) {
+export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnChapter, compact }: ReadingViewProps) {
   const [chapters, setChapters] = useState<LoadedChapter[]>([]);
   const [visibleChapter, setVisibleChapter] = useState(reference.chapter);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -615,6 +663,21 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
     ? selectedChapterData.passage.verses.find(v => v.number === selectedVerse!.verseNumber)
     : null;
 
+  // ---- Open a verse in the Meditate tab ----
+
+  const navigate = useNavigate();
+  const handleMeditate = useCallback(
+    (verse: BibleVerse, chapter: number) => {
+      const chapterData = chapters.find(c => c.chapter === chapter);
+      const translation = chapterData?.passage.copyright.replace(/[()]/g, '').trim() || undefined;
+      const state: MeditateLocationState = {
+        verse: { book: reference.book, chapter, verse: verse.number, text: verse.text, translation },
+      };
+      navigate('/meditate', { state });
+    },
+    [chapters, reference.book, navigate]
+  );
+
   // ---- Refresh highlights for a specific chapter ----
 
   const refreshHighlightsForChapter = useCallback((chapter: number) => {
@@ -753,6 +816,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
                   selectedVerse={selectedVerse}
                   highlightedRange={highlightedRange}
                   onVerseSelect={handleVerseSelect}
+                  onReflectOnChapter={onReflectOnChapter}
                 />
               ))}
 
@@ -788,6 +852,7 @@ export function ReadingView({ reference, onNavigate, onAskSophia, compact }: Rea
                   selectedVerse={selectedVerseData}
                   onClose={() => setSelectedVerse(null)}
                   onAskSophia={(verse) => onAskSophia(verse, { book: reference.book, chapter: selectedVerse.chapter })}
+                  onMeditate={(verse) => handleMeditate(verse, selectedVerse.chapter)}
                   onHighlightChange={() => refreshHighlightsForChapter(selectedVerse.chapter)}
                 />
               </div>
