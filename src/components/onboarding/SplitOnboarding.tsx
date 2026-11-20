@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import introBackground from "@/assets/BG_1.png";
+import introBackground from "@/assets/homepage-bg.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
 import startedText from "@/assets/started.svg";
 import { ChatOnboardingPanel } from './ChatOnboardingPanel';

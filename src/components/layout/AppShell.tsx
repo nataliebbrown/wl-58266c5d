@@ -9,6 +9,7 @@ import { isFirstTimeUser } from '@/lib/onboardingState';
 import { DarkModeContext } from './DarkModeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthGateModal } from '@/components/auth/AuthGateModal';
+import { getDrawerGradient, drawerBackground } from '@/lib/drawerGradients';
 
 export function AppShell() {
   const location = useLocation();
@@ -41,6 +42,15 @@ export function AppShell() {
   const drawerBg = isDarkMode ? '#241E17' : '#F1EDE9';
   const outerBg = isDarkMode ? '#171411' : '#E3DCD3';
 
+  // Surfaces on top of the drawer are translucent rather than painting their
+  // own copy of the gradient, so it reads through them as one continuous
+  // surface — see .gradient-veil in index.css.
+  const drawerGradient = getDrawerGradient(location.pathname);
+  const tintRgb = isDarkMode ? '23, 20, 17' : '227, 220, 211';
+  const drawerFill = drawerGradient
+    ? drawerBackground(drawerGradient, tintRgb)
+    : drawerBg;
+
   // Show floating Sophia on pages that don't already have a chat pane
   const hideSophiaOrb = ['/dashboard', '/chat'].some(
     p => location.pathname === p || location.pathname.startsWith(p + '/')
@@ -54,8 +64,9 @@ export function AppShell() {
         className={`h-screen lg:overflow-hidden overflow-auto flex flex-col${isDarkMode ? ' dark' : ''}`}
         style={{ background: outerBg }}
       >
-        {/* Noise overlay for subtle texture */}
-        <div className="noise-overlay" />
+        {/* Noise overlay for subtle texture. Skipped on gradient routes: those
+            images carry their own grain, and this compounds with it. */}
+        {!drawerGradient && <div className="noise-overlay" />}
 
         {/* Header */}
         <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8">
@@ -66,7 +77,7 @@ export function AppShell() {
         <div
           className="flex-1 min-h-0 rounded-t-[28px] overflow-hidden"
           style={{
-            background: drawerBg,
+            background: drawerFill,
             boxShadow: isDarkMode
               ? '0 -8px 40px rgba(12, 12, 10, 0.6), 0 -2px 12px rgba(12, 12, 10, 0.4), inset 0 1px 0 rgba(241, 241, 239, 0.06)'
               : '0 -8px 40px rgba(90, 76, 58, 0.12), 0 -2px 12px rgba(90, 76, 58, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',

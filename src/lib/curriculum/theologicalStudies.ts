@@ -245,6 +245,8 @@ When God chose to reveal the New Testament, He did so in **Koine Greek** -- the 
 
 Studying Koine Greek places you in direct contact with the very words used by Matthew, Paul, John, and the other New Testament authors. While English translations are indispensable, they necessarily make interpretive choices that the original Greek leaves open. Reading Greek gives you the ability to weigh those choices for yourself.
 
+{{keyPoint:0}}
+
 ## The Greek Alphabet and Pronunciation
 
 The Greek alphabet consists of **24 letters**, many of which will look familiar from mathematics and science. Learning to recognize and pronounce each letter is the essential first step. Greek also uses **breathing marks** (smooth and rough) on initial vowels and **accents** (acute, grave, circumflex) that affect pronunciation and occasionally meaning.
@@ -263,17 +265,35 @@ One of the most important features of Greek is its **case system**. Nouns (and a
 
 Greek nouns are organized into **three declension patterns** based on their stem endings. The first declension primarily contains feminine nouns, the second declension primarily masculine and neuter nouns, and the third declension includes nouns of all genders with consonant stems. Learning the paradigm charts for each declension is a foundational task.
 
+{{keyPoint:1}}
+
+**Reading Exercise:** Open the passage below — arguably the most well-known verse in the entire Bible. John 3:16-17 is an excellent first text for practicing Greek case identification. As you read the English, consider what you would look for in the Greek: "God" (nominative — subject), "the world" (accusative — object of "loved"), "his only Son" (accusative — object of "gave"), "whoever believes in him" (a participial construction). Notice how nearly every major case appears in just two verses — nominative, accusative, genitive ("of God"), and a purpose clause with the subjunctive. This passage will become a touchstone you return to throughout your study of Greek grammar.
+
+{{scripture:1}}
+
 ## The Verbal System
 
 Greek verbs are richly inflected, encoding **person** (first, second, third), **number** (singular, plural), **tense-form** (present, imperfect, future, aorist, perfect, pluperfect), **voice** (active, middle, passive), and **mood** (indicative, subjunctive, optative, imperative). In this introductory course, you will focus on the **indicative mood** in the present, imperfect, future, and aorist tenses.
 
 A critical concept in Greek is **verbal aspect**. The present tense typically portrays an action as ongoing or repeated (imperfective aspect), while the aorist tense views an action as a simple, undifferentiated event (perfective aspect). This distinction carries significant theological weight. For example, in 1 John 3:6, the present tense of "sinning" suggests a pattern of continual sin, not an isolated act -- a nuance lost in many English translations.
 
+{{keyPoint:2}}
+
+**Reading Exercise:** Open the passage below — the opening of John's first epistle. In 1 John 1:1-4, John piles up relative clauses and verbal forms ("what was from the beginning, what we have heard, what we have seen... what we have looked at and our hands have touched") to convey eyewitness testimony. As you read, notice the accumulation of perfect tense verbs, which in Greek emphasize a past action with continuing results. The theological weight of John's testimony — that the eternal Word of life was physically seen, heard, and touched — is carried by the grammar itself. This is exactly the kind of nuance that studying Greek unlocks.
+
+{{scripture:2}}
+
 ## Building Toward Reading the New Testament
 
 The Gospel of John and the Epistles of John are traditionally the first texts beginning Greek students read, because their vocabulary is relatively limited and their sentence structures are straightforward. By the end of this course, you should be able to work through passages in these books with the aid of a lexicon, identifying the grammatical forms and making informed decisions about meaning.
 
-The goal is not to abandon your English Bible but to **read it with new eyes** -- eyes trained to see the structure, emphasis, and precision of the original Greek text.`,
+The goal is not to abandon your English Bible but to **read it with new eyes** -- eyes trained to see the structure, emphasis, and precision of the original Greek text.
+
+{{keyPoint:3}}
+
+**Reading Exercise:** Open the passage below — the prologue of John's Gospel. John 1:1-5 is traditionally the first text beginning Greek students read because its vocabulary is limited and its sentence structures are direct. As you read the English, notice the repetition and rhythm: "In the beginning was the Word, and the Word was with God, and the Word was God." In Greek, the word order in verse 1c (*theos en ho logos*, literally "God was the Word") places "God" first for emphasis — a nuance invisible in English but central to the verse's theology. Pay attention to the contrast between "was" (*en*, imperfect — eternal existence) and "came into being" (*egeneto*, aorist — a point in time) in verses 3-4. This distinction between the eternal Word and created things is built into the grammar.
+
+{{scripture:0}}`,
                   reflectionQuestions: [
                     'What does it mean to you that God chose a common, widely spoken language -- rather than a literary or elite language -- as the vehicle for the New Testament? What might this say about the nature of the gospel?',
                     'How might understanding verbal aspect (the difference between ongoing action and a completed event) change the way you read familiar New Testament passages?',
@@ -299,9 +319,9 @@ The goal is not to abandon your English Bible but to **read it with new eyes** -
                     { title: 'Basics of Biblical Greek Video Lectures', type: 'video' as const, author: 'William D. Mounce', description: 'Video lectures accompanying the Mounce grammar, ideal for visual learners who benefit from seeing paradigms and concepts explained and illustrated in real time.' },
                   ],
                   scriptureRefs: [
-                    { label: 'John 1:1-5', book: 'John', chapter: 1 },
-                    { label: 'John 3:16-17', book: 'John', chapter: 3 },
-                    { label: '1 John 1:1-4', book: '1 John', chapter: 1 },
+                    { label: 'John 1:1-5', book: 'John', chapter: 1, verse: 1, endVerse: 5 },
+                    { label: 'John 3:16-17', book: 'John', chapter: 3, verse: 16, endVerse: 17 },
+                    { label: '1 John 1:1-4', book: '1 John', chapter: 1, verse: 1, endVerse: 4 },
                   ],
                 },
                 {
@@ -328,11 +348,19 @@ If Hebrew I & II gave you the tools, Hebrew Exegesis is where you learn to **use
 
 Hebrew exegesis is not translation alone. Translation asks, "How do I render this Hebrew sentence in English?" Exegesis asks, "What does this text mean, and how does the Hebrew language guide me to that meaning?" The distinction is crucial: translation is a necessary step within exegesis, but exegesis encompasses a far broader range of interpretive activities.
 
+{{keyPoint:0}}
+
 ## Reading Hebrew Narrative
 
 The historical narratives of the Old Testament -- Genesis, Exodus, Joshua, Judges, Samuel, Kings -- are composed in a distinctive prose style that relies on the **waw-consecutive** (or wayyiqtol) construction. This grammatical form chains one past-tense verb to the next, creating a flowing sequence of events: "And God said... and there was... and God saw... and God called..."
 
 Recognizing the waw-consecutive pattern is essential for reading Hebrew narrative fluently. When the pattern breaks -- when the author shifts to a different verbal construction -- it is almost always significant. It may signal a background comment, a parenthetical explanation, or a shift in the flow of the narrative. **Paying attention to these shifts is one of the most important skills a Hebrew exegete can develop.**
+
+{{keyPoint:1}}
+
+**Reading Exercise:** Open the passage below — the Akedah, the binding of Isaac. Genesis 22:1-14 is one of the most powerful narrative texts in the Hebrew Bible and a classic passage for practicing Hebrew narrative exegesis. As you read, notice how the narrative builds tension through a relentless chain of waw-consecutive verbs: "And God tested... and He said... and Abraham rose early... and he saddled... and he took... and he went." The Hebrew deliberately withholds emotional commentary, letting the bare sequence of actions carry the weight. Watch for the moment the verbal pattern breaks — when dialogue interrupts the action chain, the shift is dramatic and theologically loaded. This passage rewards careful attention to what the Hebrew text says and, just as importantly, what it leaves unsaid.
+
+{{scripture:0}}
 
 ## Reading Hebrew Poetry
 
@@ -346,6 +374,16 @@ Robert Lowth, the eighteenth-century scholar who first systematically described 
 
 Modern scholarship has refined Lowth's categories significantly, but his basic framework remains a useful starting point. The key insight is that **the relationship between the lines is where meaning resides** -- the interplay of echo, contrast, and development creates a richness that rewards slow, careful reading.
 
+{{keyPoint:2}}
+
+**Reading Exercise:** Open the passage below — the gateway psalm that opens the entire Psalter. Psalm 1 is an ideal first text for practicing identification of parallelism types. Verse 1 uses synonymous parallelism with an ascending structure ("walks... stands... sits"), while the psalm as a whole employs antithetic parallelism, contrasting the righteous and the wicked. As you read, identify each type of parallelism and notice how the central metaphor — a tree planted by streams of water versus chaff blown by the wind — reinforces the theological contrast through concrete imagery.
+
+{{scripture:1}}
+
+**Reading Exercise:** Now open Psalm 23 below — perhaps the most beloved poem in the Hebrew Bible. This short psalm is rich with construct chains ("the LORD is my shepherd"), metaphor shifts (from pastoral imagery to a banquet scene), and vocabulary that rewards lexical investigation. As you read, notice the shift from third person ("He leads me") to second person ("You are with me") at the psalm's center (verse 4). In the Hebrew, this shift is striking and intentional — at the moment of greatest danger ("the valley of the shadow of death"), the psalmist moves from speaking *about* God to speaking *to* God. This is the kind of observation that close reading in Hebrew makes visible.
+
+{{scripture:3}}
+
 ## The Exegetical Process
 
 A sound approach to Hebrew exegesis typically includes the following steps:
@@ -357,9 +395,17 @@ A sound approach to Hebrew exegesis typically includes the following steps:
 5. **Consider literary and historical context**: Situate the passage within its broader literary unit and historical setting.
 6. **Move to theological reflection**: Ask what the text reveals about God, humanity, and the relationship between them.
 
+{{keyPoint:4}}
+
+**Reading Exercise:** Open the passage below — the Suffering Servant song in Isaiah 53. This is one of the most theologically significant and exegetically debated chapters in the entire Old Testament. It contains rare vocabulary, unusual grammatical forms, and several textual variants where the Septuagint and Dead Sea Scrolls differ from the Masoretic Text. As you read, notice the reversal language: "he was despised... we esteemed him not... he bore our griefs... with his wounds we are healed." The Hebrew uses vivid, concrete terms for suffering and substitution. Practicing the exegetical process on this passage — from establishing the text to theological reflection — will exercise every skill covered in this lesson.
+
+{{scripture:2}}
+
 ## Cultivating the Exegetical Habit
 
-Exegesis is not merely an academic exercise; it is a **spiritual discipline**. The goal is to hear the voice of God with greater clarity and precision than you could without the original language. Every parsing decision, every lexical investigation, and every syntactical observation is in service of this larger purpose. Approach the Hebrew text with humility, patience, and expectation -- and it will reward you richly.`,
+Exegesis is not merely an academic exercise; it is a **spiritual discipline**. The goal is to hear the voice of God with greater clarity and precision than you could without the original language. Every parsing decision, every lexical investigation, and every syntactical observation is in service of this larger purpose. Approach the Hebrew text with humility, patience, and expectation -- and it will reward you richly.
+
+{{keyPoint:3}}`,
                   reflectionQuestions: [
                     'How does the discipline of close reading in the original Hebrew change your relationship with familiar Old Testament passages? Have you noticed anything in the Hebrew that your English translation does not convey?',
                     'Why is it important to distinguish between translation and exegesis? How does moving beyond translation enrich your understanding of the text?',
@@ -383,10 +429,10 @@ Exegesis is not merely an academic exercise; it is a **spiritual discipline**. T
                     { title: 'Old Testament Exegesis: A Handbook for Students and Pastors', type: 'book' as const, author: 'Douglas Stuart', description: 'A practical, step-by-step guide to the exegetical process for Old Testament texts. Particularly useful for students learning to move from grammar to interpretation to application.' },
                   ],
                   scriptureRefs: [
-                    { label: 'Genesis 22:1-14', book: 'Genesis', chapter: 22 },
-                    { label: 'Psalm 1:1-6', book: 'Psalms', chapter: 1 },
-                    { label: 'Isaiah 53:1-12', book: 'Isaiah', chapter: 53 },
-                    { label: 'Psalm 23:1-6', book: 'Psalms', chapter: 23 },
+                    { label: 'Genesis 22:1-14', book: 'Genesis', chapter: 22, verse: 1, endVerse: 14 },
+                    { label: 'Psalm 1:1-6', book: 'Psalms', chapter: 1, verse: 1, endVerse: 6 },
+                    { label: 'Isaiah 53:1-12', book: 'Isaiah', chapter: 53, verse: 1, endVerse: 12 },
+                    { label: 'Psalm 23:1-6', book: 'Psalms', chapter: 23, verse: 1, endVerse: 6 },
                   ],
                 },
                 {
@@ -410,6 +456,8 @@ Exegesis is not merely an academic exercise; it is a **spiritual discipline**. T
 
 Greek I & II equipped you with the morphological and syntactical foundations of Koine Greek. Greek Exegesis is the course where those foundations are put to work in **sustained engagement with the New Testament text**. The shift from grammar to exegesis is significant: rather than parsing isolated forms and translating disconnected sentences, you will now read whole passages, follow the flow of an author's argument, and make interpretive decisions that bear directly on theology and application.
 
+{{keyPoint:0}}
+
 ## The Exegetical Workflow
 
 A methodical approach to Greek exegesis typically proceeds through several stages:
@@ -426,11 +474,19 @@ A methodical approach to Greek exegesis typically proceeds through several stage
 
 6. **Synthesize theologically**: Draw together your grammatical, lexical, and contextual findings into a coherent interpretation. Ask what the passage teaches about God, Christ, the Spirit, salvation, the church, and the Christian life.
 
+{{keyPoint:3}}
+
 ## Word Order and Emphasis
 
 One of the most valuable skills in Greek exegesis is learning to recognize **emphasis through word order**. In Greek, the default word order is verb-subject-object, but authors frequently rearrange this order for rhetorical effect. A word placed at the beginning of a clause, especially when it departs from the expected position, typically receives emphasis.
 
 Consider John 1:1: *En arche en ho logos* ("In the beginning was the Word"). The prepositional phrase "in the beginning" is fronted for emphasis, echoing Genesis 1:1 and immediately signaling that the prologue of John's Gospel is a new creation narrative. This kind of observation is invisible in English but leaps off the page in Greek.
+
+{{keyPoint:1}}
+
+**Reading Exercise:** Open the passage below — the prologue of John's Gospel. John 1:1-18 is one of the richest texts in the New Testament for observing word order and emphasis in action. In verse 1, the fronting of *en arche* ("in the beginning") deliberately echoes Genesis 1:1, and the predicate nominative *theos* ("God") is placed before the verb in the final clause (*theos en ho logos*) to emphasize the Word's divine nature without equating the Word with the Father. As you read further, track how John uses contrast and repetition: light versus darkness (vv. 4-5), the witness of John versus the true light (vv. 6-9), rejection versus reception (vv. 10-13). Notice the climactic shift at verse 14 — "the Word became flesh" — where the aorist *egeneto* (a point-in-time event) stands in sharp contrast to the imperfect *en* ("was") used throughout the opening verses. The grammar itself narrates the incarnation.
+
+{{scripture:2}}
 
 ## Discourse Features
 
@@ -438,9 +494,23 @@ Greek authors use **conjunctions and particles** as the connective tissue of the
 
 In Romans, for example, Paul's argument builds through a chain of *gar* clauses in chapters 1-3, reaches a climax in the *oun* of Romans 3:28 ("Therefore we conclude that a person is justified by faith apart from works of the law"), and then unfolds the implications through the rest of the letter. Reading Romans in Greek with attention to these discourse markers transforms your understanding of Paul's argument.
 
+{{keyPoint:2}}
+
+**Reading Exercise:** Open the passage below — Paul's exposition of justification, suffering, and hope. Romans 5:1-11 is a masterclass in Greek discourse structure. The passage opens with *oun* ("therefore"), signaling a conclusion drawn from the argument of chapters 1-4. From there, Paul builds a chain of reasoning: "suffering produces endurance, and endurance produces character, and character produces hope" (vv. 3-4). In Greek, the connecting particle *de* and repeated verbal structure create a rhetorical climax (a "sorites" or chain-link argument). As you read, track each conjunction and notice how Paul moves from the objective fact of justification (v. 1) through the subjective experience of suffering (vv. 3-5) to the objective ground of God's love demonstrated in Christ's death (vv. 6-8). The logical architecture of the passage is built on its discourse markers.
+
+{{scripture:1}}
+
+**Reading Exercise:** Now open Romans 8:28-30 below — one of the most theologically dense passages in the New Testament. These three verses contain what theologians call the "golden chain of salvation": foreknew, predestined, called, justified, glorified. In Greek, all five verbs are aorist indicative, presenting each act as a completed reality — including glorification, which from a human perspective is still future. As you read, notice the tight logical progression marked by the relative pronoun *hous* ("whom") chaining each clause to the next. The passage is an excellent exercise in both parsing and theological synthesis: the grammar forces you to grapple with how Paul can speak of future glory as already accomplished.
+
+{{scripture:3}}
+
 ## The Goal: Hearing the Apostolic Voice
 
-The ultimate purpose of Greek exegesis is not to demonstrate technical skill but to **hear the voice of the New Testament authors with greater clarity**. Every parsing decision, every lexical investigation, and every syntactical observation serves the goal of understanding what the apostles and evangelists intended to communicate under the inspiration of the Holy Spirit. Approach the Greek text with reverence, patience, and intellectual honesty, and it will become one of the richest resources in your theological formation.`,
+The ultimate purpose of Greek exegesis is not to demonstrate technical skill but to **hear the voice of the New Testament authors with greater clarity**. Every parsing decision, every lexical investigation, and every syntactical observation serves the goal of understanding what the apostles and evangelists intended to communicate under the inspiration of the Holy Spirit. Approach the Greek text with reverence, patience, and intellectual honesty, and it will become one of the richest resources in your theological formation.
+
+**Reading Exercise:** Open the passage below — the Carmen Christi, one of the earliest christological hymns in the New Testament. Philippians 2:5-11 is widely regarded as a pre-Pauline hymn that Paul incorporates into his letter. As you read, notice the dramatic downward-then-upward movement: Christ "emptied himself" (*ekenosen*) and "humbled himself" (*etapeinosen*) — descending from divine equality to the cross — and then God "highly exalted him" (*hyperupsosen*) and "gave him the name above every name." The Greek vocabulary here is rare and emphatic: *hyperupsosen* ("super-exalted") appears nowhere else in the Greek Bible. This passage will exercise your skills in parsing, word study, and theological synthesis simultaneously.
+
+{{scripture:0}}`,
                   reflectionQuestions: [
                     'How does reading a New Testament passage in Greek compare to reading it in English? What do you notice in the Greek that your English translation does not convey?',
                     'Why is textual criticism an important first step in exegesis rather than an optional academic exercise? How does it affect your confidence in the reliability of the New Testament text?',
@@ -465,10 +535,10 @@ The ultimate purpose of Greek exegesis is not to demonstrate technical skill but
                     { title: 'Logos Bible Software', type: 'website' as const, description: 'A comprehensive digital platform for biblical studies that includes Greek texts, morphological databases, lexicons, and interlinear tools. It accelerates the exegetical workflow significantly while maintaining scholarly rigor.' },
                   ],
                   scriptureRefs: [
-                    { label: 'Philippians 2:5-11', book: 'Philippians', chapter: 2 },
-                    { label: 'Romans 5:1-11', book: 'Romans', chapter: 5 },
-                    { label: 'John 1:1-18', book: 'John', chapter: 1 },
-                    { label: 'Romans 8:28-30', book: 'Romans', chapter: 8 },
+                    { label: 'Philippians 2:5-11', book: 'Philippians', chapter: 2, verse: 5, endVerse: 11 },
+                    { label: 'Romans 5:1-11', book: 'Romans', chapter: 5, verse: 1, endVerse: 11 },
+                    { label: 'John 1:1-18', book: 'John', chapter: 1, verse: 1, endVerse: 18 },
+                    { label: 'Romans 8:28-30', book: 'Romans', chapter: 8, verse: 28, endVerse: 30 },
                   ],
                 },
               ],
@@ -4804,11 +4874,15 @@ The Persian administration adopted Aramaic as its official language for imperial
 
 Jesus and his disciples almost certainly spoke Aramaic as their primary language. Several Aramaic words and phrases are preserved in the Greek New Testament: "Talitha koum" (Mark 5:41), "Ephphatha" (Mark 7:34), "Eloi, Eloi, lema sabachthani" (Mark 15:34), "Abba" (Mark 14:36), and "Maranatha" (1 Corinthians 16:22). The Aramaic substrate underlying the Greek Gospels and the Aramaic-speaking context of Jesus' ministry make knowledge of Aramaic valuable for New Testament study.
 
+{{keyPoint:0}}
+
 ## Biblical Aramaic: Corpus and Dating
 
 Biblical Aramaic appears in five contexts: Daniel 2:4b-7:28 (the central section of Daniel, including Nebuchadnezzar's dream, the fiery furnace, Belshazzar's feast, Daniel in the lions' den, and the vision of the four beasts), Ezra 4:8-6:18 (correspondence regarding the rebuilding of Jerusalem and the temple), Ezra 7:12-26 (Artaxerxes' letter commissioning Ezra), Jeremiah 10:11 (a single verse against idols), and one word (yegar-sahadutha) in Genesis 31:47.
 
 The Aramaic of Daniel and Ezra is generally classified as Imperial or Official Aramaic, the standardized form used throughout the Persian Empire (c. 600-200 BCE). However, the dating of Daniel's Aramaic has been debated. Traditional scholarship dates the book to the sixth century BCE, while critical scholarship often assigns it to the second century BCE, partly based on linguistic features. Conservative scholars argue that Daniel's Aramaic reflects Eastern Aramaic dialect and that linguistic evidence is consistent with sixth-century composition, though the text may have undergone some updating of orthography and vocabulary in transmission.
+
+{{keyPoint:1}}
 
 ## Aramaic Grammar: Similarities and Differences from Hebrew
 
@@ -4820,6 +4894,8 @@ The alphabet is identical to Hebrew (both use the square Aramaic script that rep
 
 Vocabulary shows significant overlap with Hebrew, but many common words differ. Where Hebrew uses 'am for "people," Aramaic uses 'ama'. Where Hebrew has melek for "king," Aramaic has malkā'. Learning Aramaic vocabulary is facilitated by Hebrew knowledge but requires dedicated memorization.
 
+{{keyPoint:2}}
+
 ## Reading Daniel 2: Nebuchadnezzar's Dream
 
 Daniel 2 provides an excellent entry point into Biblical Aramaic. The chapter famously switches from Hebrew to Aramaic in verse 4b, where the Chaldeans address the king: "O king, live forever! Tell your servants the dream, and we will show the interpretation." From this point through chapter 7, Daniel continues in Aramaic.
@@ -4828,11 +4904,19 @@ The narrative presents theological themes crucial to Daniel's message. God alone
 
 Key vocabulary from Daniel 2 includes: malka' (king), helem (dream), pesha' (interpretation), raz (mystery), 'elahin (God/gods), and malkū (kingdom). The chapter employs the Aramaic determined state frequently: malka' (the king), helma' (the dream). Verbal forms include perfect, imperfect, imperative, and participles across various stems.
 
+**Reading Exercise:** Open the passage below — the full chapter of Daniel 2 beginning where the text switches from Hebrew to Aramaic. This is the ideal entry point for reading Biblical Aramaic. As you read the English, follow the narrative arc: the king's impossible demand (vv. 4b-13), Daniel's appeal to God (vv. 14-23), the revelation and interpretation of the dream (vv. 24-45), and the king's confession (vv. 46-49). Pay special attention to Daniel's prayer in verses 20-23, which contains rich theological vocabulary — "wisdom and might," "he reveals deep and hidden things," "light dwells with him." If you have begun studying Aramaic grammar, try to identify the determined state endings (-א) on nouns and the verbal forms in Daniel's prayer. This passage rewards repeated reading at every stage of your Aramaic study.
+
+{{scripture:0}}
+
 ## Reading Ezra 4-6: The Rebuilding Controversy
 
 The Aramaic sections of Ezra record official correspondence regarding Jerusalem's rebuilding. Ezra 4:8-16 presents a letter to Artaxerxes warning against Jewish rebellion. Ezra 5:6-17 records Tattenai's inquiry about the temple's authorization. Ezra 6:2-12 preserves Cyrus's original decree and Darius's confirmation. These documents provide both historical information and models of Persian administrative Aramaic.
 
 The use of Aramaic for these official documents is historically appropriate—this was the language of Persian imperial administration. The sudden shift to Aramaic in Ezra 4:8 when introducing official correspondence reflects actual administrative practice. The return to Hebrew in Ezra 6:19 for Passover celebration marks a transition from imperial politics to Jewish religious life.
+
+**Reading Exercise:** Open the passage below — the correspondence between provincial officials and the Persian king regarding Jerusalem's rebuilding. Ezra 4:8-24 is a fascinating window into how Aramaic functioned as the administrative language of the Persian Empire. As you read, notice the formal, bureaucratic tone of the letter: the officials carefully cite historical precedent ("this city is a rebellious city, hurtful to kings and provinces"), and the king responds with an equally formal decree. The Aramaic vocabulary here is heavily administrative — letters, decrees, provinces, taxes, tribute. Compare the tone and register of this official correspondence with the narrative Aramaic of Daniel 2. The contrast illustrates how Aramaic served different literary purposes within the biblical text.
+
+{{scripture:1}}
 
 Important vocabulary from Ezra's Aramaic sections includes: nisha' (letter), medinah (province), beyit (house/temple), 'abad (to do/make), benā' (to build), and qereb (midst). Legal and administrative terminology appears: te'em (decree), nishetewan (copy), and dāt (law).
 
@@ -4843,6 +4927,12 @@ The placement of Aramaic sections in Daniel and Ezra is not arbitrary but theolo
 Some scholars see a chiastic structure in Daniel 2-7, with chapter 7's vision of four beasts corresponding to chapter 2's statue, both in Aramaic, emphasizing God's control over history and kingdoms. The shift back to Hebrew in chapter 8 as Daniel receives visions specifically about Israel's future reinforces this pattern.
 
 In Ezra, Aramaic documents authenticate the narrative by citing official sources. The language itself functions as historical evidence—these are presented as actual Persian administrative records. The interplay between Hebrew narrative and Aramaic documentation reflects the bicultural world of post-exilic Judaism, negotiating identity under foreign rule while maintaining distinctive covenant identity.
+
+{{keyPoint:3}}
+
+**Reading Exercise:** Open the passage below — Daniel's night vision of four beasts and the Ancient of Days. Daniel 7 is the climactic chapter of the Aramaic section, and many scholars see it as the theological center of the entire book. As you read, notice the dramatic shift in genre from the court narratives of chapters 2-6 to full apocalyptic vision. The imagery is vivid and unsettling — four great beasts rising from the sea, a little horn speaking great things, and then the Ancient of Days taking his seat in judgment. Verse 13-14 introduces "one like a son of man" (*bar enash* in Aramaic) who receives everlasting dominion — a passage Jesus repeatedly drew upon to describe his own identity and mission. Compare this chapter with Daniel 2: both present four kingdoms followed by God's eternal kingdom, but chapter 7 adds the deeply personal figure of the Son of Man. The Aramaic section of Daniel begins with a statue and ends with a person.
+
+{{scripture:2}}
 
 ## Learning Resources and Methodology
 
@@ -4876,9 +4966,9 @@ Aramaic also aids New Testament study by illuminating the linguistic world of Je
                     { title: 'The Aramaic of Daniel', type: 'article' as const, author: 'Kenneth A. Kitchen', description: 'Notes on Some Problems in the Book of Daniel' },
                   ],
                   scriptureRefs: [
-                    { label: 'Daniel 2:4b-49', book: 'Daniel', chapter: 2 },
-                    { label: 'Ezra 4:8-24', book: 'Ezra', chapter: 4 },
-                    { label: 'Daniel 7:1-28', book: 'Daniel', chapter: 7 },
+                    { label: 'Daniel 2:4b-49', book: 'Daniel', chapter: 2, verse: 4, endVerse: 49 },
+                    { label: 'Ezra 4:8-24', book: 'Ezra', chapter: 4, verse: 8, endVerse: 24 },
+                    { label: 'Daniel 7:1-28', book: 'Daniel', chapter: 7, verse: 1, endVerse: 28 },
                   ],
                 },
                 {

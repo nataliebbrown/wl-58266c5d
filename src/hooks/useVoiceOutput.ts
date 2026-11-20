@@ -1,95 +1,72 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { synthesizeSpeech, isElevenLabsAvailable } from '@/lib/elevenLabs';
 
-const PREFERRED_VOICES = [
-  'Samantha',
-  'Google UK English Female',
-  'Microsoft Zira',
-  'Google US English',
-];
-
-export function selectVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  // Try preferred voices first
-  for (const name of PREFERRED_VOICES) {
-    const match = voices.find((v) => v.name.includes(name));
-    if (match) return match;
-  }
-  // Fallback: first English voice
-  const english = voices.find((v) => v.lang.startsWith('en'));
-  return english || voices[0] || null;
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\{\{[^}]+\}\}/g, '')          // remove {{markers}}
+    .replace(/#{1,6}\s+(.+)/g, '$1.')       // headings → sentences
+    .replace(/\*\*(.+?)\*\*/g, '$1')        // bold
+    .replace(/\*(.+?)\*/g, '$1')            // italic
+    .replace(/`(.+?)`/g, '$1')              // inline code
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1')     // links → text only
+    .replace(/^[-*]\s/gm, '')               // list bullets
+    .replace(/^\d+[.)]\s/gm, '')            // numbered lists
+    .replace(/>\s*/gm, '')                   // blockquote markers
+    .replace(/\n{2,}/g, '\n\n')             // normalize breaks
+    .trim();
 }
 
 export function useVoiceOutput() {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const hasTTSSupport =
-    typeof window !== 'undefined' && 'speechSynthesis' in window;
-
-  // Load voices (they may load asynchronously)
-  useEffect(() => {
-    if (!hasTTSSupport) return;
-
-    const loadVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        voiceRef.current = selectVoice(voices);
-      }
-    };
-
-    loadVoices();
-    speechSynthesis.addEventListener('voiceschanged', loadVoices);
-
-    return () => {
-      speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-      speechSynthesis.cancel();
-    };
-  }, [hasTTSSupport]);
+  const hasTTSSupport = isElevenLabsAvailable();
 
   const speak = useCallback(
-    (text: string) => {
+    async (text: string) => {
       if (!hasTTSSupport || !text.trim()) return;
 
-      // Cancel any ongoing speech
-      speechSynthesis.cancel();
+      // Stop current audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
 
-      // Ensure voices are loaded before speaking
-      const doSpeak = () => {
-        // Re-select voice if not yet loaded
-        if (!voiceRef.current) {
-          const voices = speechSynthesis.getVoices();
-          if (voices.length > 0) {
-            voiceRef.current = selectVoice(voices);
-          }
-        }
+      try {
+        const cleanText = stripMarkdown(text);
+        const url = await synthesizeSpeech(cleanText);
+        const audio = new Audio(url);
+        audioRef.current = audio;
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (voiceRef.current) {
-          utterance.voice = voiceRef.current;
-        }
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
+        audio.onplay = () => setIsSpeaking(true);
+        audio.onended = () => setIsSpeaking(false);
+        audio.onerror = () => setIsSpeaking(false);
 
-        utterance.onstart = () => setIsSpeaking(true);
-        utterance.onend = () => setIsSpeaking(false);
-        utterance.onerror = () => setIsSpeaking(false);
-
-        utteranceRef.current = utterance;
-        speechSynthesis.speak(utterance);
-      };
-
-      // Small delay after cancel to avoid Chrome bug where
-      // cancel() immediately before speak() silently fails
-      setTimeout(doSpeak, 50);
+        await audio.play();
+      } catch (error) {
+        console.error('ElevenLabs TTS error:', error);
+        setIsSpeaking(false);
+      }
     },
-    [hasTTSSupport],
+    [hasTTSSupport]
   );
 
   const stop = useCallback(() => {
-    if (!hasTTSSupport) return;
-    speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     setIsSpeaking(false);
-  }, [hasTTSSupport]);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
 
   return { speak, stop, isSpeaking, hasTTSSupport };
 }

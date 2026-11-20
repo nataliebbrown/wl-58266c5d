@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, MicOff, ArrowRight, BookOpen, Compass, Heart, Sparkles } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { CollapsingCardHeader } from './CollapsingCardHeader';
+import { useCollapsingHeader } from '@/hooks/useCollapsingHeader';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { useSophiaChat } from '@/hooks/useSophiaChat';
 import { useConversations } from '@/hooks/useConversations';
@@ -213,6 +215,11 @@ function PillChatInput({
 export function DashboardSophiaPanel() {
   const isDarkMode = useDarkMode();
   const navigate = useNavigate();
+  const {
+    scrollRef: startersScrollRef,
+    headerRef,
+    collapsed,
+  } = useCollapsingHeader();
   const { config } = useTimePeriod();
   const { getPersonaFromOnboarding } = useUserProfile();
   const personaData = getPersonaFromOnboarding();
@@ -281,7 +288,7 @@ export function DashboardSophiaPanel() {
   const contextualMessage = generateDashboardMessage(userContext);
 
   return (
-    <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
+    <GlassCard padding="none" className="glass-card-veil flex flex-col h-full overflow-hidden">
       {/* Expand button */}
       <div className="absolute top-4 right-4 z-10">
         <ExpandButton onClick={() => navigate('/chat')} />
@@ -292,9 +299,11 @@ export function DashboardSophiaPanel() {
         {!hasMessages && (
           <div className="flex-1 flex flex-col min-h-0">
             {/* Fixed header: Orb + Greeting */}
-            <div className="flex flex-col items-center text-center px-5 pt-8 pb-4">
-              {/* Animated Orb */}
-              <div className="mb-3">
+            <CollapsingCardHeader
+              ref={headerRef}
+              collapsed={collapsed}
+              titleClassName="text-foreground"
+              visual={
                 <Suspense fallback={<div className="w-24 h-24 rounded-full bg-foreground/[0.04] animate-pulse" />}>
                   <NoiseOrb
                     size={100}
@@ -303,37 +312,31 @@ export function DashboardSophiaPanel() {
                     speed={0.6}
                   />
                 </Suspense>
-              </div>
-
-              {/* Greeting */}
-              <div className="mb-4">
-                <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300 mb-2">
-                  Chat with Sophia
-                </p>
-                <h3 className="text-2xl leading-snug text-foreground">
-                  {isFirstVisit ? (
-                    <>
-                      What's on your <span className="italic">heart today?</span>
-                    </>
-                  ) : (
-                    <>
-                      {salutation}
-                      {userName && <> <span className="font-semibold">{userName}</span>,</>}
-                    </>
-                  )}
-                </h3>
-                <p
-                  className="text-sm mt-1 text-foreground/40 italic max-w-[260px] leading-relaxed mx-auto"
-                >
-                  {isFirstVisit
-                    ? "Ask me anything — about Scripture, faith, or whatever you're thinking about."
-                    : contextualMessage}
-                </p>
-              </div>
-            </div>
+              }
+              visualClassName="mb-3"
+              eyebrow="Chat with Sophia"
+              title={
+                isFirstVisit ? (
+                  <>
+                    What's on your <span className="italic">heart today?</span>
+                  </>
+                ) : (
+                  <>
+                    {salutation}
+                    {userName && <> <span className="font-semibold">{userName}</span>,</>}
+                  </>
+                )
+              }
+              description={
+                isFirstVisit
+                  ? "Ask me anything — about Scripture, faith, or whatever you're thinking about."
+                  : contextualMessage
+              }
+              descriptionClassName="italic mx-auto"
+            />
 
             {/* Scrollable content — starters */}
-            <div className="flex-1 overflow-y-auto px-5 py-3">
+            <div ref={startersScrollRef} className="flex-1 overflow-y-auto px-5 py-3">
               <div className="flex flex-col gap-2.5 w-full">
                 {starters.map((starter) => (
                   <button

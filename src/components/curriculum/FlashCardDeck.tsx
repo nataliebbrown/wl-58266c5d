@@ -12,30 +12,12 @@ interface FlashCardDeckProps {
 export function FlashCardDeck({ deck }: FlashCardDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  const { stop, isSpeaking, hasTTSSupport } = useVoiceOutput();
+  const { speak, stop, isSpeaking, hasTTSSupport } = useVoiceOutput();
 
-  const handleSpeak = useCallback((text: string, lang?: string) => {
+  const handleSpeak = useCallback((text: string, _lang?: string) => {
     if (!hasTTSSupport || !text.trim()) return;
-    speechSynthesis.cancel();
-
-    const doSpeak = () => {
-      const utterance = new SpeechSynthesisUtterance(text);
-
-      if (lang) {
-        const voices = speechSynthesis.getVoices();
-        const langVoice = voices.find(v => v.lang.startsWith(lang.split('-')[0]));
-        if (langVoice) {
-          utterance.voice = langVoice;
-          utterance.lang = lang;
-        }
-      }
-
-      utterance.rate = 0.85;
-      speechSynthesis.speak(utterance);
-    };
-
-    setTimeout(doSpeak, 50);
-  }, [hasTTSSupport]);
+    speak(text);
+  }, [hasTTSSupport, speak]);
 
   const handlePrev = () => {
     stop();

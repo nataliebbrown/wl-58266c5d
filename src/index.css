@@ -84,6 +84,9 @@
     --sidebar-accent-foreground: 34 22% 22%;
     --sidebar-border: 37 25% 80%;
     --sidebar-ring: 34 24% 44%;
+
+    /* Fill for surfaces layered over a drawer gradient — see .gradient-veil */
+    --veil-fill: rgba(255, 255, 255, 0.42);
   }
 
   .dark {
@@ -124,6 +127,8 @@
     --sidebar-accent-foreground: 39 42% 93%;
     --sidebar-border: 72 10% 28%;
     --sidebar-ring: 34 24% 50%;
+
+    --veil-fill: rgba(20, 16, 12, 0.42);
   }
 }
 
@@ -207,6 +212,35 @@
     background: linear-gradient(145deg, #2F2921, #241E17);
     border: 2px solid rgba(241, 237, 233, 0.08);
     box-shadow: 0 4px 24px rgba(12, 12, 10, 0.35);
+  }
+
+  /* Translucent veil over a drawer gradient. Paints no image of its own, so the
+     drawer's image reads through as one continuous surface — alignment is
+     automatic because these are literally the drawer's own pixels.
+     backdrop-filter stays off: blurring the backdrop would break that
+     continuity at every edge. */
+  .gradient-veil {
+    background: var(--veil-fill);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* Dashboard card — the same veil, plus card chrome to separate it from the
+     drawer showing at full strength in the gaps between cards. */
+  .glass-card-veil {
+    background: var(--veil-fill);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 6px 28px rgba(90, 76, 58, 0.12);
+  }
+
+  .dark .glass-card-veil {
+    /* Must be repeated here: `.dark .glass-card` above is more specific than
+       `.glass-card-veil`, so without this its opaque fill wins in dark mode. */
+    background: var(--veil-fill);
+    border: 1px solid rgba(241, 237, 233, 0.10);
+    box-shadow: 0 6px 28px rgba(12, 12, 10, 0.38);
   }
 
   /* Subtle noise overlay for page background texture */

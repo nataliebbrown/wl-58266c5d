@@ -283,7 +283,7 @@ export default function Chat() {
   const showFirstVisitGreeting = messages.length === 0 && isFirstVisit;
 
   return (
-    <div className="h-full flex transition-colors duration-300 bg-white/70 dark:bg-[linear-gradient(145deg,#2F2921,#241E17)]">
+    <div className="h-full flex transition-colors duration-300 gradient-veil">
       {/* Sidebar */}
       <ChatSidebar
         conversations={conversations}

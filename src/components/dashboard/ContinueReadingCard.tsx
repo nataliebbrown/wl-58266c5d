@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Sparkles, Compass, ChevronRight, Calendar, X } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { CollapsingCardHeader } from './CollapsingCardHeader';
+import { useCollapsingHeader } from '@/hooks/useCollapsingHeader';
 import { ExpandButton } from '@/components/ui/ExpandButton';
 import { getReadingHistory, fetchPassage, type BibleReference, type BiblePassage } from '@/lib/bibleApi';
 import { getRecommendedReadingPair, type BibleRecommendation } from '@/lib/bibleRecommendations';
@@ -376,6 +378,7 @@ function BrowseRow({ onClick }: { onClick: () => void }) {
 
 export function ContinueReadingCard() {
   const navigate = useNavigate();
+  const { scrollRef, headerRef, collapsed } = useCollapsingHeader();
   const history = getReadingHistory();
 
   const mostRecent = history[0];
@@ -414,29 +417,27 @@ export function ContinueReadingCard() {
   if (!mostRecent) {
     // Empty state — personalized recommendations, topics, reading plan
     return (
-      <GlassCard padding="none" className="flex flex-col h-full overflow-hidden relative">
+      <GlassCard padding="none" className="glass-card-veil flex flex-col h-full overflow-hidden relative">
         <div className="absolute top-4 right-4 z-10">
           <ExpandButton onClick={handleExpand} />
         </div>
 
         {/* Header */}
-        <div className="px-5 pt-8 pb-4 text-center flex flex-col items-center">
-          <div className="w-16 h-16 rounded-2xl bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center mb-6">
-            <BookOpen className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
-          </div>
-          <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-foreground/40 dark:text-wl-olive-300">
-            Read the Bible
-          </p>
-          <h3 className="text-2xl leading-snug mt-2 text-wl-earth dark:text-wl-olive-200">
-            {emptyStateHeadline}
-          </h3>
-          <p className="text-sm text-foreground/40 mt-1 max-w-[260px] leading-relaxed">
-            Read and explore the Bible with personalized passages and Sophia's guidance along the way
-          </p>
-        </div>
+        <CollapsingCardHeader
+          ref={headerRef}
+          collapsed={collapsed}
+          visual={
+            <div className="w-16 h-16 rounded-2xl bg-wl-olive/10 dark:bg-wl-olive-300/10 flex items-center justify-center">
+              <BookOpen className="w-8 h-8 text-wl-olive/60 dark:text-wl-olive-300/60" />
+            </div>
+          }
+          eyebrow="Read the Bible"
+          title={emptyStateHeadline}
+          description="Read and explore the Bible with personalized passages and Sophia's guidance along the way"
+        />
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-5 py-3 space-y-4">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-3 space-y-4">
           {/* Topic filter tabs */}
           <div className="flex flex-wrap gap-2 justify-center pb-3">
             {topicFilters.map((filter) => {
@@ -597,7 +598,7 @@ function ActiveReadingCard({
   const resumeRef: BibleReference = { book: mostRecent.book, chapter: mostRecent.chapter };
 
   return (
-    <GlassCard padding="none" className="flex flex-col h-full overflow-hidden">
+    <GlassCard padding="none" className="glass-card-veil flex flex-col h-full overflow-hidden">
       {/* Header — label + expand */}
       <div className="flex items-center justify-between px-5 pt-5">
         <div className="flex items-center gap-2.5">

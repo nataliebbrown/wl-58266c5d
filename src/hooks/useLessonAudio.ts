@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { selectVoice } from './useVoiceOutput';
+import { synthesizeSpeech, isElevenLabsAvailable } from '@/lib/elevenLabs';
 
 // ============ Text Processing ============
 
@@ -52,29 +52,15 @@ export function useLessonAudio(content: string) {
   const [currentChunk, setCurrentChunk] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const chunkRef = useRef(0); // mutable ref for callbacks
+  const chunkRef = useRef(0);
   const statusRef = useRef<AudioStatus>('idle');
 
-  const hasTTS = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const hasTTS = isElevenLabsAvailable();
 
   // Progress as 0–1
   const progress = totalSeconds > 0 ? Math.min(elapsedSeconds / totalSeconds, 1) : 0;
-
-  // Load voice
-  useEffect(() => {
-    if (!hasTTS) return;
-    const loadVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      if (voices.length > 0) voiceRef.current = selectVoice(voices);
-    };
-    loadVoices();
-    speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    return () => {
-      speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-    };
-  }, [hasTTS]);
 
   // Elapsed timer
   const startTimer = useCallback(() => {
@@ -91,12 +77,15 @@ export function useLessonAudio(content: string) {
     }
   }, []);
 
-  // Speak a specific chunk, chain to next on end
+  // Speak a specific chunk via ElevenLabs, chain to next on end
   const speakChunk = useCallback(
-    (index: number) => {
+    async (index: number) => {
       if (!hasTTS || index >= chunks.length) {
         // Finished all chunks
-        speechSynthesis.cancel();
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current = null;
+        }
         stopTimer();
         setStatus('idle');
         statusRef.current = 'idle';
@@ -106,41 +95,50 @@ export function useLessonAudio(content: string) {
         return;
       }
 
-      // Ensure voice loaded
-      if (!voiceRef.current) {
-        const voices = speechSynthesis.getVoices();
-        if (voices.length > 0) voiceRef.current = selectVoice(voices);
+      try {
+        const url = await synthesizeSpeech(chunks[index]);
+
+        // Check if we were stopped while fetching
+        if (statusRef.current !== 'playing') return;
+
+        // Stop previous audio
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+
+        const audio = new Audio(url);
+        audioRef.current = audio;
+
+        audio.onended = () => {
+          if (statusRef.current === 'playing') {
+            const next = chunkRef.current + 1;
+            chunkRef.current = next;
+            setCurrentChunk(next);
+            const wordsRead = cumWords[Math.min(next, chunks.length)];
+            setElapsedSeconds(Math.round((wordsRead / WORDS_PER_MINUTE) * 60));
+            speakChunk(next);
+          }
+        };
+
+        audio.onerror = () => {
+          if (statusRef.current === 'playing') {
+            const next = chunkRef.current + 1;
+            chunkRef.current = next;
+            setCurrentChunk(next);
+            speakChunk(next);
+          }
+        };
+
+        await audio.play();
+      } catch (error) {
+        console.error('ElevenLabs lesson audio error:', error);
+        if (statusRef.current === 'playing') {
+          const next = chunkRef.current + 1;
+          chunkRef.current = next;
+          setCurrentChunk(next);
+          speakChunk(next);
+        }
       }
-
-      const utterance = new SpeechSynthesisUtterance(chunks[index]);
-      if (voiceRef.current) utterance.voice = voiceRef.current;
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-
-      utterance.onend = () => {
-        // Only continue if still playing (not stopped/paused externally)
-        if (statusRef.current === 'playing') {
-          const next = chunkRef.current + 1;
-          chunkRef.current = next;
-          setCurrentChunk(next);
-          // Estimate elapsed based on words read so far
-          const wordsRead = cumWords[Math.min(next, chunks.length)];
-          setElapsedSeconds(Math.round((wordsRead / WORDS_PER_MINUTE) * 60));
-          speakChunk(next);
-        }
-      };
-
-      utterance.onerror = () => {
-        // On error, try to continue with next chunk
-        if (statusRef.current === 'playing') {
-          const next = chunkRef.current + 1;
-          chunkRef.current = next;
-          setCurrentChunk(next);
-          speakChunk(next);
-        }
-      };
-
-      speechSynthesis.speak(utterance);
     },
     [hasTTS, chunks, cumWords, stopTimer]
   );
@@ -148,9 +146,9 @@ export function useLessonAudio(content: string) {
   const play = useCallback(() => {
     if (!hasTTS) return;
 
-    if (statusRef.current === 'paused') {
-      // Resume
-      speechSynthesis.resume();
+    if (statusRef.current === 'paused' && audioRef.current) {
+      // Resume paused audio
+      audioRef.current.play();
       setStatus('playing');
       statusRef.current = 'playing';
       startTimer();
@@ -158,18 +156,21 @@ export function useLessonAudio(content: string) {
     }
 
     // Start from current chunk
-    speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     setStatus('playing');
     statusRef.current = 'playing';
     startTimer();
-
-    // Small delay after cancel (Chrome bug workaround)
-    setTimeout(() => speakChunk(chunkRef.current), 50);
+    speakChunk(chunkRef.current);
   }, [hasTTS, speakChunk, startTimer]);
 
   const pause = useCallback(() => {
     if (!hasTTS) return;
-    speechSynthesis.pause();
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     setStatus('paused');
     statusRef.current = 'paused';
     stopTimer();
@@ -182,7 +183,10 @@ export function useLessonAudio(content: string) {
 
   const stop = useCallback(() => {
     if (!hasTTS) return;
-    speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     stopTimer();
     setStatus('idle');
     statusRef.current = 'idle';
@@ -194,28 +198,34 @@ export function useLessonAudio(content: string) {
   const skipForward = useCallback(() => {
     if (!hasTTS || chunks.length === 0) return;
     const next = Math.min(chunkRef.current + 1, chunks.length - 1);
-    speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     chunkRef.current = next;
     setCurrentChunk(next);
     const wordsRead = cumWords[next];
     setElapsedSeconds(Math.round((wordsRead / WORDS_PER_MINUTE) * 60));
 
     if (statusRef.current === 'playing') {
-      setTimeout(() => speakChunk(next), 50);
+      speakChunk(next);
     }
   }, [hasTTS, chunks.length, cumWords, speakChunk]);
 
   const skipBack = useCallback(() => {
     if (!hasTTS || chunks.length === 0) return;
     const prev = Math.max(chunkRef.current - 1, 0);
-    speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     chunkRef.current = prev;
     setCurrentChunk(prev);
     const wordsRead = cumWords[prev];
     setElapsedSeconds(Math.round((wordsRead / WORDS_PER_MINUTE) * 60));
 
     if (statusRef.current === 'playing') {
-      setTimeout(() => speakChunk(prev), 50);
+      speakChunk(prev);
     }
   }, [hasTTS, chunks.length, cumWords, speakChunk]);
 
@@ -223,7 +233,6 @@ export function useLessonAudio(content: string) {
     (targetProgress: number) => {
       if (!hasTTS || chunks.length === 0) return;
       const targetWord = Math.round(targetProgress * totalWords);
-      // Find the chunk that contains this word
       let chunkIndex = 0;
       for (let i = 1; i < cumWords.length; i++) {
         if (cumWords[i] > targetWord) break;
@@ -231,13 +240,16 @@ export function useLessonAudio(content: string) {
       }
       chunkIndex = Math.min(chunkIndex, chunks.length - 1);
 
-      speechSynthesis.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
       chunkRef.current = chunkIndex;
       setCurrentChunk(chunkIndex);
       setElapsedSeconds(Math.round(targetProgress * totalSeconds));
 
       if (statusRef.current === 'playing') {
-        setTimeout(() => speakChunk(chunkIndex), 50);
+        speakChunk(chunkIndex);
       }
     },
     [hasTTS, chunks.length, totalWords, totalSeconds, cumWords, speakChunk]
@@ -246,7 +258,9 @@ export function useLessonAudio(content: string) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      speechSynthesis.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);

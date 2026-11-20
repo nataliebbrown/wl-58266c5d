@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import introBackground from "@/assets/BG_1.png";
+import introBackground from "@/assets/homepage-bg.png";
 import wholelicityLogo from "@/assets/logo_white.svg";
 import wholelicityLogo2 from "@/assets/logo_white_2.svg";
 import sophiaOrb from "@/assets/sophia-orb-brown.svg";
