@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   markQuizCompleted,
   markQuizStarted,
+  getQuizData,
   saveQuizProgress,
   getQuizProgress,
 } from '@/lib/onboardingState';
@@ -409,6 +410,7 @@ export function ChatOnboardingPanel({ onComplete }: ChatOnboardingPanelProps) {
 
   const handleSkipQuiz = () => {
     markQuizCompleted({
+      name: getQuizData().name,
       spiritualBackground: DEFAULT_ONBOARDING_DATA.spiritualBackground,
       learningStyle: DEFAULT_ONBOARDING_DATA.learningStyle,
       communityPreference: DEFAULT_ONBOARDING_DATA.communityPreference,
@@ -537,6 +539,7 @@ export function ChatOnboardingPanel({ onComplete }: ChatOnboardingPanelProps) {
   const handleContinue = () => {
     // Fill in defaults for any skipped questions
     const finalData = {
+      name: getQuizData().name,
       spiritualBackground: data.spiritualBackground ?? DEFAULT_ONBOARDING_DATA.spiritualBackground,
       learningStyle: data.learningStyle ?? DEFAULT_ONBOARDING_DATA.learningStyle,
       communityPreference: data.communityPreference ?? DEFAULT_ONBOARDING_DATA.communityPreference,

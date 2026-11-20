@@ -24,6 +24,10 @@ interface DashboardTourProps {
 // step: -1 = welcome overlay, 0–2 = tour steps, 3 = closing
 type TourStep = -1 | 0 | 1 | 2 | 3;
 
+function isCardStep(step: TourStep): step is 0 | 1 | 2 {
+  return step >= 0 && step <= 2;
+}
+
 // ============ Helpers ============
 
 function getElementRect(selector: string): DOMRect | null {
@@ -221,7 +225,7 @@ export function DashboardTour({
   const finaleSelector = ACTION_TO_SELECTOR[finale.action] ?? 'sophia-panel';
 
   useEffect(() => {
-    if (step >= 0 && step <= 2) {
+    if (isCardStep(step)) {
       const stepId = TOUR_STEP_ORDER[step];
       applyCardClasses(stepId);
       setBubblePos(getBubblePosition(stepId));
@@ -251,7 +255,7 @@ export function DashboardTour({
     const handleResize = () => {
       if (resizeTimerRef.current) clearTimeout(resizeTimerRef.current);
       resizeTimerRef.current = setTimeout(() => {
-        if (step >= 0 && step <= 2) {
+        if (isCardStep(step)) {
           setBubblePos(getBubblePosition(TOUR_STEP_ORDER[step]));
         } else if (step === 3) {
           setBubblePos(getBubblePosition(finaleSelector));
@@ -329,7 +333,7 @@ export function DashboardTour({
 
   // ---- Current step message ----
   const currentMessage =
-    step >= 0 && step <= 2
+    isCardStep(step)
       ? getStepMessage(spiritualBackground, TOUR_STEP_ORDER[step])
       : '';
 
@@ -413,7 +417,7 @@ export function DashboardTour({
               <p className="text-base leading-relaxed text-foreground/60 dark:text-foreground/80 mb-4">
                 <TypewriterText
                   text={introText}
-                  speed={40}
+                  speed={16}
                   onComplete={() => setShowTourPrompt(true)}
                 />
               </p>
@@ -421,7 +425,7 @@ export function DashboardTour({
                 <p className="text-base leading-relaxed text-foreground/60 dark:text-foreground/80 mb-8">
                   <TypewriterText
                     text={tourPromptText}
-                    speed={40}
+                    speed={16}
                     onComplete={() => setShowWelcomeButtons(true)}
                   />
                 </p>
@@ -458,7 +462,7 @@ export function DashboardTour({
 
       {/* ========== Steps 0–2: Tour with floating bubble ========== */}
       <AnimatePresence>
-        {step >= 0 && step <= 2 && (
+        {isCardStep(step) && (
           <>
             {/* Blurred backdrop — blurs everything behind the active card */}
             <motion.div

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 
 interface TypewriterTextProps {
   text: string;
+  /** Milliseconds per character */
   speed?: number;
   delay?: number;
   onComplete?: () => void;
@@ -11,35 +12,41 @@ interface TypewriterTextProps {
 
 export function TypewriterText({ text, speed = 20, delay = 0, onComplete, className }: TypewriterTextProps) {
   const [displayedCount, setDisplayedCount] = useState(0);
-  const [started, setStarted] = useState(delay === 0);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
-  // Reset when text changes
+  // Time-based reveal driven by requestAnimationFrame: the number of visible
+  // characters is derived from elapsed time, so the pace stays steady and
+  // smooth even at fast speeds (no per-character timer drift or jitter).
   useEffect(() => {
     setDisplayedCount(0);
-    if (delay > 0) {
-      setStarted(false);
-      const timer = setTimeout(() => setStarted(true), delay);
-      return () => clearTimeout(timer);
-    }
-  }, [text, delay]);
+    let rafId = 0;
+    let startTime: number | null = null;
+    let lastCount = 0;
 
-  // Animate character by character
-  useEffect(() => {
-    if (!started) return;
+    const tick = (now: number) => {
+      if (startTime === null) startTime = now;
+      const count = Math.min(text.length, Math.floor((now - startTime) / speed) + 1);
+      if (count !== lastCount) {
+        lastCount = count;
+        setDisplayedCount(count);
+      }
+      if (count < text.length) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        onCompleteRef.current?.();
+      }
+    };
 
-    if (displayedCount >= text.length) {
-      onCompleteRef.current?.();
-      return;
-    }
+    const delayTimer = setTimeout(() => {
+      rafId = requestAnimationFrame(tick);
+    }, delay);
 
-    const timer = setTimeout(() => {
-      setDisplayedCount((prev) => prev + 1);
-    }, speed);
-
-    return () => clearTimeout(timer);
-  }, [started, displayedCount, text.length, speed]);
+    return () => {
+      clearTimeout(delayTimer);
+      cancelAnimationFrame(rafId);
+    };
+  }, [text, speed, delay]);
 
   const isTyping = displayedCount < text.length;
 
