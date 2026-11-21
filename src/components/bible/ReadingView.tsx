@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, Type, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Type, Sparkles, Map as MapIcon } from 'lucide-react';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useDarkMode } from '@/components/layout/DarkModeContext';
+import { ChapterMap } from './ChapterMap';
 import { Button } from '@/components/ui/button';
 import { VerseText } from './VerseText';
 import { SectionHeading } from './SectionHeading';
@@ -699,6 +703,30 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
 
   const copyright = chapters[0]?.passage.copyright;
 
+  // ---- Map of places ----
+
+  const [showMap, setShowMap] = useState(false);
+  const isMobile = useIsMobile();
+  // The sheet portals outside AppShell's `.dark` wrapper, so re-apply the theme
+  const isDarkMode = useDarkMode();
+
+  const goToVerse = useCallback(
+    (chapter: number, verse: number) => {
+      const verseEl = scrollRef.current?.querySelector(
+        `[data-chapter="${chapter}"] [data-verse="${verse}"]`
+      );
+      if (verseEl) {
+        verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setHighlightedRange({ chapter, startVerse: verse, endVerse: verse });
+      } else {
+        // Chapter not loaded yet — navigate; the reference effect scrolls + highlights
+        onNavigate({ book: reference.book, chapter, verse });
+      }
+      if (isMobile) setShowMap(false);
+    },
+    [onNavigate, reference.book, isMobile]
+  );
+
   return (
     <div className="flex flex-col h-full">
       {/* Chapter header */}
@@ -744,16 +772,43 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
             </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground"
-            onClick={cycleFontSize}
-            title="Change text size"
-          >
-            <Type className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground"
+              onClick={() => setShowMap(true)}
+              title="Map of places"
+              aria-label="Map of places in this chapter"
+            >
+              <MapIcon className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground"
+              onClick={cycleFontSize}
+              title="Change text size"
+            >
+              <Type className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
+      )}
+
+      {!compact && (
+        <Sheet open={showMap} onOpenChange={setShowMap}>
+          <SheetContent
+            side={isMobile ? 'bottom' : 'right'}
+            className={`${isMobile ? 'h-[88vh] overflow-y-auto rounded-t-2xl' : 'w-full sm:max-w-[520px] overflow-y-auto'}${isDarkMode ? ' dark' : ''}`}
+          >
+            <SheetHeader className="mb-4 text-left">
+              <SheetTitle className="font-serif text-xl">Places</SheetTitle>
+              <SheetDescription>Where the events of {reference.book} {visibleChapter} happened.</SheetDescription>
+            </SheetHeader>
+            <ChapterMap book={reference.book} chapter={visibleChapter} onGoToVerse={goToVerse} />
+          </SheetContent>
+        </Sheet>
       )}
 
       {/* Content */}
