@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck } from 'lucide-react';
+import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck, Languages } from 'lucide-react';
+import { OriginalPanel } from '@/components/original/OriginalPanel';
+import type { OriginalWord } from '@/lib/originalLanguage';
 import { ChapterMap } from './ChapterMap';
 import { fetchPassage, type BibleReference } from '@/lib/bibleApi';
 import {
@@ -16,7 +18,7 @@ import {
   fetchFootnotes,
 } from '@/lib/studyResources';
 
-export type StudyTab = 'notes' | 'crossrefs' | 'footnotes' | 'places' | 'sophia';
+export type StudyTab = 'notes' | 'crossrefs' | 'footnotes' | 'original' | 'places' | 'sophia';
 
 interface StudyPanelProps {
   book: string;
@@ -31,13 +33,18 @@ interface StudyPanelProps {
   onStartStudy?: () => void;
   /** Rendered in the Sophia tab (omit to hide the tab, e.g. on mobile) */
   sophia?: ReactNode;
+  /** Ask Sophia a question (e.g. "Why do these translations differ?") */
+  onAskSophia?: (prompt: string) => void;
+  /** Start a word study of an original-language word */
+  onStudyWord?: (word: OriginalWord, verse: number) => void;
   onClose?: () => void;
 }
 
 const TABS: { id: StudyTab; label: string; icon: typeof NotebookText }[] = [
   { id: 'notes', label: 'Notes', icon: NotebookText },
-  { id: 'crossrefs', label: 'Cross-refs', icon: Link2 },
+  { id: 'crossrefs', label: 'Refs', icon: Link2 },
   { id: 'footnotes', label: 'Footnotes', icon: Asterisk },
+  { id: 'original', label: 'Original', icon: Languages },
   { id: 'places', label: 'Places', icon: MapIcon },
   { id: 'sophia', label: 'Sophia', icon: Sparkles },
 ];
@@ -72,6 +79,8 @@ export function StudyPanel({
   onGoToReference,
   onStartStudy,
   sophia,
+  onAskSophia,
+  onStudyWord,
   onClose,
 }: StudyPanelProps) {
   const tabs = sophia ? TABS : TABS.filter(t => t.id !== 'sophia');
@@ -126,7 +135,7 @@ export function StudyPanel({
                   active ? 'bg-foreground/[0.08] text-foreground' : 'text-foreground/50 hover:text-foreground/80'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0 hidden xl:inline" />
                 {t.label}
               </button>
             );
@@ -144,6 +153,16 @@ export function StudyPanel({
             <CrossRefsTab book={book} chapter={chapter} focusVerse={focusVerse} onGoToReference={onGoToReference} />
           )}
           {tab === 'footnotes' && <FootnotesTab book={book} chapter={chapter} focusVerse={focusVerse} />}
+          {tab === 'original' && (
+            <OriginalPanel
+              book={book}
+              chapter={chapter}
+              verse={focusVerse}
+              onGoTo={onGoToReference}
+              onAskSophia={onAskSophia}
+              onStudyWord={onStudyWord}
+            />
+          )}
           {tab === 'places' && (
             <ChapterMap
               book={book}

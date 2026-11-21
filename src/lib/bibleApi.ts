@@ -160,6 +160,8 @@ export function parseReference(input: string): BibleReference | null {
 
 const ESV_API_URL = 'https://api.esv.org/v3/passage/text/';
 const ESV_API_KEY = import.meta.env.VITE_ESV_API_KEY as string | undefined;
+/** True when the ESV API key is configured (otherwise the BSB is used) */
+export const HAS_ESV = !!ESV_API_KEY;
 
 const HELLOAO_API_URL = 'https://bible.helloao.org/api';
 const HELLOAO_TRANSLATION = 'BSB'; // Berean Standard Bible

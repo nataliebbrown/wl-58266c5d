@@ -8,6 +8,7 @@ import { ReadingView, type BibleMode } from '@/components/bible/ReadingView';
 import { StudyPanel, type StudyTab } from '@/components/bible/StudyPanel';
 import { PlanDayBar } from '@/components/bible/PlanDayBar';
 import type { PlanDayState } from '@/lib/readingPlan';
+import type { OriginalWord } from '@/lib/originalLanguage';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
@@ -162,6 +163,20 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
 
   const studyChapter = visibleChapter ?? reference?.chapter ?? 1;
 
+  const studyWord = useCallback(
+    (word: OriginalWord, verse: number) => {
+      if (!reference) return;
+      navigate('/study', {
+        state: {
+          passage: { book: reference.book, chapter: studyChapter },
+          methodId: 'word',
+          word: { strong: word.strong, original: word.original, translit: word.translit, gloss: word.gloss, verse },
+        },
+      });
+    },
+    [navigate, reference, studyChapter]
+  );
+
   const startStudy = useCallback(() => {
     if (!reference) return;
     navigate('/study', { state: { passage: { book: reference.book, chapter: studyChapter } } });
@@ -264,6 +279,8 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               onGoToReference={handleStudyNavigate}
               onStartStudy={startStudy}
               sophia={sophiaPane}
+              onAskSophia={openSophia}
+              onStudyWord={studyWord}
             />
           </div>
         )}
@@ -315,6 +332,11 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               onTabChange={setStudyTab}
               onGoToReference={handleStudyNavigate}
               onStartStudy={startStudy}
+              onAskSophia={prompt => {
+                setStudySheetOpen(false);
+                openSophia(prompt);
+              }}
+              onStudyWord={studyWord}
               onClose={() => setStudySheetOpen(false)}
             />
           </SheetContent>
