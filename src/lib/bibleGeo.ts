@@ -77,6 +77,7 @@ interface RawBook {
 
 const BASE = `${import.meta.env.BASE_URL}data/bible-geo`;
 let basemapPromise: Promise<Basemap> | null = null;
+let detailPromise: Promise<Basemap> | null = null;
 const bookCache = new Map<string, Promise<RawBook | null>>();
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -91,6 +92,15 @@ export function loadBasemap(): Promise<Basemap> {
     throw err;
   });
   return basemapPromise;
+}
+
+/** Higher-resolution coastlines and rivers for zoomed-in views (~1 MB, loaded on demand). */
+export function loadBasemapDetail(): Promise<Basemap> {
+  detailPromise ??= fetchJson<Basemap>(`${BASE}/basemap-detail.json`).catch(err => {
+    detailPromise = null;
+    throw err;
+  });
+  return detailPromise;
 }
 
 function loadBook(book: string): Promise<RawBook | null> {

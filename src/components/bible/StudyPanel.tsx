@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck, Languages } from 'lucide-react';
 import { OriginalPanel } from '@/components/original/OriginalPanel';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { OriginalWord } from '@/lib/originalLanguage';
 import { ChapterMap } from './ChapterMap';
 import { fetchPassage, type BibleReference } from '@/lib/bibleApi';
@@ -42,7 +43,7 @@ interface StudyPanelProps {
 
 const TABS: { id: StudyTab; label: string; icon: typeof NotebookText }[] = [
   { id: 'notes', label: 'Notes', icon: NotebookText },
-  { id: 'crossrefs', label: 'Refs', icon: Link2 },
+  { id: 'crossrefs', label: 'Cross-refs', icon: Link2 },
   { id: 'footnotes', label: 'Footnotes', icon: Asterisk },
   { id: 'original', label: 'Original', icon: Languages },
   { id: 'places', label: 'Places', icon: MapIcon },
@@ -120,24 +121,44 @@ export function StudyPanel({
             )}
           </div>
         </div>
-        <div className="flex gap-0.5 -mx-1" role="tablist">
+        {/* Selected tab shows icon + name; the others show just the icon, with the name on hover */}
+        <div className="flex items-center gap-1 -mx-1" role="tablist">
           {tabs.map(t => {
             const Icon = t.icon;
             const active = tab === t.id;
+            if (active) {
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected
+                  onClick={() => onTabChange(t.id)}
+                  className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-foreground/[0.08] px-3 h-8 text-xs text-foreground"
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  {t.label}
+                </button>
+              );
+            }
             return (
-              <button
-                key={t.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => onTabChange(t.id)}
-                className={`flex-1 flex items-center justify-center gap-1 whitespace-nowrap rounded-full px-1.5 py-1.5 text-[11px] transition-colors ${
-                  active ? 'bg-foreground/[0.08] text-foreground' : 'text-foreground/50 hover:text-foreground/80'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5 shrink-0 hidden xl:inline" />
-                {t.label}
-              </button>
+              <Tooltip key={t.id} delayDuration={150}>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={false}
+                    aria-label={t.label}
+                    onClick={() => onTabChange(t.id)}
+                    className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full text-foreground/50 hover:text-foreground/85 hover:bg-foreground/[0.05] transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  {t.label}
+                </TooltipContent>
+              </Tooltip>
             );
           })}
         </div>

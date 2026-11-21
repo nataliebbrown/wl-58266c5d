@@ -17,7 +17,8 @@
  *        (lakes: -simplify 40% keep-shapes; rivers: -filter 'scalerank <= 7' -simplify 20%)
  *
  * Usage:
- *   node scripts/build-bible-geo.mjs <ancient.jsonl> <theographic places.json> <land.json> <lakes.json> <rivers.json>
+ *   node scripts/build-bible-geo.mjs <ancient.jsonl> <theographic places.json> <land.json> <lakes.json> <rivers.json> \
+ *     [<land-detail.json> <lakes-detail.json> <rivers-detail.json>]   (detail: -simplify 90%/80%, precision=0.001)
  *
  * Output:
  *   public/data/bible-geo/basemap.json        { land, lakes, rivers } GeoJSON
@@ -27,7 +28,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const [ancientPath, theoPlacesPath, landPath, lakesPath, riversPath] = process.argv.slice(2);
+const [ancientPath, theoPlacesPath, landPath, lakesPath, riversPath, landDetail, lakesDetail, riversDetail] = process.argv.slice(2);
 if (!riversPath) {
   console.error('Usage: node scripts/build-bible-geo.mjs <ancient.jsonl> <places.json> <land.json> <lakes.json> <rivers.json>');
   process.exit(1);
@@ -178,5 +179,15 @@ const basemap = {
   rivers: stripProps(JSON.parse(fs.readFileSync(riversPath, 'utf8')), ['name']),
 };
 fs.writeFileSync(path.join(outDir, 'basemap.json'), JSON.stringify(basemap));
+
+// Optional high-detail layers, loaded by the app only when zoomed in
+if (riversDetail) {
+  const detail = {
+    land: stripProps(JSON.parse(fs.readFileSync(landDetail, 'utf8'))),
+    lakes: stripProps(JSON.parse(fs.readFileSync(lakesDetail, 'utf8')), ['name']),
+    rivers: stripProps(JSON.parse(fs.readFileSync(riversDetail, 'utf8')), ['name']),
+  };
+  fs.writeFileSync(path.join(outDir, 'basemap-detail.json'), JSON.stringify(detail));
+}
 
 console.log(`Places: ${placeCount} (skipped ${skipped}); descriptions: ${descriptions.size}; book files: ${fileCount}`);

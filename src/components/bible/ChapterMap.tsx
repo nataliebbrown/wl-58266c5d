@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { geoMercator, geoPath } from 'd3-geo';
-import { ExternalLink, MapPin, Minus, Plus } from 'lucide-react';
+import { ExternalLink, MapPin, Maximize2, Minimize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import {
   type Basemap,
   type ChapterPlace,
@@ -10,6 +11,7 @@ import {
   getBookPlaces,
   getChapterPlaces,
   loadBasemap,
+  loadBasemapDetail,
 } from '@/lib/bibleGeo';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
 
@@ -26,7 +28,18 @@ const W = 600;
 const H = 400;
 const PAD = 36;
 // Smallest area shown (degrees), so a single town isn't zoomed to street level
-const MIN_SPAN = { normal: 2.4, wide: 14 };
+const MIN_SPAN = 2.4;
+const MIN_ZOOM = 0.35;
+const MAX_ZOOM = 16;
+const STEP = 1.6;
+
+/** Pan/zoom applied on top of the fitted projection: screen = projected * k + (x, y) */
+interface View {
+  k: number;
+  x: number;
+  y: number;
+}
+const FIT: View = { k: 1, x: 0, y: 0 };
 const MAX_LABELS = 10;
 
 const LIGHT = {
@@ -107,8 +120,13 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
   const isDarkMode = useDarkMode();
   const COLORS: Palette = isDarkMode ? DARK : LIGHT;
   const [scope, setScope] = useState<Scope>('chapter');
-  const [wide, setWide] = useState(false);
+  const [view, setView] = useState<View>(FIT);
+  const [expanded, setExpanded] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const gesture = useRef<{ moved: boolean; pinchDist?: number }>({ moved: false });
   const [basemap, setBasemap] = useState<Basemap | null>(null);
+  const [detail, setDetail] = useState<Basemap | null>(null);
   const [places, setPlaces] = useState<ChapterPlace[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -136,7 +154,7 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
     const pts = places?.length ? places.map(p => [p.lon, p.lat] as [number, number]) : [[35.2, 31.8] as [number, number]];
     const lons = pts.map(p => p[0]);
     const lats = pts.map(p => p[1]);
-    const minSpan = wide ? MIN_SPAN.wide : MIN_SPAN.normal;
+    const minSpan = MIN_SPAN;
     const cx = (Math.min(...lons) + Math.max(...lons)) / 2;
     const cy = (Math.min(...lats) + Math.max(...lats)) / 2;
     const spanLon = Math.max(Math.max(...lons) - Math.min(...lons), minSpan);
@@ -154,25 +172,38 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
         ],
       }
     );
-  }, [places, wide]);
+  }, [places]);
+
+  // New places → fit the view again
+  useEffect(() => setView(FIT), [places]);
+
+  // Switch to high-detail coastlines once zoomed in
+  const useDetail = view.k >= 2.5;
+  useEffect(() => {
+    if (useDetail && !detail) loadBasemapDetail().then(setDetail).catch(() => {});
+  }, [useDetail, detail]);
+  const activeMap = useDetail && detail ? detail : basemap;
 
   const paths = useMemo(() => {
-    if (!basemap) return null;
+    if (!activeMap) return null;
     const path = geoPath(projection);
     return {
-      land: path(basemap.land) ?? '',
-      lakes: path(basemap.lakes) ?? '',
-      rivers: path(basemap.rivers) ?? '',
+      land: path(activeMap.land) ?? '',
+      lakes: path(activeMap.lakes) ?? '',
+      rivers: path(activeMap.rivers) ?? '',
     };
-  }, [basemap, projection]);
+  }, [activeMap, projection]);
 
   // Label the most-mentioned places (selected/hovered always win), skipping
   // any label that would collide with another
   const labels = useMemo(() => {
     if (!places) return new Map<string, LabelPos>();
     const projected = places
-      .map(p => ({ p, xy: projection([p.lon, p.lat]) }))
-      .filter((d): d is { p: ChapterPlace; xy: [number, number] } => !!d.xy);
+      .map(p => {
+        const xy = projection([p.lon, p.lat]);
+        return { p, xy: xy ? ([xy[0] * view.k + view.x, xy[1] * view.k + view.y] as [number, number]) : null };
+      })
+      .filter((d): d is { p: ChapterPlace; xy: [number, number] } => !!d.xy && d.xy[0] > -20 && d.xy[0] < W + 20 && d.xy[1] > -20 && d.xy[1] < H + 20);
     const priority = (id: string) => (id === selectedId ? 0 : id === hoveredId ? 1 : 2);
     const ranked = [...projected]
       .sort((a, b) => priority(a.p.id) - priority(b.p.id) || b.p.verses.length - a.p.verses.length)
@@ -181,7 +212,106 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
       ranked.map(({ p, xy }) => ({ id: p.id, name: p.name, x: xy[0], y: xy[1], force: priority(p.id) < 2 })),
       projected.map(d => d.xy)
     );
-  }, [places, projection, selectedId, hoveredId]);
+  }, [places, projection, selectedId, hoveredId, view]);
+
+  // ---- Zoom & pan ----
+  const clampK = (k: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, k));
+  /** Zoom by `factor`, keeping the point (cx, cy) in viewBox units fixed on screen. */
+  const zoomAt = useCallback((factor: number, cx = W / 2, cy = H / 2) => {
+    setView(v => {
+      const k = clampK(v.k * factor);
+      const f = k / v.k;
+      return { k, x: cx - (cx - v.x) * f, y: cy - (cy - v.y) * f };
+    });
+  }, []);
+  /** Where the +/- buttons zoom toward: the selected place, else the centre of the places */
+  const focusPoint = (): [number, number] => {
+    const pts = (selectedId ? places?.filter(p => p.id === selectedId) : places) ?? [];
+    const xy = pts.map(p => projection([p.lon, p.lat])).filter((d): d is [number, number] => !!d);
+    if (!xy.length) return [W / 2, H / 2];
+    const px = xy.reduce((a, d) => a + d[0], 0) / xy.length;
+    const py = xy.reduce((a, d) => a + d[1], 0) / xy.length;
+    return [px * view.k + view.x, py * view.k + view.y];
+  };
+  /** Zoom with the buttons, gently drawing the focus point toward the centre */
+  const zoomButton = (factor: number) => {
+    const [fx, fy] = focusPoint();
+    setView(v => {
+      const k = clampK(v.k * factor);
+      const f = k / v.k;
+      // Keep the focus point fixed, then pull it halfway toward the middle of the map
+      let x = fx - (fx - v.x) * f;
+      let y = fy - (fy - v.y) * f;
+      if (factor > 1) {
+        x += (W / 2 - fx) * 0.5;
+        y += (H / 2 - fy) * 0.5;
+      }
+      return { k, x, y };
+    });
+  };
+  const toViewBox = (clientX: number, clientY: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return { x: 0, y: 0 };
+    return { x: ((clientX - rect.left) / rect.width) * W, y: ((clientY - rect.top) / rect.height) * H };
+  };
+
+  // Scroll-wheel zoom (needs a non-passive listener to stop the page scrolling)
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const p = toViewBox(e.clientX, e.clientY);
+      zoomAt(Math.exp(-e.deltaY * 0.0015), p.x, p.y);
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  });
+
+  const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    pointers.current.set(e.pointerId, toViewBox(e.clientX, e.clientY));
+    if (pointers.current.size === 1) gesture.current = { moved: false };
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      gesture.current.pinchDist = Math.hypot(a.x - b.x, a.y - b.y);
+    }
+  };
+  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const prev = pointers.current.get(e.pointerId);
+    if (!prev) return;
+    const next = toViewBox(e.clientX, e.clientY);
+    pointers.current.set(e.pointerId, next);
+    if (pointers.current.size === 1) {
+      const dx = next.x - prev.x;
+      const dy = next.y - prev.y;
+      if (Math.abs(dx) + Math.abs(dy) > 0.5) gesture.current.moved = true;
+      setView(v => ({ ...v, x: v.x + dx, y: v.y + dy }));
+    } else if (pointers.current.size === 2 && gesture.current.pinchDist) {
+      const [a, b] = [...pointers.current.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      gesture.current.moved = true;
+      zoomAt(dist / gesture.current.pinchDist, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      gesture.current.pinchDist = dist;
+    }
+  };
+  const onPointerUp = (e: React.PointerEvent<SVGSVGElement>) => {
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size < 2) gesture.current.pinchDist = undefined;
+  };
+  /** Ignore the click that ends a drag */
+  const clickPlace = (id: string, isSelected: boolean) => {
+    if (gesture.current.moved) return;
+    setSelectedId(isSelected ? null : id);
+  };
+
+  // Esc closes the expanded map
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setExpanded(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [expanded]);
 
   const selected = places?.find(p => p.id === selectedId) ?? null;
   const loading = !places || !paths;
@@ -212,28 +342,38 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
       </div>
 
       {/* Map */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/40" style={{ background: COLORS.sea }}>
+      {(() => {
+        const mapBlock = (
+      <div className={`relative overflow-hidden rounded-2xl border border-border/40 ${expanded ? 'w-full max-w-[1400px]' : ''}`} style={{ background: COLORS.sea }}>
         {error ? (
           <div className="aspect-[3/2] flex items-center justify-center text-sm text-foreground/50">{error}</div>
         ) : (
           <svg
+            ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
-            className={`block w-full h-auto transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            style={{ touchAction: 'none' }}
+            className={`block w-full h-auto cursor-grab active:cursor-grabbing select-none transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}
             role="img"
             aria-label={`Map of places in ${scope === 'chapter' ? `${book} ${chapter}` : book}`}
           >
             {paths && (
-              <g>
-                <path d={paths.land} fill={COLORS.land} stroke={COLORS.coast} strokeWidth={0.75} />
-                <path d={paths.lakes} fill={COLORS.sea} stroke={COLORS.coast} strokeWidth={0.5} />
-                <path d={paths.rivers} fill="none" stroke={COLORS.river} strokeWidth={1} />
+              <g transform={`translate(${view.x} ${view.y}) scale(${view.k})`}>
+                <path d={paths.land} fill={COLORS.land} stroke={COLORS.coast} strokeWidth={0.75} vectorEffect="non-scaling-stroke" />
+                <path d={paths.lakes} fill={COLORS.sea} stroke={COLORS.coast} strokeWidth={0.5} vectorEffect="non-scaling-stroke" />
+                <path d={paths.rivers} fill="none" stroke={COLORS.river} strokeWidth={1} vectorEffect="non-scaling-stroke" />
               </g>
             )}
 
             {places?.map(place => {
               const xy = projection([place.lon, place.lat]);
               if (!xy) return null;
-              const [x, y] = xy;
+              const x = xy[0] * view.k + view.x;
+              const y = xy[1] * view.k + view.y;
+              if (x < -30 || x > W + 30 || y < -30 || y > H + 30) return null;
               const level = confidenceLevel(place.confidence);
               const isSelected = place.id === selectedId;
               const isHovered = place.id === hoveredId;
@@ -246,7 +386,8 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
                   tabIndex={0}
                   aria-label={`${place.name}, ${CONFIDENCE_LABELS[level].toLowerCase()}`}
                   className="cursor-pointer outline-none"
-                  onClick={() => setSelectedId(isSelected ? null : place.id)}
+                  onClick={() => clickPlace(place.id, isSelected)}
+                  onPointerDown={e => e.stopPropagation() /* let the svg handle drags only off markers */}
                   onKeyDown={e => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
@@ -297,29 +438,68 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
           </svg>
         )}
 
-        {/* Zoom */}
+        {/* Zoom & expand */}
         <div className="absolute right-2 top-2 flex flex-col overflow-hidden rounded-lg border border-border/50 bg-card/90 backdrop-blur">
           <button
             type="button"
-            onClick={() => setWide(false)}
-            disabled={!wide}
-            className="h-7 w-7 flex items-center justify-center text-foreground/60 hover:text-foreground disabled:opacity-30"
-            aria-label="Zoom in to the places"
+            onClick={() => zoomButton(STEP)}
+            disabled={view.k >= MAX_ZOOM}
+            className="h-8 w-8 flex items-center justify-center text-foreground/60 hover:text-foreground disabled:opacity-30"
+            aria-label="Zoom in"
+            title="Zoom in"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
           </button>
           <div className="h-px bg-border/50" />
           <button
             type="button"
-            onClick={() => setWide(true)}
-            disabled={wide}
-            className="h-7 w-7 flex items-center justify-center text-foreground/60 hover:text-foreground disabled:opacity-30"
-            aria-label="Zoom out to the wider region"
+            onClick={() => zoomButton(1 / STEP)}
+            disabled={view.k <= MIN_ZOOM}
+            className="h-8 w-8 flex items-center justify-center text-foreground/60 hover:text-foreground disabled:opacity-30"
+            aria-label="Zoom out"
+            title="Zoom out"
           >
-            <Minus className="w-3.5 h-3.5" />
+            <Minus className="w-4 h-4" />
+          </button>
+          <div className="h-px bg-border/50" />
+          <button
+            type="button"
+            onClick={() => setView(FIT)}
+            disabled={view.k === 1 && view.x === 0 && view.y === 0}
+            className="h-8 w-8 flex items-center justify-center text-foreground/60 hover:text-foreground disabled:opacity-30"
+            aria-label="Reset view"
+            title="Fit to places"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(e => !e)}
+          className="absolute left-2 top-2 h-8 w-8 flex items-center justify-center rounded-lg border border-border/50 bg-card/90 backdrop-blur text-foreground/60 hover:text-foreground"
+          aria-label={expanded ? 'Close full-screen map' : 'Expand map'}
+          title={expanded ? 'Close full screen' : 'Full screen'}
+        >
+          {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+        </button>
+        <p className="pointer-events-none absolute left-2 bottom-1.5 text-[10px] text-foreground/40">Drag to move · scroll or pinch to zoom</p>
       </div>
+        );
+        return expanded
+          ? createPortal(
+              <div
+                className={`fixed inset-0 z-[120] flex items-center justify-center bg-background/95 backdrop-blur-sm p-4 sm:p-8 font-sans${isDarkMode ? ' dark' : ''}`}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Full-screen map"
+                onClick={e => e.target === e.currentTarget && setExpanded(false)}
+              >
+                {mapBlock}
+              </div>,
+              document.body
+            )
+          : mapBlock;
+      })()}
 
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-foreground/45 -mt-1">
