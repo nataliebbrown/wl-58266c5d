@@ -43,6 +43,8 @@ export interface Occurrences {
   count: number;
   /** First references (up to 400) */
   refs: BibleReference[];
+  /** Verse counts per book (STEPBible code -> count) */
+  byBook: Record<string, number>;
 }
 
 export const ORIGINAL_ATTRIBUTION = {
@@ -189,20 +191,35 @@ export async function lookupFull(strong: string): Promise<FullEntry | null> {
 /** Verses where this exact word appears. Falls back to all senses of the same number. */
 export async function getOccurrences(strong: string): Promise<Occurrences> {
   const chunk = chunkOf(baseStrong(strong));
-  if (!chunk) return { count: 0, refs: [] };
-  const data = await load<Record<string, { n: number; r: string[] }>>(`occurrences/${chunk}.json`);
-  if (!data) return { count: 0, refs: [] };
+  if (!chunk) return { count: 0, refs: [], byBook: {} };
+  type Raw = { n: number; r: string[]; b?: Record<string, number> };
+  const data = await load<Record<string, Raw>>(`occurrences/${chunk}.json`);
+  if (!data) return { count: 0, refs: [], byBook: {} };
   let entry = data[strong];
   if (!entry) {
     const base = baseStrong(strong);
     const keys = Object.keys(data).filter(k => baseStrong(k) === base);
-    entry = keys.reduce<{ n: number; r: string[] }>((acc, k) => ({ n: acc.n + data[k].n, r: [...acc.r, ...data[k].r] }), { n: 0, r: [] });
+    entry = keys.reduce<Raw>((acc, k) => {
+      const b = { ...acc.b };
+      for (const [book, n] of Object.entries(data[k].b ?? {})) b[book] = (b[book] ?? 0) + n;
+      return { n: acc.n + data[k].n, r: [...acc.r, ...data[k].r], b };
+    }, { n: 0, r: [], b: {} });
+    entry.r.sort((a, b) => refOrder(a) - refOrder(b));
   }
   return {
     count: entry.n,
     refs: entry.r.map(parseStepRef).filter((r): r is BibleReference => !!r),
+    byBook: entry.b ?? {},
   };
 }
+
+function refOrder(ref: string): number {
+  const [code, ch, vs] = ref.split('.');
+  return STEP_BOOKS.indexOf(code) * 1e6 + Number(ch) * 1e3 + Number(vs);
+}
+
+/** STEPBible book codes in canonical order */
+export const STEP_BOOK_CODES = STEP_BOOKS;
 
 // ---- Preference ----
 

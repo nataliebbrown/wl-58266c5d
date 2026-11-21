@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { ChapterConnections } from '@/components/patterns/ChapterConnections';
 import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck, Languages, History } from 'lucide-react';
 import { SettingPanel } from '@/components/timewalk/SettingPanel';
 import { OriginalPanel } from '@/components/original/OriginalPanel';
@@ -359,6 +360,7 @@ function CrossRefsTab({
 
   return (
     <div ref={containerRef}>
+      <ChapterConnections book={book} chapter={chapter} focusVerse={focusVerse} onGoToReference={onGoToReference} />
       {!focusVerse && <p className="text-xs text-foreground/45 mb-4">Tap a verse in the text to jump to its cross-references.</p>}
       {refs.loading && <Loading />}
       {refs.error && <ErrorNote />}

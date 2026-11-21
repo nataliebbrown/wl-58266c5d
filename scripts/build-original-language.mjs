@@ -23,7 +23,7 @@
  *   text/<Book>/<chapter>.json   { "<verse>": [[original, translit, gloss, strong, morph], …] }  (English versification)
  *   lexicon/brief/<H|G><chunk>.json   dStrong -> { w, t, g, d }
  *   lexicon/full/<H|G><chunk>.json    Greek: LSJ; Hebrew: Strong's + BDB outline
- *   occurrences/<H|G><chunk>.json     dStrong -> { n, r: ["Gen.1.1", …] (first 400) }
+ *   occurrences/<H|G><chunk>.json     dStrong -> { n, r: ["Gen.1.1", …] (first 400), b: { Gen: count, … } }
  *   lexicon/index.json                [strong, lemma, translit, gloss] search index
  *   morph.json                        grammar code -> plain-English description
  */
@@ -299,7 +299,13 @@ const refKey = ref => {
 };
 for (const [strong, refs] of occ) {
   const sorted = [...new Set(refs)].sort((a, b) => refKey(a) - refKey(b));
-  occEntries[strong] = { n: sorted.length, r: sorted.slice(0, 400) };
+  // Verses per book (for word threads across the whole Bible)
+  const byBook = {};
+  for (const ref of sorted) {
+    const b = ref.split('.')[0];
+    byBook[b] = (byBook[b] ?? 0) + 1;
+  }
+  occEntries[strong] = { n: sorted.length, r: sorted.slice(0, 400), b: byBook };
 }
 for (const [c, data] of Object.entries(chunked(occEntries))) writeJson(`occurrences/${c}.json`, data);
 

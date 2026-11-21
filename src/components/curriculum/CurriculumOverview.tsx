@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, PlayCircle, Languages, BookOpenCheck, BookOpen, Clock } from 'lucide-react';
+import { GraduationCap, PlayCircle, Languages, BookOpenCheck, BookOpen, Clock, GitBranch } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getQuizData } from '@/lib/onboardingState';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
@@ -295,6 +295,7 @@ function StudyTools() {
   const tools = [
     { icon: Languages, title: 'Translation Bridge', body: 'Hebrew & Greek words, key words of the faith, and translations compared.', path: '/translation' },
     { icon: Clock, title: 'TimeWalk', body: 'Step into the world of the Bible: eras, people, archaeology, and daily life.', path: '/timewalk' },
+    { icon: GitBranch, title: 'Pattern Explorer', body: 'Themes, promises, and connections that run through the whole Bible.', path: '/patterns' },
     { icon: BookOpenCheck, title: 'Study methods', body: 'SOAP, Inductive, Lectio Divina, Word study, and more — step by step.', path: '/study' },
     { icon: BookOpen, title: 'Daily Bible reading', body: 'Read through the whole Bible at your own pace.', path: '/reading' },
   ];
