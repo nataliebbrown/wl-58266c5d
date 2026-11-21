@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck, Languages } from 'lucide-react';
+import { NotebookText, Link2, Asterisk, Map as MapIcon, Sparkles, ChevronDown, ArrowUpRight, Loader2, X, BookOpenCheck, Languages, History } from 'lucide-react';
+import { SettingPanel } from '@/components/timewalk/SettingPanel';
 import { OriginalPanel } from '@/components/original/OriginalPanel';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { OriginalWord } from '@/lib/originalLanguage';
@@ -19,7 +20,7 @@ import {
   fetchFootnotes,
 } from '@/lib/studyResources';
 
-export type StudyTab = 'notes' | 'crossrefs' | 'footnotes' | 'original' | 'places' | 'sophia';
+export type StudyTab = 'notes' | 'crossrefs' | 'footnotes' | 'original' | 'places' | 'setting' | 'sophia';
 
 interface StudyPanelProps {
   book: string;
@@ -47,6 +48,7 @@ const TABS: { id: StudyTab; label: string; icon: typeof NotebookText }[] = [
   { id: 'footnotes', label: 'Footnotes', icon: Asterisk },
   { id: 'original', label: 'Original', icon: Languages },
   { id: 'places', label: 'Places', icon: MapIcon },
+  { id: 'setting', label: 'Setting', icon: History },
   { id: 'sophia', label: 'Sophia', icon: Sparkles },
 ];
 
@@ -183,6 +185,9 @@ export function StudyPanel({
               onAskSophia={onAskSophia}
               onStudyWord={onStudyWord}
             />
+          )}
+          {tab === 'setting' && (
+            <SettingPanel book={book} chapter={chapter} onGoToReference={onGoToReference} onAskSophia={onAskSophia} />
           )}
           {tab === 'places' && (
             <ChapterMap

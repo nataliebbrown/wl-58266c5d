@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, PlayCircle, Languages, BookOpenCheck, BookOpen } from 'lucide-react';
+import { GraduationCap, PlayCircle, Languages, BookOpenCheck, BookOpen, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getQuizData } from '@/lib/onboardingState';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
@@ -294,13 +294,14 @@ function StudyTools() {
   const navigate = useNavigate();
   const tools = [
     { icon: Languages, title: 'Translation Bridge', body: 'Hebrew & Greek words, key words of the faith, and translations compared.', path: '/translation' },
+    { icon: Clock, title: 'TimeWalk', body: 'Step into the world of the Bible: eras, people, archaeology, and daily life.', path: '/timewalk' },
     { icon: BookOpenCheck, title: 'Study methods', body: 'SOAP, Inductive, Lectio Divina, Word study, and more — step by step.', path: '/study' },
     { icon: BookOpen, title: 'Daily Bible reading', body: 'Read through the whole Bible at your own pace.', path: '/reading' },
   ];
   return (
     <div className="mb-8">
       <p className="text-xs font-medium uppercase tracking-wider text-foreground/40 mb-3">Study tools</p>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {tools.map(t => (
           <button
             key={t.path}

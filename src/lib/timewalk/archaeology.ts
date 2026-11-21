@@ -1,0 +1,421 @@
+// ============ TimeWalk: archaeological finds ============
+//
+// DRAFT entries, hidden from users until reviewed (set `reviewed: true` to publish).
+// Review list: docs/timewalk-review.md. Photos are looked up on Wikimedia Commons by
+// `commonsSearch` and only openly licensed images are used (scripts/fetch-timewalk-images.mjs).
+
+import type { BibleReference } from '@/lib/bibleApi';
+
+export interface Find {
+  id: string;
+  name: string;
+  /** When the object was made (scholarly, approximate) */
+  date: string;
+  found: string;
+  /** Where it is today */
+  location: string;
+  what: string;
+  /** How it connects to the Bible */
+  connection: string;
+  eraId: string;
+  refs: { label: string; ref: BibleReference }[];
+  /** Chapters this find relates to (for the study panel's Finds view) */
+  chapters: { book: string; from: number; to: number }[];
+  commonsSearch: string;
+  reviewed: boolean;
+}
+
+const ref = (label: string, book: string, chapter: number, verse?: number) => ({ label, ref: { book, chapter, verse } });
+
+export const FINDS: Find[] = [
+  {
+    id: 'merneptah-stele',
+    name: 'Merneptah Stele',
+    date: 'c. 1208 BC',
+    found: '1896, Thebes, Egypt',
+    location: 'Egyptian Museum, Cairo',
+    what: 'A granite monument celebrating Pharaoh Merneptah’s military campaigns, including one into Canaan.',
+    connection:
+      'It contains the earliest known mention of “Israel” outside the Bible — as a people already living in Canaan by about 1208 BC. It fits the Bible’s picture of Israel settled in the land during the time of the judges.',
+    eraId: 'conquest',
+    refs: [ref('Judges 2:6–10', 'Judges', 2, 6), ref('Joshua 24:1', 'Joshua', 24, 1)],
+    chapters: [{ book: 'Judges', from: 1, to: 21 }, { book: 'Joshua', from: 1, to: 24 }],
+    commonsSearch: 'Merneptah Stele',
+    reviewed: false,
+  },
+  {
+    id: 'tel-dan-stele',
+    name: 'Tel Dan Stele',
+    date: 'c. 840 BC',
+    found: '1993–1994, Tel Dan, northern Israel',
+    location: 'Israel Museum, Jerusalem',
+    what: 'Fragments of a victory inscription by an Aramean king, probably Hazael of Damascus.',
+    connection:
+      'It mentions the “house of David” — the earliest reference to King David outside the Bible, written about 150 years after his reign. It also refers to kings of Israel and Judah around the time described in 2 Kings 8–9.',
+    eraId: 'divided',
+    refs: [ref('2 Samuel 7:16', '2 Samuel', 7, 16), ref('2 Kings 8:28', '2 Kings', 8, 28)],
+    chapters: [{ book: '2 Kings', from: 8, to: 10 }, { book: '2 Samuel', from: 7, to: 7 }],
+    commonsSearch: 'Tel Dan Stele',
+    reviewed: false,
+  },
+  {
+    id: 'mesha-stele',
+    name: 'Mesha Stele (Moabite Stone)',
+    date: 'c. 840 BC',
+    found: '1868, Dhiban, Jordan',
+    location: 'Louvre, Paris',
+    what: 'A basalt monument by Mesha, king of Moab, describing his revolt against Israel.',
+    connection:
+      'Mesha names Omri, king of Israel, and the God of Israel (YHWH). 2 Kings 3 tells the same story of Mesha’s rebellion from Israel’s side. Many scholars also read “house of David” in a damaged line.',
+    eraId: 'divided',
+    refs: [ref('2 Kings 3:4–5', '2 Kings', 3, 4), ref('1 Kings 16:23', '1 Kings', 16, 23)],
+    chapters: [{ book: '2 Kings', from: 3, to: 3 }, { book: '1 Kings', from: 16, to: 16 }],
+    commonsSearch: 'Mesha Stele Louvre',
+    reviewed: false,
+  },
+  {
+    id: 'black-obelisk',
+    name: 'Black Obelisk of Shalmaneser III',
+    date: 'c. 825 BC',
+    found: '1846, Nimrud, Iraq',
+    location: 'British Museum, London',
+    what: 'A black limestone pillar recording the Assyrian king’s campaigns, with carved panels of kings bringing tribute.',
+    connection:
+      'One panel shows “Jehu, son of Omri” (as the Assyrians called him) bowing before Shalmaneser — the only known picture of an Israelite king. Jehu’s rise is told in 2 Kings 9–10.',
+    eraId: 'divided',
+    refs: [ref('2 Kings 9:1–13', '2 Kings', 9, 1), ref('2 Kings 10:28', '2 Kings', 10, 28)],
+    chapters: [{ book: '2 Kings', from: 9, to: 10 }],
+    commonsSearch: 'Black Obelisk Shalmaneser III Jehu',
+    reviewed: false,
+  },
+  {
+    id: 'siloam-inscription',
+    name: 'Hezekiah’s Tunnel and the Siloam Inscription',
+    date: 'c. 701 BC',
+    found: '1880, Jerusalem',
+    location: 'Tunnel in Jerusalem; inscription in the Istanbul Archaeology Museums',
+    what: 'A 533-meter (1,750-foot) tunnel cut through solid rock to bring water from the Gihon Spring into the city, with an inscription describing the moment the two digging teams met.',
+    connection:
+      'The Bible says Hezekiah “made the pool and the tunnel and brought water into the city” to prepare for the Assyrian siege. Visitors can still walk through it today.',
+    eraId: 'judah',
+    refs: [ref('2 Kings 20:20', '2 Kings', 20, 20), ref('2 Chronicles 32:30', '2 Chronicles', 32, 30)],
+    chapters: [{ book: '2 Kings', from: 18, to: 20 }, { book: '2 Chronicles', from: 32, to: 32 }],
+    commonsSearch: 'Siloam inscription',
+    reviewed: false,
+  },
+  {
+    id: 'sennacherib-prism',
+    name: 'Sennacherib’s Prism',
+    date: 'c. 690 BC',
+    found: '1830, Nineveh, Iraq',
+    location: 'British Museum (Taylor Prism); Oriental Institute, Chicago',
+    what: 'Six-sided clay prisms recording the Assyrian king Sennacherib’s campaigns.',
+    connection:
+      'Sennacherib boasts that he shut up Hezekiah in Jerusalem “like a bird in a cage” — but never claims to have captured the city. 2 Kings 19 and Isaiah 37 tell how God delivered Jerusalem.',
+    eraId: 'judah',
+    refs: [ref('2 Kings 19:32–36', '2 Kings', 19, 32), ref('Isaiah 37:36–37', 'Isaiah', 37, 36)],
+    chapters: [{ book: '2 Kings', from: 18, to: 19 }, { book: 'Isaiah', from: 36, to: 37 }, { book: '2 Chronicles', from: 32, to: 32 }],
+    commonsSearch: 'Taylor Prism Sennacherib',
+    reviewed: false,
+  },
+  {
+    id: 'lachish-reliefs',
+    name: 'Lachish Reliefs',
+    date: 'c. 700 BC',
+    found: '1840s, Sennacherib’s palace at Nineveh',
+    location: 'British Museum, London',
+    what: 'Large carved stone panels from Sennacherib’s palace showing the siege and capture of the Judean city of Lachish.',
+    connection:
+      'The Bible mentions Sennacherib at Lachish while he threatened Jerusalem. The reliefs show siege ramps, battering rams, and families being led into exile — and excavations at Lachish have found the Assyrian siege ramp.',
+    eraId: 'judah',
+    refs: [ref('2 Kings 18:14', '2 Kings', 18, 14), ref('2 Chronicles 32:9', '2 Chronicles', 32, 9)],
+    chapters: [{ book: '2 Kings', from: 18, to: 19 }, { book: '2 Chronicles', from: 32, to: 32 }],
+    commonsSearch: 'Lachish relief British Museum',
+    reviewed: false,
+  },
+  {
+    id: 'hezekiah-bulla',
+    name: 'Seal impression of King Hezekiah',
+    date: 'c. 715–686 BC',
+    found: '2009 (published 2015), Ophel excavations, Jerusalem',
+    location: 'Herbert W. Armstrong College / Hebrew University collection',
+    what: 'A small clay seal impression (bulla) reading “Belonging to Hezekiah, son of Ahaz, king of Judah.”',
+    connection: 'It was found in a scientific excavation near the royal quarter of Jerusalem and names the king described in 2 Kings 18–20.',
+    eraId: 'judah',
+    refs: [ref('2 Kings 18:1', '2 Kings', 18, 1)],
+    chapters: [{ book: '2 Kings', from: 18, to: 20 }, { book: '2 Chronicles', from: 29, to: 32 }, { book: 'Isaiah', from: 36, to: 39 }],
+    // No openly licensed photo of this bulla is known; leave blank rather than show a different seal
+    commonsSearch: '',
+    reviewed: false,
+  },
+  {
+    id: 'ketef-hinnom',
+    name: 'Ketef Hinnom Silver Scrolls',
+    date: 'c. 600 BC',
+    found: '1979, a burial cave in Jerusalem',
+    location: 'Israel Museum, Jerusalem',
+    what: 'Two tiny rolled-up silver amulets, worn around the neck.',
+    connection:
+      'They contain a form of the priestly blessing from Numbers 6:24–26 — “The LORD bless you and keep you…” — making them the oldest known texts of Scripture, about 400 years older than the Dead Sea Scrolls.',
+    eraId: 'judah',
+    refs: [ref('Numbers 6:24–26', 'Numbers', 6, 24)],
+    chapters: [{ book: 'Numbers', from: 6, to: 6 }],
+    commonsSearch: 'Ketef Hinnom silver scroll',
+    reviewed: false,
+  },
+  {
+    id: 'lachish-letters',
+    name: 'Lachish Letters',
+    date: 'c. 588 BC',
+    found: '1935, Lachish',
+    location: 'Israel Museum and British Museum',
+    what: 'Letters written in ink on pottery pieces by a Judean officer, as Babylon closed in.',
+    connection:
+      'One letter says the writer can no longer see the fire signals of Azekah. Jeremiah 34:7 describes the moment when Lachish and Azekah were the only fortified cities of Judah left standing.',
+    eraId: 'judah',
+    refs: [ref('Jeremiah 34:7', 'Jeremiah', 34, 7)],
+    chapters: [{ book: 'Jeremiah', from: 34, to: 34 }],
+    commonsSearch: 'Lachish letters ostracon',
+    reviewed: false,
+  },
+  {
+    id: 'babylonian-chronicle',
+    name: 'Babylonian Chronicle of Jerusalem’s capture',
+    date: 'c. 597 BC (written later)',
+    found: 'Acquired by the British Museum in the 1890s',
+    location: 'British Museum, London',
+    what: 'A clay tablet recording the early years of Nebuchadnezzar’s reign.',
+    connection:
+      'It records that Nebuchadnezzar captured “the city of Judah” on 2 Adar (March 16, 597 BC), took its king, and appointed a king of his own choosing — the events of 2 Kings 24:10–17.',
+    eraId: 'judah',
+    refs: [ref('2 Kings 24:10–17', '2 Kings', 24, 10)],
+    chapters: [{ book: '2 Kings', from: 24, to: 24 }],
+    commonsSearch: 'Babylonian Chronicle Nebuchadnezzar Jerusalem tablet',
+    reviewed: false,
+  },
+  {
+    id: 'jehoiachin-tablets',
+    name: 'Jehoiachin ration tablets',
+    date: 'c. 592–569 BC',
+    found: '1899–1917, Babylon',
+    location: 'Vorderasiatisches Museum, Berlin',
+    what: 'Administrative tablets listing food rations given to people held at Nebuchadnezzar’s court.',
+    connection: 'They list rations for “Jehoiachin, king of Judah” and his sons — matching 2 Kings 25:27–30, which says the exiled king was given a regular allowance in Babylon.',
+    eraId: 'exile',
+    refs: [ref('2 Kings 25:27–30', '2 Kings', 25, 27)],
+    chapters: [{ book: '2 Kings', from: 25, to: 25 }, { book: 'Jeremiah', from: 52, to: 52 }],
+    commonsSearch: 'Jehoiachin ration tablets',
+    reviewed: false,
+  },
+  {
+    id: 'ishtar-gate',
+    name: 'Ishtar Gate of Babylon',
+    date: 'c. 575 BC',
+    found: '1902–1914, Babylon',
+    location: 'Reconstructed in the Pergamon Museum, Berlin',
+    what: 'A glazed-brick city gate decorated with lions, bulls, and dragons, built by Nebuchadnezzar II.',
+    connection: 'It gives a sense of the city Daniel and the exiles lived in — and of the pride in Nebuchadnezzar’s words, “Is not this great Babylon, which I have built?”',
+    eraId: 'exile',
+    refs: [ref('Daniel 4:30', 'Daniel', 4, 30)],
+    chapters: [{ book: 'Daniel', from: 1, to: 5 }],
+    commonsSearch: 'Ishtar Gate Pergamon Museum',
+    reviewed: false,
+  },
+  {
+    id: 'nabonidus-cylinder',
+    name: 'Nabonidus Cylinder',
+    date: 'c. 540 BC',
+    found: '1854, Ur, Iraq',
+    location: 'British Museum, London',
+    what: 'Clay cylinders recording the building work of Nabonidus, the last king of Babylon.',
+    connection:
+      'They name Belshazzar as Nabonidus’ eldest son. Belshazzar was once unknown outside the Bible; Daniel 5 presents him ruling Babylon, which fits his role as co-regent while his father was away — and explains why he offered Daniel only the “third” place in the kingdom.',
+    eraId: 'exile',
+    refs: [ref('Daniel 5:29', 'Daniel', 5, 29)],
+    chapters: [{ book: 'Daniel', from: 5, to: 5 }],
+    commonsSearch: 'Nabonidus Cylinder',
+    reviewed: false,
+  },
+  {
+    id: 'cyrus-cylinder',
+    name: 'Cyrus Cylinder',
+    date: 'c. 539 BC',
+    found: '1879, Babylon',
+    location: 'British Museum, London',
+    what: 'A clay cylinder in which Cyrus the Great describes his capture of Babylon.',
+    connection:
+      'Cyrus says he returned displaced peoples to their homelands and restored their temples. It does not mention the Jews, but it shows the policy behind his decree in Ezra 1 — and Isaiah names Cyrus as the one who would say of Jerusalem, “Let it be rebuilt.”',
+    eraId: 'return',
+    refs: [ref('Ezra 1:1–4', 'Ezra', 1, 1), ref('Isaiah 44:28', 'Isaiah', 44, 28)],
+    chapters: [{ book: 'Ezra', from: 1, to: 1 }, { book: 'Isaiah', from: 44, to: 45 }, { book: '2 Chronicles', from: 36, to: 36 }],
+    commonsSearch: 'Cyrus Cylinder British Museum',
+    reviewed: false,
+  },
+  {
+    id: 'dead-sea-scrolls',
+    name: 'Dead Sea Scrolls (Great Isaiah Scroll)',
+    date: 'c. 250 BC – AD 68 (Isaiah scroll c. 125 BC)',
+    found: '1947–1956, caves near Qumran',
+    location: 'Shrine of the Book, Israel Museum, Jerusalem',
+    what: 'Around 900 scrolls, including copies or fragments of every Old Testament book except Esther.',
+    connection:
+      'The complete Isaiah scroll is about 1,000 years older than the previous oldest Hebrew manuscripts, yet it reads almost word for word the same — powerful evidence of how carefully Scripture was copied.',
+    eraId: 'between',
+    refs: [ref('Isaiah 40:8', 'Isaiah', 40, 8), ref('Isaiah 53:5', 'Isaiah', 53, 5)],
+    chapters: [{ book: 'Isaiah', from: 1, to: 66 }],
+    commonsSearch: 'Great Isaiah Scroll',
+    reviewed: false,
+  },
+  {
+    id: 'pool-of-bethesda',
+    name: 'Pool of Bethesda',
+    date: '1st century and earlier',
+    found: 'Excavated from the late 1800s, near St. Anne’s Church, Jerusalem',
+    location: 'Jerusalem (visitable)',
+    what: 'The remains of large pools with porches, north of the temple.',
+    connection:
+      'John 5:2 describes a pool by the Sheep Gate “surrounded by five covered colonnades.” The excavations revealed twin pools with porticoes on four sides and one between them — five in all.',
+    eraId: 'jesus',
+    refs: [ref('John 5:2', 'John', 5, 2)],
+    chapters: [{ book: 'John', from: 5, to: 5 }],
+    commonsSearch: 'Pool of Bethesda Jerusalem',
+    reviewed: false,
+  },
+  {
+    id: 'pool-of-siloam',
+    name: 'Pool of Siloam',
+    date: '1st century',
+    found: '2004, City of David, Jerusalem',
+    location: 'Jerusalem (visitable)',
+    what: 'Wide stone steps of a large first-century pool at the southern end of the City of David, fed by Hezekiah’s Tunnel.',
+    connection: 'Jesus sent a man born blind to “wash in the Pool of Siloam” (John 9:7). The pool was rediscovered by workers repairing a sewer line.',
+    eraId: 'jesus',
+    refs: [ref('John 9:7', 'John', 9, 7)],
+    chapters: [{ book: 'John', from: 9, to: 9 }],
+    commonsSearch: 'Pool of Siloam steps',
+    reviewed: false,
+  },
+  {
+    id: 'galilee-boat',
+    name: 'The Galilee Boat',
+    date: 'c. 50 BC – AD 50',
+    found: '1986, shore of the Sea of Galilee',
+    location: 'Yigal Allon Centre, Kibbutz Ginosar',
+    what: 'A wooden fishing boat about 8 meters (27 feet) long, preserved in mud and revealed during a drought.',
+    connection: 'It is the kind of boat the disciples would have used — large enough for a crew of a dozen or more — and helps picture the storm on the lake and the great catch of fish.',
+    eraId: 'jesus',
+    refs: [ref('Mark 4:35–41', 'Mark', 4, 35), ref('Luke 5:1–11', 'Luke', 5, 1)],
+    chapters: [{ book: 'Mark', from: 4, to: 4 }, { book: 'Luke', from: 5, to: 5 }, { book: 'Matthew', from: 8, to: 8 }, { book: 'John', from: 21, to: 21 }],
+    commonsSearch: 'Ancient Galilee Boat Ginosar',
+    reviewed: false,
+  },
+  {
+    id: 'capernaum-synagogue',
+    name: 'Capernaum synagogue',
+    date: '4th–5th century, built on a 1st-century foundation',
+    found: 'Excavated from the early 1900s, Capernaum',
+    location: 'Capernaum, Sea of Galilee (visitable)',
+    what: 'The ruins of a white limestone synagogue, built over the black basalt foundations of an earlier one.',
+    connection: 'Many archaeologists think the basalt foundations belong to the synagogue where Jesus taught and healed in Capernaum, His base in Galilee.',
+    eraId: 'jesus',
+    refs: [ref('Mark 1:21', 'Mark', 1, 21), ref('Luke 7:5', 'Luke', 7, 5)],
+    chapters: [{ book: 'Mark', from: 1, to: 2 }, { book: 'Luke', from: 4, to: 7 }, { book: 'John', from: 6, to: 6 }],
+    commonsSearch: 'Capernaum synagogue',
+    reviewed: false,
+  },
+  {
+    id: 'pilate-stone',
+    name: 'Pilate Stone',
+    date: 'c. AD 26–36',
+    found: '1961, theater of Caesarea Maritima',
+    location: 'Israel Museum, Jerusalem (replica at Caesarea)',
+    what: 'A limestone block with a Latin dedication of a building to the emperor Tiberius.',
+    connection: 'It names “Pontius Pilate, Prefect of Judea” — the governor who sentenced Jesus — and confirms his official title.',
+    eraId: 'jesus',
+    refs: [ref('Luke 3:1', 'Luke', 3, 1), ref('Matthew 27:2', 'Matthew', 27, 2)],
+    chapters: [{ book: 'Matthew', from: 27, to: 27 }, { book: 'Mark', from: 15, to: 15 }, { book: 'Luke', from: 23, to: 23 }, { book: 'John', from: 18, to: 19 }],
+    commonsSearch: 'Pilate stone Caesarea',
+    reviewed: false,
+  },
+  {
+    id: 'caiaphas-ossuary',
+    name: 'Caiaphas Ossuary',
+    date: '1st century AD',
+    found: '1990, a burial cave in Jerusalem',
+    location: 'Israel Museum, Jerusalem',
+    what: 'An ornate limestone bone box inscribed “Joseph, son of Caiaphas.”',
+    connection: 'Most scholars believe it belonged to the high priest Caiaphas (Josephus gives his full name as Joseph Caiaphas), who presided at Jesus’ trial.',
+    eraId: 'jesus',
+    refs: [ref('Matthew 26:57', 'Matthew', 26, 57), ref('John 18:13–14', 'John', 18, 13)],
+    chapters: [{ book: 'Matthew', from: 26, to: 26 }, { book: 'John', from: 11, to: 11 }, { book: 'John', from: 18, to: 18 }],
+    commonsSearch: 'Caiaphas ossuary',
+    reviewed: false,
+  },
+  {
+    id: 'temple-warning',
+    name: 'Temple warning inscription',
+    date: '1st century BC – AD 70',
+    found: '1871 and 1935, Jerusalem',
+    location: 'Istanbul Archaeology Museums; Israel Museum (fragment)',
+    what: 'A stone sign in Greek from the barrier around Herod’s temple courts.',
+    connection:
+      'It warns that any foreigner who goes beyond the barrier will have only himself to blame for his death. Paul was accused of bringing a Gentile past it (Acts 21:28), and he wrote that Christ “has broken down the dividing wall of hostility” (Ephesians 2:14).',
+    eraId: 'church',
+    refs: [ref('Acts 21:28–29', 'Acts', 21, 28), ref('Ephesians 2:14', 'Ephesians', 2, 14)],
+    chapters: [{ book: 'Acts', from: 21, to: 21 }, { book: 'Ephesians', from: 2, to: 2 }],
+    commonsSearch: 'Temple warning inscription Istanbul',
+    reviewed: false,
+  },
+  {
+    id: 'gallio-inscription',
+    name: 'Gallio Inscription (Delphi)',
+    date: 'c. AD 52',
+    found: 'Published 1905, Delphi, Greece',
+    location: 'Delphi Archaeological Museum',
+    what: 'Fragments of a letter from the emperor Claudius that mentions Gallio as proconsul of Achaia.',
+    connection: 'It dates Gallio’s term to about AD 51–52 — which dates Paul’s appearance before him in Corinth (Acts 18:12) and anchors much of the timeline of Paul’s journeys.',
+    eraId: 'church',
+    refs: [ref('Acts 18:12–17', 'Acts', 18, 12)],
+    chapters: [{ book: 'Acts', from: 18, to: 18 }],
+    commonsSearch: 'Gallio inscription Delphi',
+    reviewed: false,
+  },
+  {
+    id: 'erastus-inscription',
+    name: 'Erastus Inscription (Corinth)',
+    date: 'c. AD 50',
+    found: '1929, Corinth, Greece',
+    location: 'Corinth (in place)',
+    what: 'A Latin pavement inscription saying a man named Erastus laid the pavement at his own expense in return for his office.',
+    connection:
+      'Paul sends greetings from “Erastus, the city treasurer” of Corinth (Romans 16:23). Many scholars think this is the same man, though others note the name was common and the inscription’s date is debated.',
+    eraId: 'church',
+    refs: [ref('Romans 16:23', 'Romans', 16, 23)],
+    chapters: [{ book: 'Romans', from: 16, to: 16 }, { book: 'Acts', from: 19, to: 19 }],
+    commonsSearch: 'Erastus inscription Corinth',
+    reviewed: false,
+  },
+  {
+    id: 'arch-of-titus',
+    name: 'Arch of Titus',
+    date: 'c. AD 81',
+    found: 'Standing in the Roman Forum since antiquity',
+    location: 'Rome',
+    what: 'A triumphal arch celebrating the Roman victory over Judea in AD 70.',
+    connection:
+      'A carved panel shows soldiers carrying the menorah and other treasures from the destroyed temple — the fulfillment of Jesus’ words that “not one stone will be left on another.”',
+    eraId: 'church',
+    refs: [ref('Luke 21:5–6', 'Luke', 21, 5), ref('Matthew 24:1–2', 'Matthew', 24, 1)],
+    chapters: [{ book: 'Matthew', from: 24, to: 24 }, { book: 'Mark', from: 13, to: 13 }, { book: 'Luke', from: 21, to: 21 }],
+    commonsSearch: 'Arch of Titus menorah relief',
+    reviewed: false,
+  },
+];
+
+export function findsForChapter(book: string, chapter: number, includeUnreviewed = false): Find[] {
+  return FINDS.filter(f => (includeUnreviewed || f.reviewed) && f.chapters.some(c => c.book === book && chapter >= c.from && chapter <= c.to));
+}
+
+export function publishedFinds(): Find[] {
+  return FINDS.filter(f => f.reviewed);
+}

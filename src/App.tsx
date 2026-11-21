@@ -23,6 +23,7 @@ import Study from "./pages/Study";
 import ReadingPlan from "./pages/ReadingPlan";
 import Today from "./pages/Today";
 import TranslationBridge from "./pages/TranslationBridge";
+import TimeWalk from "./pages/TimeWalk";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
@@ -81,6 +82,7 @@ function AppContent() {
         <Route path="/reading" element={<ReadingPlan />} />
         <Route path="/today" element={<Today />} />
         <Route path="/translation" element={<TranslationBridge />} />
+        <Route path="/timewalk" element={<TimeWalk />} />
         <Route path="/search" element={<Search />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/terms" element={<Terms />} />

@@ -36,5 +36,5 @@ export const navItems: NavItem[] = [
   { icon: Lightbulb, label: 'Insights', id: 'insights', path: '/insights', available: true },
   { icon: NotebookPen, label: 'Journal', id: 'journal', path: '/journal', available: true },
   { icon: GitBranch, label: 'Patterns', id: 'patterns', path: '/patterns', available: false, moduleType: 'patterns' },
-  { icon: Clock, label: 'TimeWalk', id: 'timewalk', path: '/timewalk', available: false, moduleType: 'timewalk' },
+  { icon: Clock, label: 'TimeWalk', id: 'timewalk', path: '/timewalk', available: true, moduleType: 'timewalk', hideOnMobile: true },
 ];

@@ -14,6 +14,8 @@ import {
   loadBasemapDetail,
 } from '@/lib/bibleGeo';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
+import { getPlacePhotos, type Photo } from '@/lib/timewalk/data';
+import { PhotoCredit, PhotoThumb } from '@/components/timewalk/PhotoViewer';
 
 interface ChapterMapProps {
   book: string;
@@ -127,6 +129,10 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
   const gesture = useRef<{ moved: boolean; pinchDist?: number }>({ moved: false });
   const [basemap, setBasemap] = useState<Basemap | null>(null);
   const [detail, setDetail] = useState<Basemap | null>(null);
+  const [photos, setPhotos] = useState<Record<string, Photo>>({});
+  useEffect(() => {
+    getPlacePhotos().then(setPhotos).catch(() => {});
+  }, []);
   const [places, setPlaces] = useState<ChapterPlace[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -516,6 +522,12 @@ export function ChapterMap({ book, chapter, onGoToVerse }: ChapterMapProps) {
       {/* Selected place */}
       {selected && (
         <div className="rounded-2xl border border-border/40 bg-foreground/[0.025] px-4 py-4">
+          {photos[selected.id] && (
+            <div className="mb-3">
+              <PhotoThumb photo={photos[selected.id]} aspect="aspect-[16/9]" />
+              <PhotoCredit photo={photos[selected.id]} className="mt-1" />
+            </div>
+          )}
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-serif text-lg text-foreground/90 leading-tight">{selected.name}</p>
