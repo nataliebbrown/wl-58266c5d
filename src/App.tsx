@@ -19,6 +19,7 @@ import Search from "./pages/Search";
 import Settings from "./pages/Settings";
 import Journal from "./pages/Journal";
 import Meditate from "./pages/Meditate";
+import Study from "./pages/Study";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
@@ -73,6 +74,7 @@ function AppContent() {
         <Route path="/insights" element={<Insights />} />
         <Route path="/journal" element={<Journal />} />
         <Route path="/meditate" element={<Meditate />} />
+        <Route path="/study" element={<Study />} />
         <Route path="/search" element={<Search />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/terms" element={<Terms />} />

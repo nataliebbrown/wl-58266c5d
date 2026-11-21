@@ -242,7 +242,8 @@ function parseEsvResponse(data: Record<string, unknown>, ref: BibleReference): B
 
       for (let i = 1; i < parts.length; i += 2) {
         const verseNum = parseInt(parts[i], 10);
-        const verseText = (parts[i + 1] ?? '').replace(/\n/g, ' ').trim();
+        // The short copyright "(ESV)" is appended to the passage's last verse — strip it
+        const verseText = (parts[i + 1] ?? '').replace(/\n/g, ' ').replace(/\s*\(ESV\)\s*$/, '').trim();
         if (verseText) {
           const verse: BibleVerse = { number: verseNum, text: verseText };
           paragraphVerses.push(verse);

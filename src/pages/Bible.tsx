@@ -158,6 +158,11 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   }, []);
 
   const studyChapter = visibleChapter ?? reference?.chapter ?? 1;
+
+  const startStudy = useCallback(() => {
+    if (!reference) return;
+    navigate('/study', { state: { passage: { book: reference.book, chapter: studyChapter } } });
+  }, [navigate, reference, studyChapter]);
   const studyFocus = focusVerse && focusVerse.chapter === studyChapter ? focusVerse.verse : null;
 
   const sophiaPane = (
@@ -243,6 +248,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               tab={studyTab}
               onTabChange={setStudyTab}
               onGoToReference={handleStudyNavigate}
+              onStartStudy={startStudy}
               sophia={sophiaPane}
             />
           </div>
@@ -294,6 +300,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               tab={studyTab === 'sophia' ? 'notes' : studyTab}
               onTabChange={setStudyTab}
               onGoToReference={handleStudyNavigate}
+              onStartStudy={startStudy}
               onClose={() => setStudySheetOpen(false)}
             />
           </SheetContent>
