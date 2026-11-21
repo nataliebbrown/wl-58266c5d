@@ -1,4 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import { PortraitsOfGod } from '@/components/portraits/PortraitsOfGod';
 import { Plus, Search, X } from 'lucide-react';
 import { getCurriculumForUser } from '@/lib/curriculum';
 import { getQuizData } from '@/lib/onboardingState';
@@ -93,10 +95,13 @@ function buildActivityList(
 
 // ============ Component ============
 
-type Tab = 'all' | 'by-lesson';
+type Tab = 'all' | 'by-lesson' | 'portraits';
 
 export default function Journal() {
-  const [activeTab, setActiveTab] = useState<Tab>('all');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<Tab>(() =>
+    (location.state as { tab?: Tab } | null)?.tab === 'portraits' ? 'portraits' : 'all'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -200,7 +205,20 @@ export default function Journal() {
             >
               By Lesson
             </button>
+            <button
+              onClick={() => setActiveTab('portraits')}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === 'portraits'
+                  ? 'border-foreground/60 text-foreground'
+                  : 'border-transparent text-foreground/40 hover:text-foreground/60'
+              }`}
+            >
+              Portraits of God
+            </button>
           </div>
+
+          {activeTab === 'portraits' && <PortraitsOfGod />}
+          {activeTab !== 'portraits' && (<>
 
           {/* Search */}
           <div className="relative mb-6">
@@ -266,6 +284,7 @@ export default function Journal() {
               searchQuery={searchQuery}
             />
           )}
+          </>)}
         </div>
       </div>
     </div>

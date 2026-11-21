@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pause, Play, RotateCcw, Check, SlidersHorizontal } from 'lucide-react';
 import { formatMeditationReference } from '@/lib/meditation/catalog';
+import { PortraitCaptureForm } from '@/components/portraits/PortraitCaptureForm';
 import {
   type MeditationTarget,
   type SessionMinutes,
@@ -263,9 +264,12 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
             <p className="font-serif text-2xl text-foreground/85 leading-snug mb-2">
               What did this verse show you about God?
             </p>
-            <p className="text-sm text-foreground/50 leading-relaxed mb-7">
+            <p className="text-sm text-foreground/50 leading-relaxed mb-5">
               Take a moment before you move on. Thank Him for who He is.
             </p>
+            <div className="text-left mb-7">
+              <PortraitCaptureForm source="meditation" reference={reference} placeholder="God is…" compact />
+            </div>
             <div className="flex items-center justify-center gap-2">
               <button
                 type="button"

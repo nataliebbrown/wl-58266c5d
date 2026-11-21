@@ -16,6 +16,7 @@ import {
   NT_BOOKS,
 } from '@/lib/bibleApi';
 import { getHighlightsForChapter, type VerseHighlight } from '@/lib/highlights';
+import { PortraitCaptureForm } from '@/components/portraits/PortraitCaptureForm';
 import { useNavigate } from 'react-router-dom';
 import type { MeditateLocationState } from '@/lib/meditation/storage';
 
@@ -182,6 +183,7 @@ function RevealsGodCard({
   chapter: number;
   onReflect: () => void;
 }) {
+  const [capturing, setCapturing] = useState(false);
   return (
     <div className="mt-10 mb-2 rounded-2xl border border-border/30 bg-foreground/[0.025] px-5 py-5 font-sans">
       <p className="text-[11px] uppercase tracking-[0.18em] text-foreground/40 mb-2">
@@ -193,14 +195,33 @@ function RevealsGodCard({
       <p className="text-sm text-foreground/55 leading-relaxed mb-4">
         Look back over the chapter. What did you see of His character, His promises, or what He is doing?
       </p>
-      <button
-        type="button"
-        onClick={onReflect}
-        className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3.5 py-1.5 text-sm text-foreground/70 hover:text-foreground hover:bg-foreground/[0.04] transition-colors"
-      >
-        <Sparkles className="w-3.5 h-3.5" />
-        Reflect with Sophia
-      </button>
+      {capturing ? (
+        <PortraitCaptureForm
+          source="reflection"
+          reference={`${book === 'Psalms' ? 'Psalm' : book} ${chapter}`}
+          placeholder={`In ${book} ${chapter}, I saw that God…`}
+          onCancel={() => setCapturing(false)}
+          compact
+        />
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onReflect}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3.5 py-1.5 text-sm text-foreground/70 hover:text-foreground hover:bg-foreground/[0.04] transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Reflect with Sophia
+          </button>
+          <button
+            type="button"
+            onClick={() => setCapturing(true)}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3.5 py-1.5 text-sm text-foreground/70 hover:text-foreground hover:bg-foreground/[0.04] transition-colors"
+          >
+            Write what you saw
+          </button>
+        </div>
+      )}
     </div>
   );
 }
