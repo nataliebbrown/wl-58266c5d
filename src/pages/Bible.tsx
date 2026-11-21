@@ -4,7 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BibleNavigator } from '@/components/bible/BibleNavigator';
-import { ReadingView } from '@/components/bible/ReadingView';
+import { ReadingView, type BibleMode } from '@/components/bible/ReadingView';
+import { StudyPanel, type StudyTab } from '@/components/bible/StudyPanel';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useDarkMode } from '@/components/layout/DarkModeContext';
 import { useSophiaOrbIntercept } from '@/components/sophia/SophiaOrbInterceptContext';
 import type { BibleReference, BibleVerse } from '@/lib/bibleApi';
 import { buildChapterRevealsGodPrompt } from '@/lib/sophiaHermeneutics';
@@ -34,20 +38,52 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
   const [resumeConversationId, setResumeConversationId] = useState<string | null>(incomingConversationId);
 
+  // ---- Read / study mode ----
+  const [mode, setMode] = useState<BibleMode>(() => {
+    try {
+      return localStorage.getItem('wl-bible-mode') === 'study' ? 'study' : 'read';
+    } catch {
+      return 'read';
+    }
+  });
+  const [studyTab, setStudyTab] = useState<StudyTab>('notes');
+  const [studySheetOpen, setStudySheetOpen] = useState(false);
+  const [focusVerse, setFocusVerse] = useState<{ chapter: number; verse: number } | null>(null);
+  const [visibleChapter, setVisibleChapter] = useState<number | null>(reference?.chapter ?? null);
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isDarkMode = useDarkMode();
+
+  const handleModeChange = useCallback((next: BibleMode) => {
+    setMode(next);
+    try {
+      localStorage.setItem('wl-bible-mode', next);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // Open Sophia wherever she lives in the current layout
+  const openSophia = useCallback((prompt?: string) => {
+    setIsSophiaOpen(true);
+    if (mode === 'study') setStudyTab('sophia');
+    if (prompt) setSophiaPrompt(prompt);
+  }, [mode]);
+
   // Register orb intercept (only when not embedded)
   const { register, unregister, setHideOrb, setContextLabel } = useSophiaOrbIntercept();
 
   useEffect(() => {
     if (embedded) return;
-    // Hide orb on mount since the Sophia pane starts open
-    setHideOrb(true);
-    register((prompt?: string) => {
-      setIsSophiaOpen(true);
-      setHideOrb(true);
-      if (prompt) setSophiaPrompt(prompt);
-    });
+    register((prompt?: string) => openSophia(prompt));
     return () => unregister();
-  }, [embedded, register, unregister, setHideOrb]);
+  }, [embedded, register, unregister, openSophia]);
+
+  // Hide the floating orb whenever a Sophia chat is already on screen
+  const sophiaVisible = mode === 'study' && isDesktop ? studyTab === 'sophia' : isSophiaOpen;
+  useEffect(() => {
+    if (embedded) return;
+    setHideOrb(sophiaVisible);
+  }, [embedded, sophiaVisible, setHideOrb]);
 
   // Broadcast current passage to the orb so hover prompts are passage-aware
   useEffect(() => {
@@ -59,11 +95,10 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   useEffect(() => {
     if (incomingConversationId) {
       setIsSophiaOpen(true);
-      setHideOrb(true);
       // Clear location state to prevent re-opening on back/forward
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [incomingConversationId, setHideOrb, navigate, location.pathname]);
+  }, [incomingConversationId, navigate, location.pathname]);
 
   // Update reference when initialReference prop changes (for embedded usage)
   useEffect(() => {
@@ -83,35 +118,60 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   const handleAskSophia = useCallback(
     (verse: BibleVerse, ref: BibleReference) => {
       if (embedded) return;
-      const prompt = `Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`;
-      setIsSophiaOpen(true);
-      setHideOrb(true);
-      setSophiaPrompt(prompt);
+      openSophia(`Help me understand ${ref.book} ${ref.chapter}:${verse.number} — "${verse.text}"`);
     },
-    [embedded, setHideOrb]
+    [embedded, openSophia]
   );
 
   const handleReflectOnChapter = useCallback(
     (book: string, chapter: number) => {
       if (embedded) return;
-      setIsSophiaOpen(true);
-      setHideOrb(true);
-      setSophiaPrompt(buildChapterRevealsGodPrompt(book, chapter));
+      openSophia(buildChapterRevealsGodPrompt(book, chapter));
     },
-    [embedded, setHideOrb]
+    [embedded, openSophia]
   );
 
   const handleDismissSophia = useCallback(() => {
     setIsSophiaOpen(false);
     setSophiaPrompt(undefined);
     setResumeConversationId(null);
-    setHideOrb(false);
-  }, [setHideOrb]);
+    if (mode === 'study') setStudyTab('notes');
+  }, [mode]);
 
   // Handle passage navigation from within the Sophia pane (in-page, no route change)
   const handlePassageNavigate = useCallback((ref: BibleReference) => {
     setReference(ref);
   }, []);
+
+  const handleVerseFocus = useCallback((chapter: number, verse: number | null) => {
+    setFocusVerse(verse ? { chapter, verse } : null);
+  }, []);
+
+  const handleVisibleChapter = useCallback((chapter: number) => {
+    setVisibleChapter(chapter);
+  }, []);
+
+  // Navigating from the study panel (cross-refs, map) — close the mobile sheet
+  const handleStudyNavigate = useCallback((ref: BibleReference) => {
+    setReference(ref);
+    setStudySheetOpen(false);
+  }, []);
+
+  const studyChapter = visibleChapter ?? reference?.chapter ?? 1;
+  const studyFocus = focusVerse && focusVerse.chapter === studyChapter ? focusVerse.verse : null;
+
+  const sophiaPane = (
+    <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
+      <ContextualSophiaPane
+        onDismiss={handleDismissSophia}
+        initialPrompt={sophiaPrompt}
+        context="bible"
+        bibleReference={reference}
+        existingConversationId={resumeConversationId}
+        onNavigateToPassage={handlePassageNavigate}
+      />
+    </Suspense>
+  );
 
   return (
     <div className="h-full flex flex-col relative overflow-hidden">
@@ -154,6 +214,11 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               onNavigate={setReference}
               onAskSophia={handleAskSophia}
               onReflectOnChapter={embedded ? undefined : handleReflectOnChapter}
+              mode={embedded ? undefined : mode}
+              onModeChange={embedded ? undefined : handleModeChange}
+              onVerseFocus={handleVerseFocus}
+              onVisibleChapterChange={handleVisibleChapter}
+              onOpenStudyPanel={!isDesktop ? () => setStudySheetOpen(true) : undefined}
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center px-6">
@@ -168,8 +233,21 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
           )}
         </div>
 
-        {/* Contextual Sophia chat pane — desktop sidebar */}
-        {!embedded && (
+        {/* Desktop right column: study panel (study mode) or Sophia pane (read mode) */}
+        {!embedded && isDesktop && mode === 'study' && reference && (
+          <div className="w-[420px] flex-shrink-0 border-l border-border/30 overflow-hidden">
+            <StudyPanel
+              book={reference.book}
+              chapter={studyChapter}
+              focusVerse={studyFocus}
+              tab={studyTab}
+              onTabChange={setStudyTab}
+              onGoToReference={handleStudyNavigate}
+              sophia={sophiaPane}
+            />
+          </div>
+        )}
+        {!embedded && isDesktop && mode === 'read' && (
           <AnimatePresence>
             {isSophiaOpen && (
               <motion.div
@@ -177,20 +255,9 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
                 animate={{ width: 380, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                className="flex-shrink-0 border-l border-border/30 overflow-hidden hidden lg:block"
+                className="flex-shrink-0 border-l border-border/30 overflow-hidden"
               >
-                <div className="w-[380px] h-full">
-                  <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
-                    <ContextualSophiaPane
-                      onDismiss={handleDismissSophia}
-                      initialPrompt={sophiaPrompt}
-                      context="bible"
-                      bibleReference={reference}
-                      existingConversationId={resumeConversationId}
-                      onNavigateToPassage={handlePassageNavigate}
-                    />
-                  </Suspense>
-                </div>
+                <div className="w-[380px] h-full">{sophiaPane}</div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -198,7 +265,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
       </div>
 
       {/* Contextual Sophia chat pane — mobile overlay within page bounds */}
-      {!embedded && (
+      {!embedded && !isDesktop && (
         <AnimatePresence>
           {isSophiaOpen && (
             <motion.div
@@ -206,21 +273,31 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-              className="absolute inset-0 z-20 bg-background lg:hidden"
+              className="absolute inset-0 z-20 bg-background"
             >
-              <Suspense fallback={<div className="flex items-center justify-center h-full text-foreground/40 text-sm">Loading...</div>}>
-                <ContextualSophiaPane
-                  onDismiss={handleDismissSophia}
-                  initialPrompt={sophiaPrompt}
-                  context="bible"
-                  bibleReference={reference}
-                  existingConversationId={resumeConversationId}
-                  onNavigateToPassage={handlePassageNavigate}
-                />
-              </Suspense>
+              {sophiaPane}
             </motion.div>
           )}
         </AnimatePresence>
+      )}
+
+      {/* Mobile study panel */}
+      {!embedded && !isDesktop && mode === 'study' && reference && (
+        <Sheet open={studySheetOpen} onOpenChange={setStudySheetOpen}>
+          {/* The sheet portals outside AppShell's `.dark` wrapper, so re-apply the theme */}
+          <SheetContent side="bottom" className={`h-[88vh] p-0 rounded-t-2xl overflow-hidden [&>button]:hidden${isDarkMode ? ' dark' : ''}`}>
+            <SheetTitle className="sr-only">Study {reference.book} {studyChapter}</SheetTitle>
+            <StudyPanel
+              book={reference.book}
+              chapter={studyChapter}
+              focusVerse={studyFocus}
+              tab={studyTab === 'sophia' ? 'notes' : studyTab}
+              onTabChange={setStudyTab}
+              onGoToReference={handleStudyNavigate}
+              onClose={() => setStudySheetOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   );

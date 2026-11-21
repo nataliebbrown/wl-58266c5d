@@ -279,7 +279,7 @@ function parseEsvResponse(data: Record<string, unknown>, ref: BibleReference): B
 
 // ============ HelloAO / BSB API (fallback — no key required) ============
 
-const BOOK_TO_USFM: Record<string, string> = {
+export const BOOK_TO_USFM: Record<string, string> = {
   'Genesis': 'GEN', 'Exodus': 'EXO', 'Leviticus': 'LEV', 'Numbers': 'NUM',
   'Deuteronomy': 'DEU', 'Joshua': 'JOS', 'Judges': 'JDG', 'Ruth': 'RUT',
   '1 Samuel': '1SA', '2 Samuel': '2SA', '1 Kings': '1KI', '2 Kings': '2KI',

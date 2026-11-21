@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ChevronDown, Type, Sparkles, Map as MapIcon } from 'lucide-react';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useDarkMode } from '@/components/layout/DarkModeContext';
-import { ChapterMap } from './ChapterMap';
+import { ChevronLeft, ChevronRight, ChevronDown, Type, Sparkles, NotebookText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VerseText } from './VerseText';
 import { SectionHeading } from './SectionHeading';
@@ -31,8 +27,19 @@ interface ReadingViewProps {
   onAskSophia: (verse: BibleVerse, reference: BibleReference) => void;
   /** When provided, each chapter ends with a "What does this reveal about God?" reflection card. */
   onReflectOnChapter?: (book: string, chapter: number) => void;
+  /** Read vs. study mode toggle (shown when provided) */
+  mode?: BibleMode;
+  onModeChange?: (mode: BibleMode) => void;
+  /** Tapped verse (null when deselected) — study mode follows it */
+  onVerseFocus?: (chapter: number, verse: number | null) => void;
+  /** Chapter currently at the top of the reader */
+  onVisibleChapterChange?: (chapter: number) => void;
+  /** Mobile: open the study panel */
+  onOpenStudyPanel?: () => void;
   compact?: boolean;
 }
+
+export type BibleMode = 'read' | 'study';
 
 interface LoadedChapter {
   book: string;
@@ -319,7 +326,18 @@ function CompactNavigator({
 
 // ============ Main Component ============
 
-export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnChapter, compact }: ReadingViewProps) {
+export function ReadingView({
+  reference,
+  onNavigate,
+  onAskSophia,
+  onReflectOnChapter,
+  mode,
+  onModeChange,
+  onVerseFocus,
+  onVisibleChapterChange,
+  onOpenStudyPanel,
+  compact,
+}: ReadingViewProps) {
   const [chapters, setChapters] = useState<LoadedChapter[]>([]);
   const [visibleChapter, setVisibleChapter] = useState(reference.chapter);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -637,6 +655,21 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
     });
   }, []);
 
+  // ---- Report verse focus & visible chapter (study mode follows these) ----
+
+  const onVerseFocusRef = useRef(onVerseFocus);
+  onVerseFocusRef.current = onVerseFocus;
+  const onVisibleChapterRef = useRef(onVisibleChapterChange);
+  onVisibleChapterRef.current = onVisibleChapterChange;
+
+  useEffect(() => {
+    if (selectedVerse) onVerseFocusRef.current?.(selectedVerse.chapter, selectedVerse.verseNumber);
+  }, [selectedVerse]);
+
+  useEffect(() => {
+    onVisibleChapterRef.current?.(visibleChapter);
+  }, [visibleChapter]);
+
   // ---- Highlight bar positioning ----
 
   useLayoutEffect(() => {
@@ -703,30 +736,6 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
 
   const copyright = chapters[0]?.passage.copyright;
 
-  // ---- Map of places ----
-
-  const [showMap, setShowMap] = useState(false);
-  const isMobile = useIsMobile();
-  // The sheet portals outside AppShell's `.dark` wrapper, so re-apply the theme
-  const isDarkMode = useDarkMode();
-
-  const goToVerse = useCallback(
-    (chapter: number, verse: number) => {
-      const verseEl = scrollRef.current?.querySelector(
-        `[data-chapter="${chapter}"] [data-verse="${verse}"]`
-      );
-      if (verseEl) {
-        verseEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setHighlightedRange({ chapter, startVerse: verse, endVerse: verse });
-      } else {
-        // Chapter not loaded yet — navigate; the reference effect scrolls + highlights
-        onNavigate({ book: reference.book, chapter, verse });
-      }
-      if (isMobile) setShowMap(false);
-    },
-    [onNavigate, reference.book, isMobile]
-  );
-
   return (
     <div className="flex flex-col h-full">
       {/* Chapter header */}
@@ -773,16 +782,35 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
           </div>
 
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground"
-              onClick={() => setShowMap(true)}
-              title="Map of places"
-              aria-label="Map of places in this chapter"
-            >
-              <MapIcon className="w-4 h-4" />
-            </Button>
+            {mode && onModeChange && (
+              <div className="inline-flex rounded-full border border-border/50 p-0.5 text-xs mr-1" role="group" aria-label="Reading mode">
+                {(['read', 'study'] as BibleMode[]).map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => onModeChange(m)}
+                    aria-pressed={mode === m}
+                    className={`rounded-full px-2.5 py-1 transition-colors ${
+                      mode === m ? 'bg-foreground/[0.08] text-foreground' : 'text-foreground/50 hover:text-foreground/80'
+                    }`}
+                  >
+                    {m === 'read' ? 'Read' : 'Study'}
+                  </button>
+                ))}
+              </div>
+            )}
+            {mode === 'study' && onOpenStudyPanel && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground"
+                onClick={onOpenStudyPanel}
+                title="Study notes"
+                aria-label="Open study notes"
+              >
+                <NotebookText className="w-4 h-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -796,20 +824,6 @@ export function ReadingView({ reference, onNavigate, onAskSophia, onReflectOnCha
         </div>
       )}
 
-      {!compact && (
-        <Sheet open={showMap} onOpenChange={setShowMap}>
-          <SheetContent
-            side={isMobile ? 'bottom' : 'right'}
-            className={`${isMobile ? 'h-[88vh] overflow-y-auto rounded-t-2xl' : 'w-full sm:max-w-[520px] overflow-y-auto'}${isDarkMode ? ' dark' : ''}`}
-          >
-            <SheetHeader className="mb-4 text-left">
-              <SheetTitle className="font-serif text-xl">Places</SheetTitle>
-              <SheetDescription>Where the events of {reference.book} {visibleChapter} happened.</SheetDescription>
-            </SheetHeader>
-            <ChapterMap book={reference.book} chapter={visibleChapter} onGoToVerse={goToVerse} />
-          </SheetContent>
-        </Sheet>
-      )}
 
       {/* Content */}
       <div className="flex-1 min-h-0 relative">
