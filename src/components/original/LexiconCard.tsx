@@ -11,6 +11,7 @@ import {
   ORIGINAL_ATTRIBUTION,
   describeMorph,
   displayStrong,
+  formatTranslit,
   getLexiconLevel,
   getOccurrences,
   languageOf,
@@ -72,7 +73,7 @@ export function LexiconCard({ strong, word, onGoTo, onClose, onStudy }: LexiconC
   }, [word?.morph]);
 
   const lemma = brief?.w || full?.w || word?.original || '';
-  const translit = brief?.t || full?.t || word?.translit || '';
+  const translit = formatTranslit(brief?.t || full?.t || word?.translit || '');
   const gloss = brief?.g || word?.gloss || '';
   const refs = occ?.refs ?? [];
   const shownRefs = showAll ? refs : refs.slice(0, 24);

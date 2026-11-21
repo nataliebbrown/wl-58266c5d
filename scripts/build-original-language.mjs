@@ -24,6 +24,7 @@
  *   lexicon/brief/<H|G><chunk>.json   dStrong -> { w, t, g, d }
  *   lexicon/full/<H|G><chunk>.json    Greek: LSJ; Hebrew: Strong's + BDB outline
  *   occurrences/<H|G><chunk>.json     dStrong -> { n, r: ["Gen.1.1", …] (first 400) }
+ *   lexicon/index.json                [strong, lemma, translit, gloss] search index
  *   morph.json                        grammar code -> plain-English description
  */
 import fs from 'node:fs';
@@ -115,7 +116,7 @@ let hebrewWords = 0;
 for (const f of pick('TAHOT')) {
   for (const line of read(f).split('\n')) {
     // Gen.1.1#01=L  or  Mal.4.1(3.19)#01=L — English ref first
-    const m = line.match(/^([1-3]?[A-Za-z]{2,3})\.(\d+)\.(\d+)(?:\([\d.]+\))?#\d+=([^\t]+)\t/);
+    const m = line.match(/^([1-3]?[A-Za-z]{2,3})\.(\d+)\.(\d+)(?:\([\d.]+\))?(?:[[{][\d.]+[\]}])?#\d+=([^\t]+)\t/);
     if (!m) continue;
     const [, book, ch, vs, type] = m;
     if (!/^[LQR]/.test(type)) continue; // skip Ketiv-only and extra lines
@@ -142,12 +143,21 @@ for (const f of pick('TAHOT')) {
   }
 }
 
+// Verses where modern English Bibles (ESV, BSB) follow the Greek numbering rather than the KJV's
+const ESV_KEEPS_GREEK = new Set(['Rev.12.18', '3Jn.1.15', 'Php.1.16', 'Php.1.17']);
+
 let greekWords = 0;
 for (const f of pick('TAGNT')) {
   for (const line of read(f).split('\n')) {
-    const m = line.match(/^([1-3]?[A-Za-z]{2,3})\.(\d+)\.(\d+)#\d+=([^\t]+)\t/);
+    // Jhn.3.16#01=NKO  or  2Co.13.13[13.14]#01=NKO — Greek ref, then the English ref in brackets when it differs
+    // {14.24} marks where some manuscripts place the passage — informational only
+    const m = line.match(/^([1-3]?[A-Za-z]{2,3})\.(\d+)\.(\d+)(?:\[(\d+)\.(\d+)\])?(?:\{[\d.]+\})?#\d+=([^\t]+)\t/);
     if (!m) continue;
-    const [, book, ch, vs, type] = m;
+    const [, book, grkCh, grkVs, engCh, engVs, type] = m;
+    // Brackets follow KJV numbering; where the ESV/BSB keep the Greek numbering, ignore them
+    const keepGreek = ESV_KEEPS_GREEK.has(`${book}.${grkCh}.${grkVs}`);
+    const ch = keepGreek ? grkCh : engCh ?? grkCh;
+    const vs = keepGreek ? grkVs : engVs ?? grkVs;
     if (!/N/.test(type)) continue; // words in the Nestle-Aland text
     const cols = line.split('\t');
     const gm = (cols[1] ?? '').match(/^(.*?)\s*\((.*)\)\s*$/);
@@ -223,6 +233,14 @@ function parseLexicon(fileList, maxLen) {
 
 const brief = parseLexicon([...pick('TBESH'), ...pick('TBESG')], 6000);
 for (const [c, data] of Object.entries(chunked(brief))) writeJson(`lexicon/brief/${c}.json`, data);
+
+// Search index: [strong, lemma, translit, gloss] for look-up by English word or number
+writeJson(
+  'lexicon/index.json',
+  Object.entries(brief)
+    .filter(([k]) => /^[HG]\d{4}[A-Za-z]?$/.test(k) && !/^H9\d{3}/.test(k))
+    .map(([k, e]) => [k, e.w, e.t, e.g])
+);
 
 // Full: Greek LSJ
 const lsj = parseLexicon(pick('TFLSJ'), 20000);

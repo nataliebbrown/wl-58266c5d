@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraduationCap, PlayCircle } from 'lucide-react';
+import { GraduationCap, PlayCircle, Languages, BookOpenCheck, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getQuizData } from '@/lib/onboardingState';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import {
@@ -218,6 +219,9 @@ export function CurriculumOverview() {
             </div>
           </motion.div>
 
+          {/* Study tools */}
+          <StudyTools />
+
           {/* Phase list */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -280,6 +284,36 @@ export function CurriculumOverview() {
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ============ Study tools ============
+
+function StudyTools() {
+  const navigate = useNavigate();
+  const tools = [
+    { icon: Languages, title: 'Translation Bridge', body: 'Hebrew & Greek words, key words of the faith, and translations compared.', path: '/translation' },
+    { icon: BookOpenCheck, title: 'Study methods', body: 'SOAP, Inductive, Lectio Divina, Word study, and more — step by step.', path: '/study' },
+    { icon: BookOpen, title: 'Daily Bible reading', body: 'Read through the whole Bible at your own pace.', path: '/reading' },
+  ];
+  return (
+    <div className="mb-8">
+      <p className="text-xs font-medium uppercase tracking-wider text-foreground/40 mb-3">Study tools</p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {tools.map(t => (
+          <button
+            key={t.path}
+            type="button"
+            onClick={() => navigate(t.path)}
+            className="text-left rounded-2xl border border-border/30 bg-foreground/[0.02] px-4 py-4 hover:bg-foreground/[0.045] hover:border-border/50 transition-colors"
+          >
+            <t.icon className="w-4 h-4 text-hl-green mb-2" />
+            <p className="text-sm font-medium text-foreground/85">{t.title}</p>
+            <p className="text-xs text-foreground/50 leading-relaxed mt-1">{t.body}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -106,6 +106,11 @@ export function baseStrong(strong: string): string {
   return m ? `${m[1]}${m[2].padStart(4, '0')}` : strong;
 }
 
+/** Clean a lexicon transliteration for display: "che.sed" -> "chesed" */
+export function formatTranslit(t: string): string {
+  return t.replace(/[.·]/g, '').trim();
+}
+
 /** Display form: "H2617", "G26" style without leading zeros */
 export function displayStrong(strong: string): string {
   const m = strong.match(/^([HG])0*(\d+)([A-Za-z]?)$/);
@@ -228,4 +233,46 @@ export function matchWordsByGloss(words: OriginalWord[], english: string): Origi
     const tokens = w.gloss.toLowerCase().split(/[^a-z']+/).filter(Boolean);
     return tokens.some(t => t === target || (stem.length > 2 && t.startsWith(stem)));
   });
+}
+
+// ---- Look-up ----
+
+export interface LexiconHit {
+  strong: string;
+  lemma: string;
+  translit: string;
+  gloss: string;
+}
+
+let indexPromise: Promise<LexiconHit[]> | null = null;
+
+/** Search the lexicon by number ("H2617", "G26"), English gloss ("grace"), or transliteration ("hesed"). */
+export async function searchLexicon(query: string, limit = 30): Promise<LexiconHit[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  indexPromise ??= load<[string, string, string, string][]>('lexicon/index.json').then(rows =>
+    (rows ?? []).map(([strong, lemma, translit, gloss]) => ({ strong, lemma, translit, gloss }))
+  );
+  const index = await indexPromise;
+  const num = q.match(/^([hg])\s*0*(\d+)([a-z]?)$/);
+  if (num) {
+    const base = `${num[1].toUpperCase()}${num[2].padStart(4, '0')}`;
+    return index.filter(h => baseStrong(h.strong) === base).slice(0, limit);
+  }
+  const plain = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ.·’'ʼ-]/g, '');
+  const pq = plain(q);
+  const scored: { hit: LexiconHit; score: number }[] = [];
+  for (const h of index) {
+    const gloss = h.gloss.toLowerCase();
+    const tr = plain(h.translit);
+    let score = 0;
+    if (gloss === q || tr === pq) score = 3;
+    else if (gloss.split(/[^a-z]+/).includes(q)) score = 2;
+    else if (gloss.split(/[^a-z]+/).some(w => w.startsWith(q)) || tr.startsWith(pq)) score = 1;
+    if (score) scored.push({ hit: h, score });
+  }
+  return scored
+    .sort((a, b) => b.score - a.score || a.hit.gloss.length - b.hit.gloss.length)
+    .slice(0, limit)
+    .map(s => s.hit);
 }
