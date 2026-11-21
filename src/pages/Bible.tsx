@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { BibleNavigator } from '@/components/bible/BibleNavigator';
 import { ReadingView, type BibleMode } from '@/components/bible/ReadingView';
 import { StudyPanel, type StudyTab } from '@/components/bible/StudyPanel';
+import { PlanDayBar } from '@/components/bible/PlanDayBar';
+import type { PlanDayState } from '@/lib/readingPlan';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
@@ -26,7 +28,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const locationState = !embedded
-    ? (location.state as { initialReference?: BibleReference; conversationId?: string } | null)
+    ? (location.state as { initialReference?: BibleReference; conversationId?: string; planDay?: PlanDayState } | null)
     : null;
   const stateRef = locationState?.initialReference;
   const incomingConversationId = locationState?.conversationId ?? null;
@@ -34,6 +36,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
     initialReference ?? stateRef ?? null
   );
   const [showNav, setShowNav] = useState(true);
+  const [planDay, setPlanDay] = useState<PlanDayState | null>(locationState?.planDay ?? null);
   const [isSophiaOpen, setIsSophiaOpen] = useState(true);
   const [sophiaPrompt, setSophiaPrompt] = useState<string | undefined>();
   const [resumeConversationId, setResumeConversationId] = useState<string | null>(incomingConversationId);
@@ -212,7 +215,17 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
         </motion.div>
 
         {/* Reading area */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col">
+          {planDay && !embedded && (
+            <PlanDayBar
+              planDay={planDay}
+              currentBook={reference?.book}
+              currentChapter={visibleChapter ?? reference?.chapter}
+              onGoTo={setReference}
+              onDismiss={() => setPlanDay(null)}
+            />
+          )}
+          <div className="flex-1 min-h-0">
           {reference ? (
             <ReadingView
               reference={reference}
@@ -236,6 +249,7 @@ export default function Bible({ embedded, initialReference }: BibleProps) {
               </p>
             </div>
           )}
+          </div>
         </div>
 
         {/* Desktop right column: study panel (study mode) or Sophia pane (read mode) */}

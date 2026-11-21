@@ -14,6 +14,7 @@ import { getProgressPercentage } from '@/lib/curriculum/curriculumProgress';
 import { getCurriculumForUser } from '@/lib/curriculum/composeCurriculum';
 import { getQuizData, shouldShowWelcomeDashboard, markFullyOnboarded } from '@/lib/onboardingState';
 import { DashboardTour } from '@/components/onboarding-tour/DashboardTour';
+import { TodaysReadingStrip } from './TodaysReadingStrip';
 // ============ Stagger Animation ============
 
 const stagger = {
@@ -89,6 +90,13 @@ export function SacredRhythmDashboard() {
             <span>{timeStr}</span>
           </div>
         </div>
+
+        {/* Daily Bible reading */}
+        {(!tourActive || tourClosing) && (
+          <div className="mb-5 md:mb-6">
+            <TodaysReadingStrip />
+          </div>
+        )}
 
         {/* Orientation banner — shown once for first-time users */}
         <AnimatePresence>
