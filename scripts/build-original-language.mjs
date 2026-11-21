@@ -274,7 +274,15 @@ for (const [c, data] of Object.entries(chunked(full))) writeJson(`lexicon/full/$
 
 // ---- Occurrences ----
 const occEntries = {};
-for (const [strong, refs] of occ) occEntries[strong] = { n: refs.length, r: refs.slice(0, 400) };
+// Source files aren't in canonical order (e.g. "Act-Rev" sorts before "Mat-Jhn"), so sort refs
+const refKey = ref => {
+  const [b, c, v] = ref.split('.');
+  return STEP_BOOKS.indexOf(b) * 1e6 + Number(c) * 1e3 + Number(v);
+};
+for (const [strong, refs] of occ) {
+  const sorted = [...new Set(refs)].sort((a, b) => refKey(a) - refKey(b));
+  occEntries[strong] = { n: sorted.length, r: sorted.slice(0, 400) };
+}
 for (const [c, data] of Object.entries(chunked(occEntries))) writeJson(`occurrences/${c}.json`, data);
 
 writeJson('morph.json', morph);

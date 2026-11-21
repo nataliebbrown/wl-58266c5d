@@ -15,8 +15,10 @@ export interface StudySession {
   /** Character study */
   person?: string;
   characterId?: string;
-  /** Word study: chosen word */
+  /** Word study: chosen word (English) */
   word?: string;
+  /** Word study: the original Hebrew/Greek word behind it */
+  original?: { strong: string; word: string; translit: string; gloss: string; verse: number };
   /** SOAP: chosen verse */
   verse?: { number: number; text: string };
   /** Answers by step id */
@@ -96,7 +98,7 @@ export function formatSessionForJournal(session: StudySession): { title: string;
   const lines: string[] = [];
   if (session.person) lines.push(`Person: ${session.person}`);
   if (session.verse) lines.push(`Verse: ${passage}:${session.verse.number} — “${session.verse.text}”`);
-  if (session.word) lines.push(`Word: “${session.word}”`);
+  if (session.word) lines.push(`Word: “${session.word}”${session.original ? ` — ${session.original.word} (${session.original.translit}, ${session.original.strong.replace(/^([HG])0*/, '$1')})` : ''}`);
   if (lines.length) lines.push('');
   for (const step of method?.steps ?? []) {
     const answer = session.answers[step.id]?.trim();

@@ -16,6 +16,7 @@ import {
   saveSessionToJournal,
 } from '@/lib/studyMethods/sessions';
 import { addPortraitEntry, getAttribute } from '@/lib/portraits';
+import { getVerseWords, matchWordsByGloss, type OriginalWord } from '@/lib/originalLanguage';
 import { logActivity } from '@/lib/activityLog';
 import { StudyPassageView, type PassagePickMode } from '@/components/study/StudyPassageView';
 import { StudyStepCard } from '@/components/study/StudyStepCard';
@@ -31,6 +32,8 @@ const ContextualSophiaPane = lazy(() =>
 export interface StudyLocationState {
   passage?: StudyPassageRef;
   methodId?: string;
+  /** Word study of a specific original word (from the dictionary card) */
+  word?: { strong: string; original: string; translit: string; gloss: string; verse: number };
   sessionId?: string;
 }
 
@@ -59,7 +62,17 @@ export default function Study() {
   // Opened with a method and passage (e.g. from Today): start right away
   useEffect(() => {
     if (!session && incoming.methodId && incoming.methodId !== 'character' && incoming.passage && getMethod(incoming.methodId)) {
-      start(incoming.methodId, incoming.passage);
+      const s = start(incoming.methodId, incoming.passage);
+      if (incoming.methodId === 'word' && incoming.word) {
+        const w = incoming.word;
+        // Word chosen already — skip straight past "Choose a word"
+        update({
+          word: w.gloss,
+          original: { strong: w.strong, word: w.original, translit: w.translit, gloss: w.gloss, verse: w.verse },
+          stepIndex: 1,
+        });
+        void s;
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -108,6 +121,31 @@ export default function Study() {
     setSessions(getSessions());
     setPassageOpen(true);
     setView('session');
+    return s;
+  };
+
+  // ---- Word study: find the original word behind a tapped English word ----
+  const [candidates, setCandidates] = useState<{ verse: number; words: OriginalWord[]; all: OriginalWord[] } | null>(null);
+  const pickWord = async (english: string, verse: number) => {
+    update({ word: english, original: undefined });
+    setCandidates(null);
+    if (!session) return;
+    try {
+      const all = await getVerseWords(session.passage.book, session.passage.chapter, verse);
+      const matches = matchWordsByGloss(all, english);
+      if (matches.length === 1) {
+        const w = matches[0];
+        update({ original: { strong: w.strong, word: w.original, translit: w.translit, gloss: w.gloss, verse } });
+      } else {
+        setCandidates({ verse, words: matches, all });
+      }
+    } catch {
+      /* original text unavailable — English-only word study still works */
+    }
+  };
+  const chooseOriginal = (w: OriginalWord, verse: number) => {
+    update({ original: { strong: w.strong, word: w.original, translit: w.translit, gloss: w.gloss, verse } });
+    setCandidates(null);
   };
 
   const resume = (s: StudySession) => {
@@ -150,7 +188,9 @@ export default function Study() {
     const vars = { person: session.person, word: session.word, passage: label };
     const prompt =
       step.kind === 'word-original'
-        ? `I'm doing a word study of “${session.word}” in ${label}. What is the original Hebrew or Greek word behind it, and what does it mean? Please mention if translations differ.`
+        ? session.original
+          ? `I'm doing a word study of “${session.word}” in ${label} — the original word is ${session.original.word} (${session.original.translit}). What does it mean, how is it used elsewhere in Scripture, and what does it show about God?`
+          : `I'm doing a word study of “${session.word}” in ${label}. What is the original Hebrew or Greek word behind it, and what does it mean? Please mention if translations differ.`
         : `I'm doing a ${method.name} study of ${label}${session.person ? ` focused on ${session.person}` : ''}. I'm on the “${step.title}” step: “${fillTemplate(step.prompt, vars)}” Please don't give me the answer — help me with a guiding question or a hint so I can see it in the text myself.`;
     setSophia({ prompt, key: Date.now() });
   };
@@ -226,7 +266,7 @@ export default function Study() {
                       selectedVerse={session.verse?.number}
                       highlightWord={session.word}
                       onPickVerse={(number, text) => update({ verse: { number, text: text.trim().replace(/^[“”"‘’']+|[“”"‘’']+$/g, '') } })}
-                      onPickWord={word => update({ word })}
+                      onPickWord={(word, verse) => void pickWord(word, verse)}
                     />
                   </div>
                 )}
@@ -243,6 +283,8 @@ export default function Study() {
                   onBack={() => update({ stepIndex: Math.max(0, session.stepIndex - 1) })}
                   onNext={() => (session.stepIndex >= method.steps.length - 1 ? finish() : update({ stepIndex: session.stepIndex + 1 }))}
                   onAskSophia={askSophia}
+                  candidates={candidates}
+                  onChooseOriginal={chooseOriginal}
                 />
               </div>
             </div>

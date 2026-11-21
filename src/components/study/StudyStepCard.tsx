@@ -5,6 +5,10 @@ import type { StudySession } from '@/lib/studyMethods/sessions';
 import { GOD_ATTRIBUTES } from '@/lib/portraits';
 import { searchBible, type BibleSearchResult } from '@/lib/bibleApi';
 import { canReadAloud, play, type Playback } from '@/lib/readAloud';
+import { getOccurrences, displayStrong, languageOf, type OriginalWord, type Occurrences } from '@/lib/originalLanguage';
+import { fetchVerse } from '@/lib/translations';
+import { LexiconCard } from '@/components/original/LexiconCard';
+import type { BibleReference } from '@/lib/bibleApi';
 
 interface StudyStepCardProps {
   method: StudyMethod;
@@ -16,6 +20,9 @@ interface StudyStepCardProps {
   onBack: () => void;
   onNext: () => void;
   onAskSophia: (step: StudyStep) => void;
+  /** Word study: original words that might match the tapped English word */
+  candidates?: { verse: number; words: OriginalWord[]; all: OriginalWord[] } | null;
+  onChooseOriginal?: (word: OriginalWord, verse: number) => void;
 }
 
 const MAX_ATTRIBUTES = 3;
@@ -29,6 +36,8 @@ export function StudyStepCard({
   onBack,
   onNext,
   onAskSophia,
+  candidates,
+  onChooseOriginal,
 }: StudyStepCardProps) {
   const step = method.steps[session.stepIndex];
   const vars = { person: session.person, word: session.word, passage: passageLabel };
@@ -85,10 +94,39 @@ export function StudyStepCard({
       {step.kind === 'pick-word' && (
         <div className="mb-5">
           {session.word ? (
-            <p className="rounded-xl border border-border/40 bg-foreground/[0.03] px-4 py-3">
+            <div className="rounded-xl border border-border/40 bg-foreground/[0.03] px-4 py-3">
               <span className="text-xs text-foreground/45 block mb-0.5">Your word</span>
               <span className="font-serif text-2xl text-foreground/90">“{session.word}”</span>
-            </p>
+              {session.original && (
+                <span className="block mt-1 text-sm text-foreground/65">
+                  Original:{' '}
+                  <span className="font-serif text-lg text-foreground/85" dir={languageOf(session.original.strong) === 'H' ? 'rtl' : 'ltr'}>
+                    {session.original.word}
+                  </span>{' '}
+                  <span className="italic">{session.original.translit}</span> · {displayStrong(session.original.strong)}
+                </span>
+              )}
+              {!session.original && candidates && (
+                <div className="mt-3">
+                  <p className="text-xs text-foreground/55 mb-1.5">
+                    {candidates.words.length > 1 ? 'Which original word did you mean?' : 'Which original word is behind it?'}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(candidates.words.length > 1 ? candidates.words : candidates.all).map((w, i) => (
+                      <button
+                        key={`${w.strong}-${i}`}
+                        type="button"
+                        onClick={() => onChooseOriginal?.(w, candidates.verse)}
+                        className="rounded-lg border border-border/50 px-2.5 py-1.5 text-left hover:bg-foreground/[0.04]"
+                      >
+                        <span className="block font-serif text-base text-foreground/85">{w.original}</span>
+                        <span className="block text-[11px] text-foreground/55">{w.gloss}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <p className="rounded-xl border border-dashed border-border/60 px-4 py-3 text-sm text-foreground/50">
               No word chosen yet — tap one in the passage.
@@ -97,9 +135,16 @@ export function StudyStepCard({
         </div>
       )}
 
-      {step.kind === 'word-occurrences' && session.word && <WordOccurrences word={session.word} />}
+      {step.kind === 'word-occurrences' && session.original && <OriginalOccurrences strong={session.original.strong} />}
+      {step.kind === 'word-occurrences' && session.word && !session.original && <WordOccurrences word={session.word} />}
 
-      {step.kind === 'word-original' && session.word && (
+      {step.kind === 'word-original' && session.original && (
+        <div className="mb-5">
+          <LexiconCard strong={session.original.strong} word={{ original: session.original.word, translit: session.original.translit, gloss: session.original.gloss, strong: session.original.strong, morph: '' }} />
+        </div>
+      )}
+
+      {step.kind === 'word-original' && session.word && !session.original && (
         <div className="mb-5 flex flex-wrap gap-2">
           <a
             href={`https://www.stepbible.org/?q=reference=${encodeURIComponent(passageLabel)}`}
@@ -348,6 +393,60 @@ function WordOccurrences({ word }: { word: string }) {
           <p className="font-serif text-sm leading-relaxed text-foreground/80">{highlight(r.text)}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** Verses where the same original word appears (built-in index), with text for the first few. */
+function OriginalOccurrences({ strong }: { strong: string }) {
+  const [occ, setOcc] = useState<Occurrences | null>(null);
+  const [texts, setTexts] = useState<Record<string, string | null>>({});
+  const SHOW = 8;
+
+  useEffect(() => {
+    let cancelled = false;
+    setOcc(null);
+    getOccurrences(strong).then(o => {
+      if (cancelled) return;
+      setOcc(o);
+      for (const r of o.refs.slice(0, SHOW)) {
+        const key = `${r.book} ${r.chapter}:${r.verse}`;
+        fetchVerse('BSB', r.book, r.chapter, r.verse ?? 1)
+          .then(t => !cancelled && setTexts(prev => ({ ...prev, [key]: t })))
+          .catch(() => {});
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [strong]);
+
+  if (!occ) {
+    return (
+      <p className="mb-5 text-sm text-foreground/45 flex items-center gap-2">
+        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Finding every place this word appears…
+      </p>
+    );
+  }
+  const label = (r: BibleReference) => `${r.book === 'Psalms' ? 'Psalm' : r.book} ${r.chapter}:${r.verse}`;
+  return (
+    <div className="mb-5">
+      <p className="text-xs text-foreground/55 mb-2">
+        The same {languageOf(strong) === 'H' ? 'Hebrew' : 'Greek'} word appears in{' '}
+        <span className="font-medium text-foreground/80">{occ.count.toLocaleString()}</span> {occ.count === 1 ? 'verse' : 'verses'}. A few of them:
+      </p>
+      <div className="max-h-64 overflow-y-auto rounded-xl border border-border/40 divide-y divide-border/30">
+        {occ.refs.slice(0, SHOW).map(r => {
+          const key = `${r.book} ${r.chapter}:${r.verse}`;
+          return (
+            <div key={key} className="px-4 py-2.5">
+              <p className="text-xs font-medium text-foreground/50 mb-0.5">{label(r)}</p>
+              <p className="font-serif text-sm leading-relaxed text-foreground/80">{texts[key] ?? '…'}</p>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-foreground/40 mt-1.5">Verse text: Berean Standard Bible. Word index: STEPBible.org (CC BY 4.0).</p>
     </div>
   );
 }
