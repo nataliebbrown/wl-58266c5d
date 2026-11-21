@@ -4,6 +4,7 @@
 // totals — just "Day 37". Missing a day never puts anyone behind.
 
 import { BIBLE_BOOKS } from './bibleApi';
+import { logActivity, removeActivity } from './activityLog';
 
 export type ReadingPlanId = 'canonical' | 'chronological';
 
@@ -250,6 +251,10 @@ export function setDayComplete(planId: ReadingPlanId, day: number, complete: boo
     lastCompletedAt: complete ? new Date().toISOString() : current.lastCompletedAt,
   };
   store({ activePlanId: data.activePlanId ?? planId, plans: { ...data.plans, [planId]: progress } });
+  const refId = `reading:${planId}:${day}`;
+  const readingDay = getPlanDay(planId, day);
+  if (complete && readingDay) logActivity({ type: 'reading', label: `Day ${day} · ${formatDay(readingDay)}`, refId });
+  else if (!complete) removeActivity(refId);
   return progress;
 }
 

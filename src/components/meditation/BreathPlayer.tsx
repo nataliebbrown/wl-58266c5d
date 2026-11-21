@@ -5,6 +5,8 @@ import { X, Pause, Play, RotateCcw, Check, SlidersHorizontal } from 'lucide-reac
 import { canReadAloud, play, prepare, type Playback } from '@/lib/readAloud';
 import { formatMeditationReference } from '@/lib/meditation/catalog';
 import { PortraitCaptureForm } from '@/components/portraits/PortraitCaptureForm';
+import { logActivity } from '@/lib/activityLog';
+import { useDarkMode } from '@/components/layout/DarkModeContext';
 import {
   type MeditationTarget,
   type SessionMinutes,
@@ -44,6 +46,8 @@ const easeInOut = (t: number) => 0.5 - Math.cos(Math.PI * Math.min(Math.max(t, 0
 
 export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: BreathPlayerProps) {
   const initialSettings = useMemo(() => getMeditationSettings(), []);
+  // Portaled outside AppShell's `.dark` wrapper, so re-apply the theme
+  const isDarkMode = useDarkMode();
   const [paceId, setPaceId] = useState(initialSettings.paceId);
   const [minutes, setMinutes] = useState<SessionMinutes>(initialSettings.minutes);
   const voiceAvailable = useMemo(() => canReadAloud(), []);
@@ -170,6 +174,11 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
     return () => cancelAnimationFrame(raf);
   }, [stage, totalSec, cycleSec, pace.inhaleSec, pace.exhaleSec]);
 
+  // ---- Log a finished meditation ----
+  useEffect(() => {
+    if (stage === 'complete') logActivity({ type: 'meditation', label: `Meditated on ${reference}` });
+  }, [stage, reference]);
+
   // ---- Keyboard: Esc closes, Space pauses ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -192,7 +201,7 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] flex flex-col bg-background"
+      className={`fixed inset-0 z-[100] flex flex-col bg-background text-foreground${isDarkMode ? ' dark' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label={`Meditate on ${reference}`}

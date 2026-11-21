@@ -28,7 +28,7 @@ export const navItems: NavItem[] = [
   { icon: BookOpen, label: 'Bible', id: 'bible', path: '/bible', available: true },
   { icon: Wind, label: 'Meditate', id: 'meditate', path: '/meditate', available: true },
   { icon: Compass, label: 'Learn', id: 'learn', path: '/learn', available: true },
-  { icon: Calendar, label: 'Today', id: 'today', path: '/today', available: false, moduleType: 'formation' },
+  { icon: Calendar, label: 'Today', id: 'today', path: '/today', available: true, moduleType: 'formation' },
   { icon: Lightbulb, label: 'Insights', id: 'insights', path: '/insights', available: true },
   { icon: NotebookPen, label: 'Journal', id: 'journal', path: '/journal', available: true },
   { icon: GitBranch, label: 'Patterns', id: 'patterns', path: '/patterns', available: false, moduleType: 'patterns' },

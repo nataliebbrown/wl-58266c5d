@@ -14,6 +14,8 @@ export interface MeditationTarget {
 /** Router state used to open a verse in the Meditate tab (e.g. from the Bible reader). */
 export interface MeditateLocationState {
   verse?: { book: string; chapter: number; verse: number; text: string; translation?: string };
+  /** Open a catalog verse directly (e.g. from Today's suggestion) */
+  catalogId?: string;
 }
 
 export interface SavedMeditationVerse extends MeditationTarget {

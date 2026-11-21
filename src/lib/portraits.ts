@@ -3,6 +3,8 @@
 // What a person learns about God — collected from study sessions, chapter
 // reflections, and meditation — grouped by attribute into a growing portrait.
 
+import { logActivity } from './activityLog';
+
 export interface GodAttribute {
   id: string;
   name: string;
@@ -73,6 +75,8 @@ export function addPortraitEntry(entry: Omit<PortraitEntry, 'id' | 'createdAt'>)
     createdAt: new Date().toISOString(),
   };
   saveAll([full, ...getPortraitEntries()]);
+  const names = full.attributeIds.map(id => GOD_ATTRIBUTES.find(a => a.id === id)?.name).filter(Boolean).join(', ');
+  logActivity({ type: 'portrait', label: `Saw God as ${names.toLowerCase()}${full.reference ? ` · ${full.reference}` : ''}`, refId: `portrait:${full.id}` });
   return full;
 }
 

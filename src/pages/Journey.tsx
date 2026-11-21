@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { getQuizData } from '@/lib/onboardingState';
 import sophiaOrb from '@/assets/sophia-orb-brown.svg';
+import { getActivities } from '@/lib/activityLog';
+import { buildJourneyNodes } from '@/lib/journey';
 import type { JourneyNode } from '@/components/dashboard/JourneyCard';
 
 // ============ Personalized Content ============
@@ -38,8 +40,7 @@ export default function Journey() {
   const personalized = JOURNEY_CONTENT[quizData.spiritualBackground ?? ''];
   const narration = personalized?.narration ?? 'Every journey begins with a single step. Yours just started.';
 
-  // TODO: Replace with actual journey data from state/storage
-  const nodes: JourneyNode[] = [];
+  const nodes = buildJourneyNodes(getActivities());
   const isEmpty = nodes.length === 0;
   const nodeCount = isEmpty ? 1 : nodes.length;
   const svgHeight = (nodeCount + 1) * NODE_SPACING + 40;

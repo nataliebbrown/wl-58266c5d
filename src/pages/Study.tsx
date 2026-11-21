@@ -16,6 +16,7 @@ import {
   saveSessionToJournal,
 } from '@/lib/studyMethods/sessions';
 import { addPortraitEntry, getAttribute } from '@/lib/portraits';
+import { logActivity } from '@/lib/activityLog';
 import { StudyPassageView, type PassagePickMode } from '@/components/study/StudyPassageView';
 import { StudyStepCard } from '@/components/study/StudyStepCard';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
@@ -54,6 +55,14 @@ export default function Study() {
   const [sessions, setSessions] = useState<StudySession[]>(() => getSessions());
   const [sophia, setSophia] = useState<{ prompt: string; key: number } | null>(null);
   const [passageOpen, setPassageOpen] = useState(true);
+
+  // Opened with a method and passage (e.g. from Today): start right away
+  useEffect(() => {
+    if (!session && incoming.methodId && incoming.methodId !== 'character' && incoming.passage && getMethod(incoming.methodId)) {
+      start(incoming.methodId, incoming.passage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Keep the URL state in sync so a refresh resumes the same session
   useEffect(() => {
@@ -124,6 +133,11 @@ export default function Study() {
       });
     }
     saveSession(finished);
+    logActivity({
+      type: 'study',
+      label: `${getMethod(session.methodId)?.name ?? 'Study'} · ${session.person ? `${session.person} · ` : ''}${passageLabel(session.passage)}`,
+      refId: `study:${session.id}`,
+    });
     setSession(finished);
     setSessions(getSessions());
     setView('summary');

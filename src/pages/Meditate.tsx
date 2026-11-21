@@ -35,6 +35,17 @@ export default function Meditate() {
   // Launched from a verse in the Bible reader
   useEffect(() => {
     const state = location.state as MeditateLocationState | null;
+    if (state?.catalogId) {
+      for (const category of MEDITATION_CATALOG) {
+        const v = category.verses.find(cv => cv.id === state.catalogId);
+        if (v) {
+          setSession({ target: { ...v, truth: category.truth }, editSplit: false, save: false });
+          break;
+        }
+      }
+      navigate(location.pathname, { replace: true, state: null });
+      return;
+    }
     if (!state?.verse) return;
     const { book, chapter, verse, text, translation } = state.verse;
     const { inhale, exhale } = splitVerse(text);
