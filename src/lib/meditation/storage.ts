@@ -37,14 +37,26 @@ export const BREATH_PACES: BreathPace[] = [
 export const SESSION_MINUTES = [1, 3, 5] as const;
 export type SessionMinutes = (typeof SESSION_MINUTES)[number];
 
+export type VoiceMode = 'off' | 'guide' | 'every';
+
+export const VOICE_MODES: { id: VoiceMode; label: string }[] = [
+  { id: 'off', label: 'Off' },
+  { id: 'guide', label: 'First 3 breaths' },
+  { id: 'every', label: 'Every breath' },
+];
+
+/** How many breaths the "guide" voice mode speaks before going quiet */
+export const GUIDED_BREATHS = 3;
+
 export interface MeditationSettings {
   paceId: BreathPace['id'];
   minutes: SessionMinutes;
+  voice: VoiceMode;
 }
 
 const SAVED_KEY = 'wl-meditation-verses';
 const SETTINGS_KEY = 'wl-meditation-settings';
-const DEFAULT_SETTINGS: MeditationSettings = { paceId: 'gentle', minutes: 3 };
+const DEFAULT_SETTINGS: MeditationSettings = { paceId: 'gentle', minutes: 3, voice: 'off' };
 
 // ---- Splitting ----
 

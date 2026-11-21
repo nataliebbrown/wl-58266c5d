@@ -2,12 +2,16 @@ import { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } fro
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pause, Play, RotateCcw, Check, SlidersHorizontal } from 'lucide-react';
+import { canReadAloud, play, prepare, type Playback } from '@/lib/readAloud';
 import { formatMeditationReference } from '@/lib/meditation/catalog';
 import { PortraitCaptureForm } from '@/components/portraits/PortraitCaptureForm';
 import {
   type MeditationTarget,
   type SessionMinutes,
+  type VoiceMode,
   BREATH_PACES,
+  VOICE_MODES,
+  GUIDED_BREATHS,
   SESSION_MINUTES,
   getMeditationSettings,
   saveMeditationSettings,
@@ -42,6 +46,8 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
   const initialSettings = useMemo(() => getMeditationSettings(), []);
   const [paceId, setPaceId] = useState(initialSettings.paceId);
   const [minutes, setMinutes] = useState<SessionMinutes>(initialSettings.minutes);
+  const voiceAvailable = useMemo(() => canReadAloud(), []);
+  const [voice, setVoice] = useState<VoiceMode>(voiceAvailable ? initialSettings.voice : 'off');
   const pace = getPace(paceId);
 
   // Split editing
@@ -71,7 +77,12 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
 
   // ---- Start ----
   const begin = useCallback(() => {
-    saveMeditationSettings({ paceId, minutes });
+    saveMeditationSettings({ paceId, minutes, voice });
+    // Generate narration during the settle countdown so it starts on the breath
+    if (voice !== 'off') {
+      void prepare(inhale);
+      void prepare(exhale);
+    }
     onStart?.({ ...target, inhale, exhale });
     elapsedRef.current = 0;
     setRemainingSec(totalSec);
@@ -80,7 +91,7 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
     setSettleCount(SETTLE_SECONDS);
     setEditingSplit(false);
     setStage('settle');
-  }, [paceId, minutes, onStart, target, inhale, exhale, totalSec]);
+  }, [paceId, minutes, voice, onStart, target, inhale, exhale, totalSec]);
 
   // ---- Settle countdown ----
   useEffect(() => {
@@ -92,6 +103,25 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
     const t = setTimeout(() => setSettleCount(c => c - 1), 1000);
     return () => clearTimeout(t);
   }, [stage, settleCount]);
+
+  // ---- Narration: speak each half as its breath begins ----
+  const playbackRef = useRef<Playback | null>(null);
+  const narrateRef = useRef<(phase: BreathPhase, breath: number) => void>(() => {});
+  narrateRef.current = (phase, breath) => {
+    if (voice === 'off' || pausedRef.current) return;
+    if (voice === 'guide' && breath >= GUIDED_BREATHS) return;
+    playbackRef.current?.stop();
+    playbackRef.current = play(phase === 'in' ? inhale : exhale, { rate: 0.8 });
+  };
+  const stopNarration = useCallback(() => {
+    playbackRef.current?.stop();
+    playbackRef.current = null;
+  }, []);
+  // Stop speaking when paused, finished, or closed
+  useEffect(() => {
+    if (paused || stage !== 'breathing') stopNarration();
+  }, [paused, stage, stopNarration]);
+  useEffect(() => stopNarration, [stopNarration]);
 
   // ---- Breathing loop (time-based, pausable) ----
   useEffect(() => {
@@ -127,6 +157,7 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
       if (nextPhase !== lastPhase) {
         lastPhase = nextPhase;
         setPhase(nextPhase);
+        narrateRef.current(nextPhase, Math.floor(elapsed / cycleSec));
       }
       const remaining = Math.ceil(totalSec - elapsed);
       if (remaining !== lastRemaining) {
@@ -224,6 +255,8 @@ export function BreathPlayer({ target, onClose, onStart, editSplitInitially }: B
             onPaceChange={setPaceId}
             minutes={minutes}
             onMinutesChange={setMinutes}
+            voice={voiceAvailable ? voice : undefined}
+            onVoiceChange={setVoice}
             onBegin={begin}
           />
         )}
@@ -328,6 +361,8 @@ function SetupScreen({
   onPaceChange,
   minutes,
   onMinutesChange,
+  voice,
+  onVoiceChange,
   onBegin,
 }: {
   reference: string;
@@ -344,6 +379,9 @@ function SetupScreen({
   onPaceChange: (id: (typeof BREATH_PACES)[number]['id']) => void;
   minutes: SessionMinutes;
   onMinutesChange: (m: SessionMinutes) => void;
+  /** Undefined when read-aloud isn't available in this browser */
+  voice?: VoiceMode;
+  onVoiceChange: (v: VoiceMode) => void;
   onBegin: () => void;
 }) {
   return (
@@ -433,6 +471,15 @@ function SetupScreen({
             </Chip>
           ))}
         </OptionRow>
+        {voice !== undefined && (
+          <OptionRow label="Voice">
+            {VOICE_MODES.map(v => (
+              <Chip key={v.id} active={voice === v.id} onClick={() => onVoiceChange(v.id)}>
+                {v.label}
+              </Chip>
+            ))}
+          </OptionRow>
+        )}
       </div>
 
       <div className="flex justify-center">
