@@ -5,10 +5,10 @@ import type { Photo } from '@/lib/timewalk/data';
 import { useDarkMode } from '@/components/layout/DarkModeContext';
 
 /** Attribution line shown with every photo. */
-export function PhotoCredit({ photo, className = '' }: { photo: Photo; className?: string }) {
+export function PhotoCredit({ photo, className = '', prefix }: { photo: Photo; className?: string; prefix?: string }) {
   return (
     <p className={`text-[10.5px] leading-snug text-foreground/45 ${className}`}>
-      {photo.near ? 'Photo taken nearby · ' : 'Photo: '}
+      {prefix ?? (photo.near ? 'Photo taken nearby · ' : 'Photo: ')}
       {photo.author} ·{' '}
       {photo.licenseUrl ? (
         <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground/70">
@@ -19,7 +19,7 @@ export function PhotoCredit({ photo, className = '' }: { photo: Photo; className
       )}{' '}
       ·{' '}
       <a href={photo.source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground/70">
-        Wikimedia Commons
+        {photo.sourceName ?? 'Wikimedia Commons'}
       </a>
     </p>
   );
@@ -81,7 +81,7 @@ export function PhotoLightbox({ photo, onClose }: { photo: Photo; onClose: () =>
           {photo.near ? 'Taken nearby · ' : ''}
           {photo.author} · {photo.license} ·{' '}
           <a href={photo.source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-white">
-            Wikimedia Commons
+            {photo.sourceName ?? 'Wikimedia Commons'}
           </a>{' '}
           ·{' '}
           <a href={photo.full} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline underline-offset-2 hover:text-white">

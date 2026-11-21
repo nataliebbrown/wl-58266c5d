@@ -58,6 +58,21 @@ export interface Photo {
   alt: string;
   near?: boolean;
   title?: string;
+  /** Where the source link goes (default: Wikimedia Commons) */
+  sourceName?: string;
+}
+
+/** A hand-picked artwork, historical photo, or museum object (scripts/fetch-timewalk-art.mjs) */
+export interface ArtImage extends Photo {
+  id: string;
+  /** art = an artist's interpretation; photo = historical photograph; artifact = museum object */
+  kind: 'art' | 'photo' | 'artifact';
+  era?: string;
+  life?: string;
+  caption: string;
+  artist?: string;
+  date?: string;
+  ref?: BibleReference;
 }
 
 export const TIMEWALK_ATTRIBUTION = {
@@ -176,6 +191,11 @@ export async function getChapterSetting(book: string, chapter: number): Promise<
 
 export async function getPlacePhotos(): Promise<Record<string, Photo>> {
   return (await load<Record<string, Photo>>('place-photos.json')) ?? {};
+}
+
+export async function getArt(): Promise<ArtImage[]> {
+  const data = (await load<Record<string, Omit<ArtImage, 'id'>>>('art.json')) ?? {};
+  return Object.entries(data).map(([id, a]) => ({ id, ...a }));
 }
 
 export async function getFindImages(): Promise<Record<string, Photo>> {

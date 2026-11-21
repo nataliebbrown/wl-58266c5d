@@ -25,6 +25,8 @@ import { DateToggle } from '@/components/timewalk/DateToggle';
 import { FindCard } from '@/components/timewalk/FindCard';
 import { LifeCard } from '@/components/timewalk/LifeCard';
 import { PersonCard } from '@/components/timewalk/PersonCard';
+import { ArtGallery } from '@/components/timewalk/ArtGallery';
+import { useArt } from '@/components/timewalk/useArt';
 import { useDateSystem, useDraftPreview } from '@/components/timewalk/useDateSystem';
 
 type Tab = 'timeline' | 'people' | 'finds' | 'life';
@@ -169,6 +171,7 @@ function TimelineTab({
     : { powers: [], events: [] };
   const finds = FINDS.filter(f => f.eraId === era.id && (preview || f.reviewed));
   const topics = LIFE_TOPICS.filter(t => t.eras.includes(era.id) && (preview || t.reviewed)).slice(0, 4);
+  const art = useArt().filter(a => a.era === era.id);
 
   return (
     <div>
@@ -230,6 +233,12 @@ function TimelineTab({
           </div>
         )}
       </section>
+
+      {art.length > 0 && (
+        <div className="mt-8">
+          <ArtGallery items={art} onGoTo={onOpenBible} />
+        </div>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_280px]">
         {/* Events */}

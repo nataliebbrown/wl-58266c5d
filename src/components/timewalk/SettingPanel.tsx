@@ -21,6 +21,8 @@ import { CaveatNote } from './CaveatNote';
 import { DateToggle } from './DateToggle';
 import { FindCard } from './FindCard';
 import { LifeCard } from './LifeCard';
+import { ArtFigure } from './ArtGallery';
+import { useArt } from './useArt';
 import { PersonCard } from './PersonCard';
 import { useDateSystem, useDraftPreview } from './useDateSystem';
 
@@ -124,6 +126,7 @@ function WhenView({
   const era = eraForChapter(book, chapter);
   const [setting, setSetting] = useState<ChapterSetting | null | undefined>(undefined);
   const [events, setEvents] = useState<Map<string, TimelineEvent> | null>(null);
+  const art = useArt();
 
   useEffect(() => {
     let cancelled = false;
@@ -147,6 +150,7 @@ function WhenView({
   if (!era) return <p className="text-sm text-foreground/50">No historical setting for this chapter.</p>;
 
   const chapterEvents = (setting?.events ?? []).map(id => events?.get(id)).filter((e): e is TimelineEvent => !!e);
+  const chapterArt = art.filter(a => a.ref?.book === book && a.ref.chapter === chapter);
 
   return (
     <div className="space-y-4">
@@ -163,6 +167,10 @@ function WhenView({
           {era.godAtWork}
         </p>
       </div>
+
+      {chapterArt.map(a => (
+        <ArtFigure key={a.id} art={a} />
+      ))}
 
       {era.caveats.length > 0 && (
         <div className="space-y-2">

@@ -1,10 +1,23 @@
 import type { BibleReference } from '@/lib/bibleApi';
 import type { LifeTopic } from '@/lib/timewalk/dailyLife';
 import { DraftBadge } from './FindCard';
+import { ArtFigure } from './ArtGallery';
+import { KIND_LABEL, useArt, withDescription } from './useArt';
+import { PhotoCredit, PhotoThumb } from './PhotoViewer';
 
 export function LifeCard({ topic, onGoTo }: { topic: LifeTopic; onGoTo?: (r: BibleReference) => void }) {
+  const images = useArt().filter(a => a.life === topic.id);
+  const [main, ...more] = images;
   return (
-    <article className="rounded-2xl border border-border/30 px-4 py-4 font-sans">
+    <article className="rounded-2xl border border-border/30 overflow-hidden font-sans">
+      {main && <PhotoThumb photo={withDescription(main)} className="rounded-none" aspect="aspect-[16/9]" />}
+      <div className="px-4 py-4">
+      {main && (
+        <p className="text-[11px] text-foreground/50 -mt-1 mb-2">
+          {KIND_LABEL[main.kind]}: {main.caption}
+          {main.kind === 'photo' && ' — photographed in the early 1900s, not in Bible times'}
+        </p>
+      )}
       <p className="font-serif text-lg text-foreground/90">
         {topic.title}
         {!topic.reviewed && <DraftBadge />}
@@ -26,6 +39,15 @@ export function LifeCard({ topic, onGoTo }: { topic: LifeTopic; onGoTo?: (r: Bib
             {r.label}
           </button>
         ))}
+      </div>
+      {more.length > 0 && (
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          {more.map(a => (
+            <ArtFigure key={a.id} art={a} />
+          ))}
+        </div>
+      )}
+      {main && <PhotoCredit photo={main} className="mt-3" prefix={main.kind === 'photo' ? 'Photo: ' : ''} />}
       </div>
     </article>
   );
