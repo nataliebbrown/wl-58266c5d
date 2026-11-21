@@ -1,9 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Check, ChevronDown, ChevronRight, Clock, NotebookPen, Trash2, User } from 'lucide-react';
-import { BIBLE_BOOKS, fetchPassage, type BiblePassage } from '@/lib/bibleApi';
+import { BIBLE_BOOKS, fetchPassage, type BiblePassage, type BibleReference } from '@/lib/bibleApi';
 import { STUDY_METHODS, getMethod, fillTemplate, type StudyStep } from '@/lib/studyMethods/methods';
-import { BIBLE_CHARACTERS, type BibleCharacter } from '@/lib/studyMethods/characters';
+import { BIBLE_CHARACTERS, getCharacter, type BibleCharacter } from '@/lib/studyMethods/characters';
+import { eraForChapter } from '@/lib/timewalk/eras';
+import { PersonCard } from '@/components/timewalk/PersonCard';
 import {
   type StudyPassageRef,
   type StudySession,
@@ -273,6 +275,7 @@ export default function Study() {
               </div>
 
               {/* Step */}
+              <div className="space-y-4">
               <div className="rounded-2xl border border-border/30 bg-background px-5 py-6 sm:px-6">
                 <StudyStepCard
                   method={method}
@@ -286,6 +289,10 @@ export default function Study() {
                   candidates={candidates}
                   onChooseOriginal={chooseOriginal}
                 />
+              </div>
+              {session.characterId && getCharacter(session.characterId) && (
+                <CharacterProfile personId={getCharacter(session.characterId)!.personId} name={session.person ?? ''} onOpenBible={ref => navigate('/bible', { state: { initialReference: ref } })} />
+              )}
               </div>
             </div>
           </div>
@@ -575,12 +582,18 @@ function CharacterPicker({
                 <span className="flex-1 min-w-0">
                   <span className="block font-serif text-lg text-foreground/90">{c.name}</span>
                   <span className="block text-xs text-foreground/50 truncate">{c.summary}</span>
+                  <span className="block text-[11px] text-foreground/40">{eraForChapter(c.passages[0].book, c.passages[0].chapter)?.name}</span>
                 </span>
                 <span className="text-xs text-foreground/45 shrink-0">
                   {completed}/{c.passages.length}
                 </span>
                 <ChevronDown className={`w-4 h-4 text-foreground/40 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
               </button>
+              {isOpen && (
+                <div className="border-t border-border/30 px-2 pt-2">
+                  <CharacterProfile personId={c.personId} name={c.name} />
+                </div>
+              )}
               {isOpen && (
                 <ul className="border-t border-border/30 px-2 py-2">
                   {c.passages.map(p => {
@@ -684,6 +697,32 @@ function StudySummary({
           Back to {label}
         </button>
       </div>
+    </div>
+  );
+}
+
+// ============ Character profile (TimeWalk) ============
+
+function CharacterProfile({ personId, name, onOpenBible }: { personId: string; name: string; onOpenBible?: (ref: BibleReference) => void }) {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState(personId);
+  useEffect(() => setCurrent(personId), [personId]);
+  return (
+    <div className="font-sans">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between rounded-xl px-2 py-2 text-sm text-foreground/65 hover:bg-foreground/[0.03]"
+        aria-expanded={open}
+      >
+        About {name} — family, era, and story
+        <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="pb-2">
+          <PersonCard id={current} onSelectPerson={setCurrent} onGoTo={onOpenBible} />
+        </div>
+      )}
     </div>
   );
 }

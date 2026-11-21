@@ -11,12 +11,15 @@ export interface BibleCharacter {
   id: string;
   name: string;
   summary: string;
+  /** TimeWalk (Theographic) person id, for family and biography */
+  personId: string;
   passages: CharacterPassage[];
 }
 
 export const BIBLE_CHARACTERS: BibleCharacter[] = [
   {
     id: 'abraham',
+    personId: 'abraham_58',
     name: 'Abraham',
     summary: 'Called by God to leave everything, and counted righteous by faith.',
     passages: [
@@ -29,6 +32,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'joseph',
+    personId: 'joseph_1710',
     name: 'Joseph',
     summary: 'Betrayed, enslaved, and raised up — God meant it for good.',
     passages: [
@@ -41,6 +45,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'moses',
+    personId: 'moses_2108',
     name: 'Moses',
     summary: 'A reluctant leader through whom God rescued His people.',
     passages: [
@@ -54,6 +59,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'ruth',
+    personId: 'ruth_2450',
     name: 'Ruth',
     summary: 'A foreign widow folded into God’s redemption story.',
     passages: [
@@ -65,6 +71,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'hannah',
+    personId: 'hannah_1400',
     name: 'Hannah',
     summary: 'A woman who poured out her heart and praised the God who lifts the lowly.',
     passages: [
@@ -74,6 +81,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'david',
+    personId: 'david_994',
     name: 'David',
     summary: 'Shepherd, king, sinner, and worshiper — a man after God’s heart.',
     passages: [
@@ -87,6 +95,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'elijah',
+    personId: 'elijah_1131',
     name: 'Elijah',
     summary: 'A prophet who saw God’s fire — and heard His whisper.',
     passages: [
@@ -97,6 +106,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'esther',
+    personId: 'esther_1343',
     name: 'Esther',
     summary: 'God’s hidden hand saving His people through a courageous queen.',
     passages: [
@@ -108,6 +118,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'daniel',
+    personId: 'daniel_975',
     name: 'Daniel',
     summary: 'Faithful in exile, trusting the God who rules over kings.',
     passages: [
@@ -119,6 +130,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'jonah',
+    personId: 'jonah_1689',
     name: 'Jonah',
     summary: 'A runaway prophet and the relentless mercy of God.',
     passages: [
@@ -130,6 +142,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'mary',
+    personId: 'mary_1938',
     name: 'Mary, mother of Jesus',
     summary: 'The Lord’s servant who treasured His work in her heart.',
     passages: [
@@ -141,6 +154,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'peter',
+    personId: 'peter_2745',
     name: 'Peter',
     summary: 'Bold, impulsive, broken, and restored by Jesus.',
     passages: [
@@ -154,6 +168,7 @@ export const BIBLE_CHARACTERS: BibleCharacter[] = [
   },
   {
     id: 'paul',
+    personId: 'paul_2479',
     name: 'Paul',
     summary: 'From persecutor to apostle — grace that changes everything.',
     passages: [

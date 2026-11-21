@@ -6,7 +6,8 @@
 
 import { MEDITATION_CATALOG, formatMeditationReference } from '@/lib/meditation/catalog';
 import { GOD_ATTRIBUTES, countByAttribute, getAttribute, getPortraitEntries, type PortraitEntry } from '@/lib/portraits';
-import { getActivePlan } from '@/lib/readingPlan';
+import { getActivePlan, getCurrentDay, getPlanDay } from '@/lib/readingPlan';
+import { eraForChapter } from '@/lib/timewalk/eras';
 import type { BibleReference } from '@/lib/bibleApi';
 import type { TimePeriod } from '@/lib/timeAwareness';
 import type { Intention, IntentionFocus } from './practices';
@@ -16,6 +17,7 @@ export type SuggestionAction =
   | { kind: 'read'; reference: BibleReference }
   | { kind: 'study'; reference: BibleReference; methodId: string }
   | { kind: 'reading-plan' }
+  | { kind: 'timewalk'; eraId: string }
   | { kind: 'practice'; practiceId: string };
 
 export interface Suggestion {
@@ -173,6 +175,23 @@ export function getDailySuggestion(ctx: SuggestionContext): Suggestion {
         sophiaPrompt: `This week I've been seeing that God is ${attr.name.toLowerCase()}. Where else in Scripture is that shown?`,
       });
     }
+  }
+
+  // History behind today's reading (TimeWalk)
+  const plan = getActivePlan();
+  const today = plan ? getPlanDay(plan.planId, getCurrentDay(plan)) : undefined;
+  const first = today?.chapters[0];
+  const era = first ? eraForChapter(first.book, first.chapter) : undefined;
+  if (first && era && era.id !== 'beginning') {
+    const book = first.book === 'Psalms' ? 'the Psalms' : first.book;
+    candidates.push({
+      id: `timewalk-${era.id}`,
+      title: `Step into the world of ${book}`,
+      body: `Today’s reading is set in ${era.name.toLowerCase().startsWith('the ') ? era.name.toLowerCase() : `the era of ${era.name.toLowerCase()}`}. ${era.godAtWork}`,
+      actionLabel: 'Open TimeWalk',
+      action: { kind: 'timewalk', eraId: era.id },
+      sophiaPrompt: `What was happening in history around ${first.book} ${first.chapter}, and how does it help me see what God was doing?`,
+    });
   }
 
   // Season from onboarding

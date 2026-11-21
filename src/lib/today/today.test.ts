@@ -4,6 +4,7 @@ import { getPractice, isPracticeDone, daysPracticedThisWeek, orderForTime, check
 import { getDailySuggestion, parseAnchor } from './suggestions';
 import { GUIDED_PRACTICES } from './guided';
 import { buildJourneyNodes } from '../journey';
+import { choosePlan, setDayComplete } from '../readingPlan';
 
 beforeEach(() => {
   const store = new Map<string, string>();
@@ -73,6 +74,18 @@ describe('daily suggestion', () => {
   it('suggests the Examen in the evening when it is not already in the rhythm', () => {
     const s = getDailySuggestion({ period: 'evening', intention: null, portraits: [], hasReadingPlan: true, examenDoneToday: false, examenInRhythm: false });
     expect(s.action).toEqual({ kind: 'practice', practiceId: 'examen' });
+  });
+
+  it('suggests stepping into the history behind today’s reading', () => {
+    const days = (n: number) => [0, 1, 2].map(i => getDailySuggestion({ period: 'morning', intention: null, portraits: [], hasReadingPlan: true, date: new Date(2026, 10, 21 + i + n) }));
+    choosePlan('canonical');
+    // Day 1 (Genesis 1–3) is "The Beginning", which TimeWalk doesn't date — no history suggestion
+    expect(days(0).some(s => s.id.startsWith('timewalk-'))).toBe(false);
+    // Finish days 1–17 so today is day 18 (Exodus 2–4)
+    for (let d = 1; d <= 17; d++) setDayComplete('canonical', d, true);
+    const hit = days(0).find(s => s.id.startsWith('timewalk-'));
+    expect(hit?.action).toEqual({ kind: 'timewalk', eraId: 'exodus' });
+    expect(hit?.title).toBe('Step into the world of Exodus');
   });
 
   it('parses attribute anchors', () => {

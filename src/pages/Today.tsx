@@ -119,6 +119,7 @@ export default function Today() {
     else if (a.kind === 'read') navigate('/bible', { state: { initialReference: a.reference } });
     else if (a.kind === 'study') navigate('/study', { state: { passage: { book: a.reference.book, chapter: a.reference.chapter }, methodId: a.methodId } });
     else if (a.kind === 'reading-plan') navigate('/reading');
+    else if (a.kind === 'timewalk') navigate('/timewalk', { state: { eraId: a.eraId } });
     else if (a.kind === 'practice') {
       const p = getPractice(a.practiceId);
       if (p) startPractice(p);
